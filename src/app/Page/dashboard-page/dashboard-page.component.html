@@ -1,3 +1,140 @@
-<!-- Side Nav -->
+<div class="row m-0">
+    <!-- Sidebar -->
+    <div [class.d-none]="!isSidebarVisible"
+        class="col-8 col-sm-6 col-md-3 col-xxl-2 vh-100 p-0 d-md-block sidebar scrollable">
+        <ul class="nav flex-column">
+            <div class="d-flex justify-content-end closeNav">
+                <div class="d-md-none pt-2 pe-2">
+                    <i (click)="toggleSidebar()" class="bi bi-x fs-1 "></i>
+                </div>
+            </div>
+            <div class="px-2 py-3 d-flex justify-content-center">
+                <img src="../../../assets/aceClosetLogoFull.png" alt="Logo" width="35%">
+            </div>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/home" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-house pe-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/users" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-people pe-2"></i>
+                    Users
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/products" routerLinkActive="active"
+                    (click)="toggleSidebar()">
+                    <i class="bi bi-box-seam pe-2"></i>
+                    Products
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/orders" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-cart-check pe-2"></i>
+                    Orders
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/invoices" routerLinkActive="active"
+                    (click)="toggleSidebar()">
+                    <i class="bi bi-receipt pe-2"></i>
+                    Invoices
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/payments" routerLinkActive="active"
+                    (click)="toggleSidebar()">
+                    <i class="bi bi-cash-coin pe-2"></i>
+                    Payments
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/transactions" routerLinkActive="active"
+                    (click)="toggleSidebar()">
+                    <i class="bi bi-window-stack pe-2"></i>
+                    Transactions
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/bank" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-bank pe-2"></i>
+                    Bank Accounts
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/reports" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-file-earmark-bar-graph pe-2"></i>
+                    Reports
+                </a>
+            </li>
+            <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/refunds" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-cart-x pe-2"></i>
+                    Refunds
+                </a>
+            </li>
+            <li class="nav-item pb-4">
+                <a class="nav-link" routerLink="/dashboard/settings" routerLinkActive="active"
+                    (click)="toggleSidebar()">
+                    <i class="bi bi-gear pe-2"></i>
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </div>
 
-<router-outlet></router-outlet>
+    <!-- Main Content -->
+    <div class="col mx-4">
+        <div class="row">
+            <div class="col px-0 pt-4 d-md-none">
+                <i (click)="toggleSidebar()" class="bi bi-list pe-2 fs-3 "></i>
+            </div>
+            <div class="col px-0 pt-4 d-flex justify-content-end">
+                <div class="d-flex align-items-center">
+                    <!-- Sun Icon Dropdown -->
+                    <div class="dropdown me-3">
+                        <a class="dashTopIcon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-sun fs-4"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"> <i class="bi bi-sun pe-2"></i>Light</a></li>
+                            <li><a class="dropdown-item" href="#"> <i class="bi bi-moon-stars pe-2"></i>Dark</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Bell Icon Dropdown -->
+                    <div class="dropdown me-3">
+                        <a class="dashTopIcon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell fs-4"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">All Notifications</a></li>
+                            <li><a class="dropdown-item" href="#">Unread Notifications</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Person Icon Dropdown -->
+                    <div class="dropdown me-3">
+                        <a class="dashTopIcon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-4"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person pe-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear pe-2"></i>Settings</a></li>
+                            <li class="logout text-center"><a class="dropdown-item" href="#">Logout<i
+                                        class="bi bi-box-arrow-in-right ps-2"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col pt-4 mt-4">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+</div>
