@@ -86,44 +86,46 @@
     </div>
 
     <!-- Main Content -->
-    <div class="col mx-4">
+    <div class="col">
         <div class="row">
-            <div class="col px-0 pt-4 d-md-none">
+            <div class="col pt-4 ms-2 d-md-none">
                 <i (click)="toggleSidebar()" class="bi bi-list pe-2 fs-3 "></i>
             </div>
-            <div class="col px-0 pt-4 d-flex justify-content-end">
+            <div class="col pt-4 d-flex justify-content-end">
                 <div class="d-flex align-items-center">
                     <!-- Sun Icon Dropdown -->
                     <div class="dropdown me-3">
-                        <a class="dashTopIcon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="dashTopIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-sun fs-4"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"> <i class="bi bi-sun pe-2"></i>Light</a></li>
-                            <li><a class="dropdown-item" href="#"> <i class="bi bi-moon-stars pe-2"></i>Dark</a></li>
+                            <li><a class="dropdown-item" type="button"> <i class="bi bi-sun pe-2"></i>Light</a></li>
+                            <li><a class="dropdown-item" type="button"> <i class="bi bi-moon-stars pe-2"></i>Dark</a>
+                            </li>
                         </ul>
                     </div>
 
                     <!-- Bell Icon Dropdown -->
                     <div class="dropdown me-3">
-                        <a class="dashTopIcon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="dashTopIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-bell fs-4"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">All Notifications</a></li>
-                            <li><a class="dropdown-item" href="#">Unread Notifications</a></li>
+                            <li><a class="dropdown-item" type="button">All Notifications</a></li>
+                            <li><a class="dropdown-item" type="button">Unread Notifications</a></li>
                         </ul>
                     </div>
 
                     <!-- Person Icon Dropdown -->
                     <div class="dropdown me-3">
-                        <a class="dashTopIcon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="dashTopIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle fs-4"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person pe-2"></i>My Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear pe-2"></i>Settings</a></li>
-                            <li class="logout text-center"><a class="dropdown-item" href="#">Logout<i
+                            <li><a class="dropdown-item" type="button"><i class="bi bi-person pe-2"></i>My Profile</a>
+                            </li>
+                            <li><a class="dropdown-item" type="button"><i class="bi bi-gear pe-2"></i>Settings</a></li>
+                            <li class="logout text-center"><a class="dropdown-item" type="button">Logout<i
                                         class="bi bi-box-arrow-in-right ps-2"></i></a></li>
                         </ul>
                     </div>

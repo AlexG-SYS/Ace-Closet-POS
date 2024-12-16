@@ -1,0 +1,75 @@
+.fs-5 {
+    font-size: 1.1rem !important;
+}
+
+.income {
+    color: #497ffc;
+    background-color: #d8ebf8;
+}
+
+.expense {
+    color: #8a8d93;
+    background-color: #ecedee;
+}
+
+.profit {
+    color: #56ca00;
+    background-color: #e4f7d6;
+}
+
+.bankTransfer {
+    color: #ff4c51;
+    background-color: #ffe2e3;
+}
+
+.creditCard {
+    color: #8c57ff;
+    background-color: #ede4ff;
+}
+
+.cashPayment {
+    color: #16b1ff;
+    background-color: #daf3ff;
+}
+
+.eWallet {
+    color: #ffb400;
+    background-color: #fff3d6;
+}
+
+.orderBG {
+    color: #fff;
+    background-color: #16b1ff;
+}
+
+.salesBG {
+    color: #fff;
+    background-color: #16b1ff;
+}
+
+.profitBG {
+    color: #fff;
+    background-color: #16b1ff;
+}
+
+.transactionBG {
+    color: #fff;
+    background-color: #16b1ff;
+}
+
+.textProfit {
+    color: #6fd225;
+}
+
+.textLoss {
+    color: #ff4c51;
+}
+
+
+
+@media (max-width: 767.98px) {
+
+    .fs-5 {
+        font-size: .95rem !important;
+    }
+}
