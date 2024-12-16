@@ -1,3 +1,16 @@
+.topNav {
+    position: sticky;
+    top: 0;
+    z-index: 800;
+    background-color: #f4f5fa;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.topNav.scrolled {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .nav-link {
     cursor: pointer;
     color: #433c50;
@@ -57,6 +70,8 @@
 
     }
 }
+
+
 
 @media (max-width: 767.98px) {
     .vh-100 {

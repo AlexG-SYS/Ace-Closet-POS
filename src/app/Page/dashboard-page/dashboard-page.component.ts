@@ -19,4 +19,15 @@ export class DashboardPageComponent {
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
+
+  constructor() {
+    document.addEventListener('scroll', function () {
+      const topNav = document.querySelector('.topNav');
+      if (window.scrollY > 10) {
+        topNav!.classList.add('scrolled');
+      } else {
+        topNav!.classList.remove('scrolled');
+      }
+    });
+  }
 }

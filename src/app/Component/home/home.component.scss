@@ -65,11 +65,20 @@
     color: #ff4c51;
 }
 
-
+apx-chart {
+    display: block;
+    max-width: 100%;
+}
 
 @media (max-width: 767.98px) {
 
     .fs-5 {
-        font-size: .95rem !important;
+        font-size: 1.1rem !important;
+    }
+
+    .border-start {
+        border: none !important;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6 !important;
     }
 }
