@@ -18,9 +18,10 @@
                 </a>
             </li>
             <li class="nav-item pb-1">
-                <a class="nav-link" routerLink="/dashboard/users" routerLinkActive="active" (click)="toggleSidebar()">
+                <a class="nav-link" routerLink="/dashboard/customers" routerLinkActive="active"
+                    (click)="toggleSidebar()">
                     <i class="bi bi-people pe-2"></i>
-                    Users
+                    Customers
                 </a>
             </li>
             <li class="nav-item pb-1">
@@ -50,6 +51,7 @@
                     Payments
                 </a>
             </li>
+
             <li class="nav-item pb-1">
                 <a class="nav-link" routerLink="/dashboard/transactions" routerLinkActive="active"
                     (click)="toggleSidebar()">
@@ -88,11 +90,15 @@
     <!-- Main Content -->
     <div class="col">
         <div class="row topNav p-3 pt-4">
-            <div class="col d-md-none">
+            <div class="col-auto d-md-none">
                 <i (click)="toggleSidebar()" class="bi bi-list pe-2 fs-3 "></i>
             </div>
             <div class="col d-flex justify-content-end">
                 <div class="d-flex align-items-center">
+                    <div>
+                        <p class="p-0 m-0 pe-3 fw-medium">{{greetingMessage}}</p>
+                    </div>
+
                     <!-- Sun Icon Dropdown -->
                     <div class="dropdown me-3">
                         <a class="dashTopIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">

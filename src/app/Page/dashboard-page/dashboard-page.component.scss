@@ -1,3 +1,10 @@
+.sidebar {
+    background-color: #f4f5fa;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
 .topNav {
     position: sticky;
     top: 0;
@@ -90,6 +97,7 @@
         box-shadow: 0 .3875rem .575rem rgba(46, 38, 61, .18);
         border-top-right-radius: 1rem;
         border-bottom-right-radius: 1rem;
+        position: fixed;
     }
 
     .closeNav {

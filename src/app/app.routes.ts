@@ -12,6 +12,7 @@ import { ReportsComponent } from './Component/reports/reports.component';
 import { PaymentsComponent } from './Component/payments/payments.component';
 import { TransactionsComponent } from './Component/transactions/transactions.component';
 import { RefundsComponent } from './Component/refunds/refunds.component';
+import { CustomersComponent } from './Component/customers/customers.component';
 
 export const routes: Routes = [
   { path: '', title: 'Login | Ace Closet POS', component: LoginPageComponent },
@@ -32,9 +33,9 @@ export const routes: Routes = [
         component: HomeComponent,
       },
       {
-        path: 'users',
-        title: 'Users | Ace Closet POS',
-        component: UsersComponent,
+        path: 'customers',
+        title: 'Customers | Ace Closet POS',
+        component: CustomersComponent,
       },
       {
         path: 'products',
