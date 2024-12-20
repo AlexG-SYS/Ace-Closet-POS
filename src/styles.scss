@@ -6,6 +6,8 @@ body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
     background-color: #f4f5fa;
+    scrollbar-width: thin;
+    scrollbar-color: #a3a3a3 #f1f1f1;
 }
 
 .btn-primary {
@@ -32,4 +34,40 @@ body {
 .card {
     border-radius: 1rem;
     box-shadow: 0 .25rem .625rem rgba(46, 38, 61, .2);
+}
+
+/* Success Snackbar Style */
+.success-snackbar {
+    .mat-mdc-snackbar-surface {
+        background-color: #3468e2 !important;
+        border-radius: 1rem !important;
+        color: white !important;
+    }
+
+    .mat-mdc-snack-bar-label {
+        text-align: center !important;
+    }
+
+    .mdc-button__label {
+        color: white !important;
+    }
+}
+
+/* Error Snackbar Style */
+.error-snackbar {
+    .mat-mdc-snackbar-surface {
+        text-align: center !important;
+        background-color: rgb(240, 26, 40) !important;
+        border-radius: 1rem !important;
+        color: white !important;
+    }
+
+    .mat-mdc-snack-bar-label {
+        text-align: center !important;
+    }
+
+    .mdc-button__label {
+        color: white !important;
+    }
+
 }

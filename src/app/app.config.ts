@@ -21,11 +21,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimationsAsync('noop'),
-    provideFirebaseApp(() =>
-      initializeApp({
-        // Missing for Security Reason
-      })
-    ),
+    provideFirebaseApp(() => initializeApp({})),
     provideAuth(() => getAuth()),
     provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,

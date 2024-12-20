@@ -1,14 +1,204 @@
 <div class="conatiner px-2">
     <div class="row">
-        <div class="col-xxl-4 col-xl-5 col-md-12 pb-4">
+        <div class="col-xxl-4 col-xl-4 col-md-5 pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="email" class="form-control" id="searchCustomer" placeholder="Search Customer"
+                                matInput (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButton" class="clearBtn"><i class="bi bi-x-lg"></i></span>
+                        </form>
+
+                        <!-- Button to Open the Modal -->
+                        <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                            data-bs-target="#newCustomer">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="d-none d-xxl-inline ps-1">Add Customer</span>
+                        </button>
+                    </div>
+                    @if(!tableSpinner){
+                    <!-- Table Section -->
+                    <mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"> {{element.name}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Account Balance Column -->
+                        <ng-container matColumnDef="accountBalance">
+                            <mat-header-cell *matHeaderCellDef class="balance"> Balance
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="balance" (click)="showUserData(element)"> ${{
+                                element.accountBalance | number:
+                                '1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    </mat-table>
+                    }@else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <mat-paginator [pageSizeOptions]="[9]" hidePageSize></mat-paginator>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-8 col-xl-8 col-md-7 pb-4">
             <div class="card">
                 <div class="card-body"></div>
             </div>
         </div>
-        <div class="col-xxl-8 col-xl-7 col-md-12 pb-4">
-            <div class="card">
-                <div class="card-body"></div>
-            </div>
+    </div>
+</div>
+
+
+<!-- Modal For New Customer -->
+<div class="modal fade" id="newCustomer" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="customerForm" (ngSubmit)="newCustomerForm()">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">New Customer</h1>
+                        </div>
+                    </div>
+                    <!-- Customer Name -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="First Name"
+                                    formControlName="customerFirstName" />
+                                @if(firstNameControl?.invalid && firstNameControl?.touched){
+                                <div class="text-danger">
+                                    @if(firstNameControl?.errors?.['required']){
+                                    <small>First Name is required.</small>
+                                    }
+                                    @if(firstNameControl?.errors?.['pattern']){
+                                    Only letters and spaces are allowed.
+                                    }
+                                    <small></small>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Last Name"
+                                    formControlName="customerLastName" />
+                                @if(lastNameControl?.invalid && lastNameControl?.touched){
+                                <div class="text-danger">
+                                    @if(lastNameControl?.errors?.['required']){
+                                    <small>Last Name is required.</small>
+                                    }
+                                    @if(lastNameControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Email & Phone # -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Email"
+                                    formControlName="customerEmail" />
+                                @if(emailControl?.invalid && emailControl?.touched){
+                                <div class="text-danger">
+                                    @if(emailControl?.errors?.['required']){
+                                    <small>Email is required.</small>
+                                    }
+                                    @if(emailControl?.errors?.['email']){
+                                    <small>Invalid email format.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Phone #"
+                                    formControlName="customerPhoneNum" />
+                                @if(phoneControl?.invalid && phoneControl?.touched){
+                                <div class="text-danger">
+                                    @if(phoneControl?.errors?.['required']){
+                                    <small>Phone number is required.</small>
+                                    }
+                                    @if(phoneControl?.errors?.['pattern']){
+                                    <small>Invalid format. Use xxx-xxxx.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Address -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Street"
+                                    formControlName="customerStreet" />
+                                @if(streetControl?.invalid && streetControl?.touched){
+                                <div class="text-danger">
+                                    @if(streetControl?.errors?.['required']){
+                                    <small>Street is required.</small>
+                                    }
+                                    @if(streetControl?.errors?.['maxLength']){
+                                    <small>Maximum length is 100 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="City/Town/Village"
+                                    formControlName="customerCityTown" />
+                                @if(cityControl?.invalid && cityControl?.touched){
+                                <div class="text-danger">
+                                    @if(cityControl?.errors?.['required']){
+                                    <small>City/Town/Village is required.</small>
+                                    }
+                                    @if(cityControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewCustomerForm()">Cancel</button>
+                            <button type="submit" class="btn btn-primary"
+                                [disabled]="customerForm.invalid">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

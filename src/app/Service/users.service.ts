@@ -6,8 +6,14 @@ import {
   collectionData,
   doc,
   setDoc,
+  Timestamp,
+  query,
+  where,
+  getDocs,
+  orderBy,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { User } from '../DataModels/userData.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,14 +25,50 @@ export class UsersService {
     this.usersCollection = collection(this.firestore, 'users');
   }
 
-  // Method to write data to Firestore
-  addItem(data: any): Promise<any> {
-    return addDoc(this.usersCollection, data);
+  addUser(data: any): Promise<any> {
+    data.createdAt = Timestamp.now();
+
+    return new Promise((resolve, reject) => {
+      try {
+        // Attempt to add the document to Firestore
+        addDoc(this.usersCollection, data)
+          .then((docRef) => {
+            resolve(docRef); // Resolve with the document reference if successful
+          })
+          .catch((error) => {
+            reject(error); // Reject with the error if something goes wrong
+          });
+      } catch (error) {
+        reject(error); // Catch any synchronous errors and reject the promise
+      }
+    });
   }
 
-  // Method to read data from Firestore
-  getItems(): Observable<any[]> {
-    return collectionData(this.usersCollection, { idField: 'id' });
+  // Method to retrieve active users
+  getActiveUsers(): Promise<any[]> {
+    const activeUsersQuery = query(
+      this.usersCollection,
+      where('status', '==', 'active'),
+      orderBy('name', 'asc')
+    );
+
+    return new Promise((resolve, reject) => {
+      try {
+        getDocs(activeUsersQuery)
+          .then((querySnapshot) => {
+            const users = querySnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...(doc.data() as Partial<User>),
+            }));
+            resolve(users); // Resolve with the list of active users
+          })
+          .catch((error) => {
+            reject(error); // Reject with the error if something goes wrong
+          });
+      } catch (error) {
+        reject(error); // Catch any synchronous errors and reject the promise
+      }
+    });
   }
 
   // Method to update a specific document

@@ -33,12 +33,12 @@
 }
 
 .nav-link:hover {
-    background: rgba(46, 38, 61, .08);
+    background: #e5e6e9;
 }
 
 .nav-link.active {
     color: #fff;
-    box-shadow: 0 .1875rem .375rem rgba(46, 38, 61, .18);
+    box-shadow: 0 .1875rem .375rem rgb(184, 184, 186);
     background: linear-gradient(270deg, #0d6efd 0%, #66bfff 100%);
 }
 
