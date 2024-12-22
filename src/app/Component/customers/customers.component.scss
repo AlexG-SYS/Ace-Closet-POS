@@ -1,15 +1,19 @@
 .clearBtn {
     position: absolute;
-    top: 55%;
-    right: 1rem;
+    top: 50%;
+    right: .8rem;
     transform: translateY(-50%);
     cursor: pointer;
     color: #676a71;
+
+    :hover {
+        color: #16b1ff;
+    }
 }
 
 .mat-mdc-table {
     width: 100%;
-    height: 500px !important;
+    height: 450px !important;
     overflow: auto;
 }
 

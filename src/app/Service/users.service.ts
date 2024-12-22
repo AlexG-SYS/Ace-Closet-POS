@@ -49,6 +49,7 @@ export class UsersService {
     const activeUsersQuery = query(
       this.usersCollection,
       where('status', '==', 'active'),
+      where('role', '==', 'customer'),
       orderBy('name', 'asc')
     );
 
