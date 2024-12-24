@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import {
   ReactiveFormsModule,
-  FormBuilder,
   FormGroup,
   Validators,
   FormControl,
@@ -18,6 +17,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-customers',
@@ -34,13 +34,16 @@ import { DecimalPipe } from '@angular/common';
 })
 export class CustomersComponent implements AfterViewInit, OnInit {
   customerForm = new FormGroup({
+    id: new FormControl('', []),
     customerFirstName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.maxLength(25),
     ]), // Only letters and spaces
     customerLastName: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.maxLength(25),
     ]), // Only letters and spaces
     customerEmail: new FormControl('', [Validators.required, Validators.email]), // Valid email format
     customerPhoneNum: new FormControl('', [
@@ -49,11 +52,12 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     ]),
     customerStreet: new FormControl('', [
       Validators.required,
-      Validators.maxLength(100),
+      Validators.maxLength(25),
     ]), // Max length for street
     customerCityTown: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.maxLength(25),
     ]), // Only letters and spaces
   });
 
@@ -82,9 +86,13 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   }
   tableSpinner = true;
   activeUsers: User[] = [];
-  displayedColumns: string[] = ['name', 'accountBalance'];
+  displayedColumns: string[] = ['name', 'accountBalance', 'options'];
   dataSource = new MatTableDataSource(this.activeUsers);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('newCustomerModal') newCustomerModal: any;
+  displaySmall = false;
+  modalData = false;
+  customerData: Partial<User> = {};
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value
@@ -97,7 +105,9 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     private userService: UsersService,
     private snackBar: MatSnackBar,
     private cdRef: ChangeDetectorRef
-  ) {}
+  ) {
+    this.displaySmall = window.innerWidth < 768;
+  }
 
   ngOnInit(): void {
     this.populateActiveUsers();
@@ -135,7 +145,6 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   newCustomerForm() {
     if (this.customerForm.valid) {
       const formData = this.customerForm.value;
-      const today = new Date();
       // Convert form data to a partial User data model
       const partialUser: Partial<User> = {
         name: `${formData.customerFirstName} ${formData.customerLastName}`,
@@ -154,16 +163,15 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       this.userService
         .addUser(partialUser)
         .then(() => {
+          this.clearNewCustomerForm();
+          this.modalData = false;
           this.showSnackBar('User added successfully!', 'success');
+          this.populateActiveUsers();
         })
         .catch((error) => {
           this.showSnackBar(`Failed to add user`, 'error');
           console.log(error.message);
         });
-
-      this.clearNewCustomerForm();
-
-      this.populateActiveUsers();
     } else {
       console.log('Form is invalid');
       this.customerForm.markAllAsTouched(); // Highlight invalid fields
@@ -172,6 +180,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
   clearNewCustomerForm() {
     this.customerForm.reset();
+    this.modalData = false;
   }
 
   populateActiveUsers() {
@@ -198,6 +207,71 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   }
 
   showUserData(data: User) {
-    console.log(data);
+    this.customerData = data;
+  }
+
+  modalUserData(data: User) {
+    this.modalData = true;
+    this.customerForm.patchValue({
+      id: data.id,
+      customerFirstName: data.name ? data.name.split(' ')[0] : '',
+      customerLastName: data.name ? data.name.split(' ')[1] : '',
+      customerEmail: data.email,
+      customerPhoneNum: data.phoneNumber,
+      customerStreet: data.shippingAddress?.street,
+      customerCityTown: data.shippingAddress?.cityTown,
+    });
+
+    if (this.newCustomerModal) {
+      const customerModal = new bootstrap.Modal(
+        this.newCustomerModal.nativeElement
+      );
+      customerModal.show();
+    }
+  }
+
+  updateCustomer() {
+    if (this.customerForm.valid) {
+      const formData = this.customerForm.value;
+      const today = new Date();
+      // Convert form data to a partial User data model
+      const updatedData: Partial<User> = {
+        name: `${formData.customerFirstName} ${formData.customerLastName}`,
+        email: formData.customerEmail || '',
+        phoneNumber: formData.customerPhoneNum || '',
+        shippingAddress: {
+          street: formData.customerStreet || '',
+          cityTown: formData.customerCityTown || '',
+        },
+      };
+
+      if (!this.customerForm.value.id) {
+        console.error('User ID is missing');
+        this.showSnackBar('Failed to update user: Missing user ID', 'error');
+        return;
+      }
+      this.userService
+        .updateUser(this.customerForm.value.id, updatedData)
+        .then(() => {
+          this.clearNewCustomerForm();
+          this.modalData = false;
+          this.showSnackBar('User updated successfully!', 'success');
+          this.populateActiveUsers();
+        })
+        .catch((error) => {
+          this.showSnackBar('Failed to update user', 'error');
+          console.error('Error updating user:', error.message);
+        });
+    } else {
+      this.customerForm.markAllAsTouched(); // Highlight invalid fields
+    }
+  }
+
+  getInitials(): string {
+    if (!this.customerData.name) return '';
+    const nameParts = this.customerData.name.split(' ');
+    const firstInitial = nameParts[0]?.charAt(0).toUpperCase() || '';
+    const lastInitial = nameParts[1]?.charAt(0).toUpperCase() || '';
+    return firstInitial + lastInitial;
   }
 }

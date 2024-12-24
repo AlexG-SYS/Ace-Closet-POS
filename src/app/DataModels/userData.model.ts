@@ -19,7 +19,7 @@ export interface CartItem {
 }
 
 export interface User {
-  userId: string; // Unique identifier for the user
+  id: string; // Unique identifier for the user
   name: string; // Full name of the user
   email: string; // Email address
   passwordHash: string; // Hashed password for authentication

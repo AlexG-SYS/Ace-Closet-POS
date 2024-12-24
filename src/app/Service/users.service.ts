@@ -25,56 +25,51 @@ export class UsersService {
     this.usersCollection = collection(this.firestore, 'users');
   }
 
-  addUser(data: any): Promise<any> {
-    data.createdAt = Timestamp.now();
-
-    return new Promise((resolve, reject) => {
-      try {
-        // Attempt to add the document to Firestore
-        addDoc(this.usersCollection, data)
-          .then((docRef) => {
-            resolve(docRef); // Resolve with the document reference if successful
-          })
-          .catch((error) => {
-            reject(error); // Reject with the error if something goes wrong
-          });
-      } catch (error) {
-        reject(error); // Catch any synchronous errors and reject the promise
-      }
-    });
+  // Add a new user to Firestore
+  async addUser(data: any): Promise<any> {
+    try {
+      data.createdAt = Timestamp.now();
+      const docRef = await addDoc(this.usersCollection, data); // Await the Firestore operation
+      return docRef; // Return the document reference if successful
+    } catch (error) {
+      console.error('Error adding user: ', error); // Log the error for debugging
+      throw new Error('Failed to add user. Please try again later.'); // Throw a custom error message
+    }
   }
 
-  // Method to retrieve active users
-  getActiveUsers(): Promise<any[]> {
-    const activeUsersQuery = query(
-      this.usersCollection,
-      where('status', '==', 'active'),
-      where('role', '==', 'customer'),
-      orderBy('name', 'asc')
-    );
+  // Retrieve active users from Firestore
+  async getActiveUsers(): Promise<any[]> {
+    try {
+      const activeUsersQuery = query(
+        this.usersCollection,
+        where('status', '==', 'active'),
+        where('role', '==', 'customer'),
+        orderBy('name', 'asc')
+      );
 
-    return new Promise((resolve, reject) => {
-      try {
-        getDocs(activeUsersQuery)
-          .then((querySnapshot) => {
-            const users = querySnapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...(doc.data() as Partial<User>),
-            }));
-            resolve(users); // Resolve with the list of active users
-          })
-          .catch((error) => {
-            reject(error); // Reject with the error if something goes wrong
-          });
-      } catch (error) {
-        reject(error); // Catch any synchronous errors and reject the promise
-      }
-    });
+      const querySnapshot = await getDocs(activeUsersQuery); // Await the Firestore operation
+      const users = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Partial<User>),
+      }));
+      return users; // Return the list of active users if successful
+    } catch (error) {
+      console.error('Error retrieving active users: ', error); // Log the error for debugging
+      throw new Error(
+        'Failed to retrieve active users. Please try again later.'
+      ); // Throw a custom error message
+    }
   }
 
-  // Method to update a specific document
-  updateItem(id: string, data: any): Promise<void> {
-    const docRef = doc(this.firestore, `users/${id}`);
-    return setDoc(docRef, data, { merge: true });
+  // Update an existing user in Firestore
+  async updateUser(id: string, data: any): Promise<void> {
+    try {
+      data.updatedAt = Timestamp.now();
+      const docRef = doc(this.firestore, `users/${id}`);
+      await setDoc(docRef, data, { merge: true }); // Await the Firestore operation
+    } catch (error) {
+      console.error(`Error updating user with ID ${id}: `, error); // Log the error for debugging
+      throw new Error('Failed to update user. Please try again later.'); // Throw a custom error message
+    }
   }
 }

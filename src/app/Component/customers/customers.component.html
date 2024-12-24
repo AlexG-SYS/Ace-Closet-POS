@@ -8,14 +8,14 @@
                             <input type="email" class="form-control" id="searchCustomer" placeholder="Search Customer"
                                 matInput (keyup)="applyFilter($event)" #input>
 
-                            <span id="clearButton" class="clearBtn"><i class="bi bi-x-lg"></i></span>
+                            <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
 
                         <!-- Button to Open the Modal -->
                         <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
                             data-bs-target="#newCustomer">
                             <i class="bi bi-plus-lg"></i>
-                            <span class="d-none d-xxl-inline ps-1">New</span>
+                            <span class="d-none d-xxl-inline ps-1" (click)="modalData = false">New</span>
                         </button>
                     </div>
                     @if(!tableSpinner){
@@ -31,11 +31,23 @@
 
                         <!-- Account Balance Column -->
                         <ng-container matColumnDef="accountBalance">
-                            <mat-header-cell *matHeaderCellDef class="balance"> Balance
+                            <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let element" class="balance" (click)="showUserData(element)"> ${{
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                (click)="showUserData(element)"> ${{
                                 element.accountBalance | number:
                                 '1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Options Column -->
+                        <ng-container matColumnDef="options">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                @if(displaySmall){
+                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="showUserData(element)"></i>
+                                }
+                                <i class="bi bi-pencil-square hoverColor mx-2" (click)="modalUserData(element)"></i>
                             </mat-cell>
                         </ng-container>
 
@@ -55,9 +67,112 @@
                 </div>
             </div>
         </div>
-        <div class="col-xxl-8 col-xl-8 col-md-7 pb-4">
+        <div class="col-xxl-8 col-xl-8 col-md-7 d-none d-md-inline">
             <div class="card">
-                <div class="card-body"></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="d-flex align-items-center flex-column">
+                                <div class="avatar-wrapper p-2">
+                                    <div class="avatar"><span
+                                            class="avatar-initial rounded-circle bgColor">{{getInitials()}}</span>
+                                    </div>
+                                </div>
+                                <div class="customer-info text-center p-3">
+                                    <h5 class="m-0 p-0 text-capitalize fs-5">{{customerData.name}}</h5>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around flex-wrap pb-2 row px-4">
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-primary">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">184</h5>
+                                        <span>Cart</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-primary">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">$12,378</h5>
+                                        <span>Cart Value</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-primary">
+                                            <i class="bi bi-heart"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">184</h5>
+                                        <span>Wishlist</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-primary">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">$12,378</h5>
+                                        <span>Wishlist Value</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around row px-4">
+                                <div class="col col-xl-12 col-xxl-4">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Name:</span>
+                                            <span>{{customerData.name}}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Email:</span>
+                                            <span>{{customerData.email}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col col-xl-6 col-xxl-4">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Status:</span>
+                                            <span
+                                                class="badge bg-label-success rounded-pill text-capitalize">{{customerData.status}}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Contact:</span>
+                                            <span class="text-capitalize">{{customerData.phoneNumber}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col col-xl-6 col-xxl-4">
+                                    <ul class="list-unstyled ">
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Street:</span>
+                                            <span
+                                                class="text-capitalize">{{customerData.shippingAddress?.street}}</span>
+                                        </li>
+
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">City / Town:</span>
+                                            <span>{{customerData.shippingAddress?.cityTown}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
             </div>
         </div>
     </div>
@@ -65,19 +180,20 @@
 
 
 <!-- Modal For New Customer -->
-<div class="modal fade" id="newCustomer" data-bs-backdrop="static" tabindex="-1">
+<div class="modal fade" id="newCustomer" data-bs-backdrop="static" tabindex="-1" #newCustomerModal>
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form [formGroup]="customerForm" (ngSubmit)="newCustomerForm()">
+            <form [formGroup]="customerForm">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col d-flex justify-content-end">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewCustomerForm()"></button>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col d-flex justify-content-center">
-                            <h1 class="fw-medium">New Customer</h1>
+                            <h1 class="fw-medium">{{ modalData ? 'Edit Customer' : 'New Customer' }}</h1>
                         </div>
                     </div>
                     <!-- Customer Name -->
@@ -92,9 +208,11 @@
                                     <small>First Name is required.</small>
                                     }
                                     @if(firstNameControl?.errors?.['pattern']){
-                                    Only letters and spaces are allowed.
+                                    <small>Only letters and spaces are allowed.</small>
                                     }
-                                    <small></small>
+                                    @if(firstNameControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
                                 </div>
                                 }
                             </div>
@@ -110,6 +228,9 @@
                                     }
                                     @if(lastNameControl?.errors?.['pattern']){
                                     <small>Only letters and spaces are allowed.</small>
+                                    }
+                                    @if(lastNameControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
                                     }
                                 </div>
                                 }
@@ -164,8 +285,8 @@
                                     @if(streetControl?.errors?.['required']){
                                     <small>Street is required.</small>
                                     }
-                                    @if(streetControl?.errors?.['maxLength']){
-                                    <small>Maximum length is 100 characters.</small>
+                                    @if(streetControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
                                     }
                                 </div>
                                 }
@@ -183,6 +304,9 @@
                                     @if(cityControl?.errors?.['pattern']){
                                     <small>Only letters and spaces are allowed.</small>
                                     }
+                                    @if(cityControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
                                 </div>
                                 }
                             </div>
@@ -193,8 +317,8 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearNewCustomerForm()">Cancel</button>
-                            <button type="submit" class="btn btn-primary"
-                                [disabled]="customerForm.invalid">Save</button>
+                            <button class="btn btn-primary" (click)="modalData ? updateCustomer() : newCustomerForm()"
+                                [disabled]="customerForm.invalid">{{ modalData ? 'Update' : 'Save' }}</button>
                         </div>
                     </div>
                 </div>
