@@ -1,1 +1,80 @@
-<p>products works!</p>
+<div class="conatiner px-2">
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="email" class="form-control" id="searchProduct" placeholder="Search Product"
+                                matInput (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                        </form>
+
+                        <!-- Button to Open the Modal -->
+                        <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                            data-bs-target="#newProduct">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="d-none d-xxl-inline ps-1" (click)="modalData = false">New</span>
+                        </button>
+                    </div>
+                    @if(!tableSpinner){
+                    <!-- Table Section -->
+                    <mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                        <!-- UPC Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                            <mat-cell *matCellDef="let element" (click)="showProductData(element)"
+                                [class.text-danger]="element.status == 'inactive'"> {{element.name}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Item Name  -->
+                        <ng-container matColumnDef="accountBalance">
+                            <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                (click)="showProductData(element)" [class.text-danger]="element.status == 'inactive'">
+                                ${{element.accountBalance | number:'1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Options Column -->
+                        <ng-container matColumnDef="options">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                @if(displaySmall){
+                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="showProductData(element)"
+                                    data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
+                                }
+                                <i class="bi bi-pencil-square hoverColor mx-2" (click)="modalProductData(element)"></i>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    </mat-table>
+
+                    }@else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row">
+                        <div class="col d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-capitalize"
+                                (click)="populateProductTable(productTableStatus)">Show {{productTableStatus}}</button>
+                        </div>
+                        <div class="col-auto">
+                            <mat-paginator [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

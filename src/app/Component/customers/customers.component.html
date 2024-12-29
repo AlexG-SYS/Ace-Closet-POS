@@ -3,7 +3,7 @@
         <div class="col-xxl-4 col-xl-4 col-md-5 pb-4">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
                         <form class="mx-2" style="position: relative;">
                             <input type="email" class="form-control" id="searchCustomer" placeholder="Search Customer"
                                 matInput (keyup)="applyFilter($event)" #input>
@@ -25,7 +25,8 @@
                         <!-- Name Column -->
                         <ng-container matColumnDef="name">
                             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"> {{element.name}}
+                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"
+                                [class.text-danger]="element.status == 'inactive'"> {{element.name}}
                             </mat-cell>
                         </ng-container>
 
@@ -34,9 +35,8 @@
                             <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
                             </mat-header-cell>
                             <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
-                                (click)="showUserData(element)"> ${{
-                                element.accountBalance | number:
-                                '1.2-2' }}
+                                (click)="showUserData(element)" [class.text-danger]="element.status == 'inactive'">
+                                ${{element.accountBalance | number:'1.2-2' }}
                             </mat-cell>
                         </ng-container>
 
@@ -45,7 +45,8 @@
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
                                 @if(displaySmall){
-                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="showUserData(element)"></i>
+                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="showUserData(element)"
+                                    data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
                                 }
                                 <i class="bi bi-pencil-square hoverColor mx-2" (click)="modalUserData(element)"></i>
                             </mat-cell>
@@ -55,6 +56,7 @@
                         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 
                     </mat-table>
+
                     }@else {
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border m-5" role="status">
@@ -62,69 +64,76 @@
                         </div>
                     </div>
                     }
-                    <mat-paginator [pageSizeOptions]="[8]" hidePageSize></mat-paginator>
+                    <div class="row">
+                        <div class="col d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-capitalize"
+                                (click)="populateUsersTable(userTableStatus)">Show {{userTableStatus}}</button>
+                        </div>
+                        <div class="col-auto">
+                            <mat-paginator [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+
 
                 </div>
             </div>
         </div>
+        @if(customerDataLoaded){
         <div class="col-xxl-8 col-xl-8 col-md-7 d-none d-md-inline">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <div class="d-flex align-items-center flex-column">
-                                <div class="avatar-wrapper p-2">
+                            <div class="d-flex align-items-center flex-column pb-4">
+                                <div class="p-2">
                                     <div class="avatar"><span
                                             class="avatar-initial rounded-circle bgColor">{{getInitials()}}</span>
                                     </div>
-                                </div>
-                                <div class="customer-info text-center p-3">
-                                    <h5 class="m-0 p-0 text-capitalize fs-5">{{customerData.name}}</h5>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-around flex-wrap pb-2 row px-4">
                                 <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
                                     <div class="avatar">
-                                        <div class="avatar-initial rounded bg-label-primary">
+                                        <div class="avatar-initial rounded bgColor">
                                             <i class="bi bi-cart-plus"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">184</h5>
-                                        <span>Cart</span>
+                                        <h2 class="mb-0 fs-5">{{customerData.cart || 0}}</h2>
+                                        <span class="smallText">Cart Items</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
                                     <div class="avatar">
-                                        <div class="avatar-initial rounded bg-label-primary">
+                                        <div class="avatar-initial rounded bgColor">
                                             <i class="bi bi-currency-dollar"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">$12,378</h5>
-                                        <span>Cart Value</span>
+                                        <h2 class="mb-0 fs-5">${{customerData.cart || 0}}</h2>
+                                        <span class="smallText">Cart Value</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
                                     <div class="avatar">
-                                        <div class="avatar-initial rounded bg-label-primary">
+                                        <div class="avatar-initial rounded bgColor">
                                             <i class="bi bi-heart"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">184</h5>
-                                        <span>Wishlist</span>
+                                        <h2 class="mb-0 fs-5">{{customerData.wishlist || 0}}</h2>
+                                        <span class="smallText">Wishlist Items</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
                                     <div class="avatar">
-                                        <div class="avatar-initial rounded bg-label-primary">
-                                            <i class="bi bi-currency-dollar"></i>
+                                        <div class="avatar-initial rounded bgColor">
+                                            <i class="bi bi-coin"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">$12,378</h5>
-                                        <span>Wishlist Value</span>
+                                        <h2 class="mb-0 fs-5">${{customerData.wishlist || 0}}</h2>
+                                        <span class="smallText">Wishlist Value</span>
                                     </div>
                                 </div>
                             </div>
@@ -143,14 +152,15 @@
                                 </div>
                                 <div class="col col-xl-6 col-xxl-4">
                                     <ul class="list-unstyled">
-                                        <li class="mb-2">
+                                        <li class="mb-1">
                                             <span class="h6 me-1">Status:</span>
-                                            <span
-                                                class="badge bg-label-success rounded-pill text-capitalize">{{customerData.status}}</span>
+                                            <span [class.inactive]="customerData.status == 'inactive'"
+                                                [class.active]="customerData.status == 'active'"
+                                                class="badge rounded-pill text-capitalize">{{customerData.status}}</span>
                                         </li>
                                         <li class="mb-2">
                                             <span class="h6 me-1">Contact:</span>
-                                            <span class="text-capitalize">{{customerData.phoneNumber}}</span>
+                                            <span>{{customerData.phoneNumber}}</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -175,6 +185,8 @@
                 </div>
             </div>
         </div>
+        }
+
     </div>
 </div>
 
@@ -312,6 +324,19 @@
                             </div>
                         </div>
                     </div>
+                    @if(modalData){
+                    <div class="row">
+                        <div class="col d-flex justify-content-start">
+                            <div class="mx-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault" formControlName="customerStatus">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Status</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
 
                     <div class="row py-2">
                         <div class="col d-flex justify-content-center">
@@ -323,6 +348,115 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="customerInfo" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex align-items-center flex-column pb-4 mb-4">
+                            <div class="avatar"><span
+                                    class="avatar-initial rounded-circle bgColor">{{getInitials()}}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-around flex-wrap row px-3 pb-3">
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">185</h2>
+                                    <span class="smallText">Cart Items</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-currency-dollar"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">$378.00</h2>
+                                    <span class="smallText">Cart Value</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-heart"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">184</h2>
+                                    <span class="smallText">Wishlist Items</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-coin"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">$178.00</h2>
+                                    <span class="smallText">Wishlist Value</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-around row px-4">
+                            <div class="col-12">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Name:</span>
+                                        <span>{{customerData.name}}</span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Email:</span>
+                                        <span>{{customerData.email}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Status:</span>
+                                        <span
+                                            class="badge active rounded-pill text-capitalize">{{customerData.status}}</span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Contact:</span>
+                                        <span class="text-capitalize">{{customerData.phoneNumber}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <ul class="list-unstyled ">
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Street:</span>
+                                        <span class="text-capitalize">{{customerData.shippingAddress?.street}}</span>
+                                    </li>
+
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">City / Town:</span>
+                                        <span>{{customerData.shippingAddress?.cityTown}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

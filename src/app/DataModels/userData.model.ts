@@ -8,6 +8,8 @@ export interface ShippingAddress {
 export interface WishlistItem {
   productId: string;
   productName: string;
+  quantity: number;
+  price: number;
 }
 
 export interface CartItem {

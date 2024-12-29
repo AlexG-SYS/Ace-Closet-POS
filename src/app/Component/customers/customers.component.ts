@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  OnInit,
-  Component,
-  ViewChild,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { AfterViewInit, OnInit, Component, ViewChild } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -59,6 +53,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       Validators.pattern(/^[a-zA-Z\s]+$/),
       Validators.maxLength(25),
     ]), // Only letters and spaces
+    customerStatus: new FormControl(),
   });
 
   get firstNameControl() {
@@ -84,6 +79,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   get cityControl() {
     return this.customerForm.get('customerCityTown');
   }
+
   tableSpinner = true;
   activeUsers: User[] = [];
   displayedColumns: string[] = ['name', 'accountBalance', 'options'];
@@ -92,7 +88,9 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   @ViewChild('newCustomerModal') newCustomerModal: any;
   displaySmall = false;
   modalData = false;
+  customerDataLoaded = false;
   customerData: Partial<User> = {};
+  userTableStatus = '';
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value
@@ -103,14 +101,13 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
   constructor(
     private userService: UsersService,
-    private snackBar: MatSnackBar,
-    private cdRef: ChangeDetectorRef
+    private snackBar: MatSnackBar
   ) {
     this.displaySmall = window.innerWidth < 768;
   }
 
   ngOnInit(): void {
-    this.populateActiveUsers();
+    this.populateUsersTable('active');
   }
 
   ngAfterViewInit() {
@@ -166,7 +163,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
           this.clearNewCustomerForm();
           this.modalData = false;
           this.showSnackBar('User added successfully!', 'success');
-          this.populateActiveUsers();
+          this.populateUsersTable('active');
         })
         .catch((error) => {
           this.showSnackBar(`Failed to add user`, 'error');
@@ -183,9 +180,10 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     this.modalData = false;
   }
 
-  populateActiveUsers() {
+  populateUsersTable(status: string) {
+    this.tableSpinner = true;
     this.userService
-      .getActiveUsers()
+      .getUsers(status)
       .then((users) => {
         this.tableSpinner = false;
         this.activeUsers = users;
@@ -195,6 +193,12 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         this.showSnackBar(`Failed to Retrieving Users`, 'error');
         console.error('Error retrieving active users:', error);
       });
+
+    if (status == 'inactive') {
+      this.userTableStatus = 'active';
+    } else {
+      this.userTableStatus = 'inactive';
+    }
   }
 
   showSnackBar(message: string, type: string) {
@@ -207,6 +211,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   }
 
   showUserData(data: User) {
+    this.customerDataLoaded = true;
     this.customerData = data;
   }
 
@@ -220,7 +225,18 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       customerPhoneNum: data.phoneNumber,
       customerStreet: data.shippingAddress?.street,
       customerCityTown: data.shippingAddress?.cityTown,
+      customerStatus: data.status,
     });
+
+    if (data.status == 'active') {
+      this.customerForm.patchValue({
+        customerStatus: true,
+      });
+    } else {
+      this.customerForm.patchValue({
+        customerStatus: false,
+      });
+    }
 
     if (this.newCustomerModal) {
       const customerModal = new bootstrap.Modal(
@@ -234,6 +250,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     if (this.customerForm.valid) {
       const formData = this.customerForm.value;
       const today = new Date();
+
       // Convert form data to a partial User data model
       const updatedData: Partial<User> = {
         name: `${formData.customerFirstName} ${formData.customerLastName}`,
@@ -244,6 +261,12 @@ export class CustomersComponent implements AfterViewInit, OnInit {
           cityTown: formData.customerCityTown || '',
         },
       };
+
+      if (formData.customerStatus) {
+        updatedData.status = 'active';
+      } else {
+        updatedData.status = 'inactive';
+      }
 
       if (!this.customerForm.value.id) {
         console.error('User ID is missing');
@@ -256,7 +279,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
           this.clearNewCustomerForm();
           this.modalData = false;
           this.showSnackBar('User updated successfully!', 'success');
-          this.populateActiveUsers();
+          this.populateUsersTable('active');
         })
         .catch((error) => {
           this.showSnackBar('Failed to update user', 'error');

@@ -39,7 +39,7 @@ body {
 /* Success Snackbar Style */
 .success-snackbar {
     .mat-mdc-snackbar-surface {
-        background-color: #3468e2 !important;
+        background-color: rgba(54, 106, 226, 0.8) !important;
         border-radius: 1rem !important;
         color: white !important;
     }
@@ -57,7 +57,7 @@ body {
 .error-snackbar {
     .mat-mdc-snackbar-surface {
         text-align: center !important;
-        background-color: rgb(240, 26, 40) !important;
+        background-color: rgba(240, 26, 40, 0.8) !important;
         border-radius: 1rem !important;
         color: white !important;
     }
@@ -70,4 +70,8 @@ body {
         color: white !important;
     }
 
+}
+
+.text-danger {
+    color: #ff4c51 !important;
 }

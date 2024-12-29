@@ -23,7 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync('noop'),
     provideFirebaseApp(() =>
       initializeApp({
-        // Removed
+        // Removed for secuirty
       })
     ),
     provideAuth(() => getAuth()),

@@ -38,11 +38,11 @@ export class UsersService {
   }
 
   // Retrieve active users from Firestore
-  async getActiveUsers(): Promise<any[]> {
+  async getUsers(status: string): Promise<any[]> {
     try {
       const activeUsersQuery = query(
         this.usersCollection,
-        where('status', '==', 'active'),
+        where('status', '==', status),
         where('role', '==', 'customer'),
         orderBy('name', 'asc')
       );
