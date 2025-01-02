@@ -10,7 +10,6 @@ import { SettingsComponent } from './Component/settings/settings.component';
 import { LoginPageComponent } from './Page/login-page/login-page.component';
 import { ReportsComponent } from './Component/reports/reports.component';
 import { PaymentsComponent } from './Component/payments/payments.component';
-import { TransactionsComponent } from './Component/transactions/transactions.component';
 import { RefundsComponent } from './Component/refunds/refunds.component';
 import { CustomersComponent } from './Component/customers/customers.component';
 
@@ -56,11 +55,6 @@ export const routes: Routes = [
         path: 'payments',
         title: 'Payments | Ace Closet POS',
         component: PaymentsComponent,
-      },
-      {
-        path: 'transactions',
-        title: 'Transactions | Ace Closet POS',
-        component: TransactionsComponent,
       },
       {
         path: 'reports',

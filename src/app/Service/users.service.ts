@@ -3,7 +3,6 @@ import {
   Firestore,
   collection,
   addDoc,
-  collectionData,
   doc,
   setDoc,
   Timestamp,

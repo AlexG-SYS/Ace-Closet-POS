@@ -190,7 +190,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         this.dataSource.data = this.activeUsers;
       })
       .catch((error) => {
-        this.showSnackBar(`Failed to Retrieving Users`, 'error');
+        this.showSnackBar(`Retrieving Users Failed`, 'error');
         console.error('Error retrieving active users:', error);
       });
 

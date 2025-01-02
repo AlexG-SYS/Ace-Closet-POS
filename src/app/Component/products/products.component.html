@@ -5,7 +5,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <form class="mx-2" style="position: relative;">
-                            <input type="email" class="form-control" id="searchProduct" placeholder="Search Product"
+                            <input type="text" class="form-control" id="searchProduct" placeholder="Search Product"
                                 matInput (keyup)="applyFilter($event)" #input>
 
                             <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
@@ -19,45 +19,186 @@
                         </button>
                     </div>
                     @if(!tableSpinner){
-                    <!-- Table Section -->
-                    <mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+                    <div class="scrollable mb-3">
+                        @if(!displaySmall){
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
 
-                        <!-- UPC Column -->
-                        <ng-container matColumnDef="name">
-                            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-                            <mat-cell *matCellDef="let element" (click)="showProductData(element)"
-                                [class.text-danger]="element.status == 'inactive'"> {{element.name}}
-                            </mat-cell>
-                        </ng-container>
+                            <!-- UPC Column -->
+                            <ng-container matColumnDef="upc">
+                                <mat-header-cell *matHeaderCellDef> UPC </mat-header-cell>
+                                <mat-cell *matCellDef="let element" [class.text-danger]="element.status == 'inactive'">
+                                    {{element.upc}}
+                                </mat-cell>
+                            </ng-container>
 
-                        <!-- Item Name  -->
-                        <ng-container matColumnDef="accountBalance">
-                            <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
-                                (click)="showProductData(element)" [class.text-danger]="element.status == 'inactive'">
-                                ${{element.accountBalance | number:'1.2-2' }}
-                            </mat-cell>
-                        </ng-container>
+                            <!-- Name Column  -->
+                            <ng-container matColumnDef="productName">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.productName}}
+                                </mat-cell>
+                            </ng-container>
 
-                        <!-- Options Column -->
-                        <ng-container matColumnDef="options">
-                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
-                                @if(displaySmall){
-                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="showProductData(element)"
-                                    data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
-                                }
-                                <i class="bi bi-pencil-square hoverColor mx-2" (click)="modalProductData(element)"></i>
-                            </mat-cell>
-                        </ng-container>
+                            <!-- Category Column  -->
+                            <ng-container matColumnDef="category">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Category
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.category}}
+                                </mat-cell>
+                            </ng-container>
 
-                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                            <!-- Price Column  -->
+                            <ng-container matColumnDef="price">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Price
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    ${{element.price | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
 
-                    </mat-table>
+                            <!-- Qty Column  -->
+                            <ng-container matColumnDef="qty">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Qty
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.quantity}}
+                                </mat-cell>
+                            </ng-container>
 
-                    }@else {
+                            <!-- Size Column  -->
+                            <ng-container matColumnDef="size">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Size
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.size}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Cost Column  -->
+                            <ng-container matColumnDef="cost">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Cost
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    ${{element.cost | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Profit Column  -->
+                            <ng-container matColumnDef="profit">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Profit
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{ ((element.price - element.cost) / element.cost) * 100 | number:'1.2-2' }}%
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Color Column  -->
+                            <ng-container matColumnDef="color">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Color
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element"
+                                    class="d-flex justify-content-center align-items-center">
+                                    <span class="color-dot" [style]="{ 'background-color': element.productColor }">
+                                    </span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Options Column -->
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                    <i class="bi bi-pencil-square hoverColor mx-2"
+                                        (click)="modalProductData(element)"></i>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                        </table>
+                        }
+                        @else{
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                            <!-- UPC Column -->
+                            <ng-container matColumnDef="upc">
+                                <mat-header-cell *matHeaderCellDef> UPC </mat-header-cell>
+                                <mat-cell *matCellDef="let element" [class.text-danger]="element.status == 'inactive'">
+                                    {{element.upc}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Name Column  -->
+                            <ng-container matColumnDef="productName">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.productName}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Price Column  -->
+                            <ng-container matColumnDef="price">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Price
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    ${{element.price | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Qty Column  -->
+                            <ng-container matColumnDef="qty">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Qty
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.quantity}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Size Column  -->
+                            <ng-container matColumnDef="size">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Size
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    {{element.size}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Options Column -->
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                    <i class="bi bi-pencil-square hoverColor mx-2"
+                                        (click)="modalProductData(element)"></i>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsSmall"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsSmall;"></mat-row>
+
+                        </table>
+                        }
+                    </div>
+
+
+
+                    }
+                    @else {
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border m-5" role="status">
                             <span class="visually-hidden">Loading...</span>
@@ -65,16 +206,290 @@
                     </div>
                     }
                     <div class="row">
-                        <div class="col d-flex align-items-center">
+                        <div class="col d-flex align-items-center pe-0">
                             <button type="button" class="btn btn-outline-secondary btn-sm text-capitalize"
                                 (click)="populateProductTable(productTableStatus)">Show {{productTableStatus}}</button>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-auto p-0">
                             <mat-paginator [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For New Product  -->
+<div class="modal fade" id="newProduct" data-bs-backdrop="static" tabindex="-1" #newProductModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="productForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewProductForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">{{ modalData ? 'Edit Product' : 'New Product' }}</h1>
+                        </div>
+                    </div>
+                    <!-- Product UPC & Name-->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="UPC" formControlName="upc" />
+                                @if(upcControl?.invalid && upcControl?.touched){
+                                <div class="text-danger">
+                                    @if(upcControl?.errors?.['required']){
+                                    <small>UPC is required.</small>
+                                    }
+                                    @if(upcControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Product Name"
+                                    formControlName="productName" />
+                                @if(productNameControl?.invalid && productNameControl?.touched){
+                                <div class="text-danger">
+                                    @if(productNameControl?.errors?.['required']){
+                                    <small>Product Name is required.</small>
+                                    }
+                                    @if(productNameControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                    @if(productNameControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="row ">
+                        <div class="col mx-1">
+                            <div class="mb-3 ">
+                                <textarea type="text" class="form-control" placeholder="Description"
+                                    formControlName="description"></textarea>
+                                @if(descriptionControl?.invalid && descriptionControl?.touched){
+                                <div class="text-danger">
+                                    @if(descriptionControl?.errors?.['required']){
+                                    <small>Description is required.</small>
+                                    }
+                                    @if(descriptionControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 100 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Price & Cost -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="number" class="form-control" placeholder="Cost" formControlName="cost" />
+                                @if(costControl?.invalid && costControl?.touched){
+                                <div class="text-danger">
+                                    @if(costControl?.errors?.['required']){
+                                    <small>Cost is required.</small>
+                                    }
+                                    @if(costControl?.errors?.['min']){
+                                    <small>Min is $0.00</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="number" class="form-control" placeholder="Price" formControlName="price" />
+                                @if(priceControl?.invalid && priceControl?.touched){
+                                <div class="text-danger">
+                                    @if(priceControl?.errors?.['required']){
+                                    <small>Price is required.</small>
+                                    }
+                                    @if(priceControl?.errors?.['min']){
+                                    <small>Min is $0.00</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Size & Qty -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3 mx-1 w-100">
+                                <select class="form-select" formControlName="size">
+                                    <option value="" disabled selected>Select Size</option>
+                                    <option value="X-Small">X-Small</option>
+                                    <option value="Small">Small</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Large">Large</option>
+                                    <option value="X-Large">X-Large</option>
+                                    <option value="One Size">One Size</option>
+                                </select>
+                                @if(sizeControl?.invalid && sizeControl?.touched){
+                                <div class="text-danger">
+                                    @if(sizeControl?.errors?.['required']){
+                                    <small>Size is required.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="number" class="form-control" placeholder="Quantity"
+                                    formControlName="quantity" />
+                                @if(quantityControl?.invalid && quantityControl?.touched){
+                                <div class="text-danger">
+                                    @if(quantityControl?.errors?.['required']){
+                                    <small>Quantity is required.</small>
+                                    }
+                                    @if(quantityControl?.errors?.['min']){
+                                    <small>Min is $0.00</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Category & Tags -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3 mx-1 w-100">
+                                <select class="form-select" formControlName="category">
+                                    <option value="" disabled selected>Select Category</option>
+                                    <option value="T-Shirts">T-Shirts</option>
+                                    <option value="Shirts">Shirts</option>
+                                    <option value="Shorts">Shorts</option>
+                                    <option value="Pants">Pants</option>
+                                    <option value="Jeans">Jeans</option>
+                                    <option value="Jackets">Jackets</option>
+                                    <option value="Sweaters">Sweaters</option>
+                                    <option value="Underwear">Underwear</option>
+                                    <option value="Activewear">Activewear</option>
+                                    <option value="Accessories">Accessories</option>
+                                </select>
+                                @if(categoryControl?.invalid && categoryControl?.touched){
+                                <div class="text-danger">
+                                    @if(categoryControl?.errors?.['required']){
+                                    <small>Category is required.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3 mx-1 w-100">
+                                <select class="form-select" formControlName="tags">
+                                    <option value="" disabled selected>Select Tags</option>
+                                    <option value="Sale">Sale</option>
+                                    <option value="Exclusive">Exclusive</option>
+                                    <option value="Clearance">Clearance</option>
+                                    <option value="Best Seller">Best Seller</option>
+                                    <option value="New Arrival">New Arrival</option>
+                                </select>
+                                @if(tagsControl?.invalid && tagsControl?.touched){
+                                <div class="text-danger">
+                                    @if(tagsControl?.errors?.['required']){
+                                    <small>Tags is required.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images -->
+                    <div class="row pt-2">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-1 mx-1 w-100">
+                                <div class="input-group mb-3">
+                                    <input type="file" class="form-control" id="inputGroupFile01">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Color, Tax, Online & Status -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="row">
+                                <div class="col mx-1">
+                                    <div class="mb-3">
+                                        <input type="color" class="form-control form-control-color" placeholder="Color"
+                                            formControlName="productColor" (input)="updateColorInput($event)" />
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mx-1">
+                                    <input type="text" class="form-control" placeholder="Color"
+                                        formControlName="productColor" readonly />
+                                    @if(productColorControl?.invalid && productColorControl?.touched){
+                                    <div class="text-danger">
+                                        @if(productColorControl?.errors?.['required']){
+                                        <small>Color is required.</small>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="m-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckTax" formControlName="tax">
+                                    <label class="form-check-label" for="flexSwitchCheckTax">Tax</label>
+                                </div>
+                            </div>
+                            <div class="m-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckOnline" formControlName="online">
+                                    <label class="form-check-label" for="flexSwitchCheckOnline">Online</label>
+                                </div>
+                            </div>
+                            @if(modalData){
+                            <div class="m-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckStatus" formControlName="status">
+                                    <label class="form-check-label" for="flexSwitchCheckStatus">Status</label>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewProductForm()">Cancel</button>
+                            <button class="btn btn-primary" (click)="modalData ? updateProduct() : newProductForm()"
+                                [disabled]="productForm.invalid">{{ modalData ? 'Update' : 'Save' }}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
