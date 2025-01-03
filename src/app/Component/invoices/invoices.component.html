@@ -1,1 +1,87 @@
-<p>invoices works!</p>
+<div class="conatiner px-2">
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 col-lg-3">
+                            <div class="d-flex justify-content-between border-end p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">24</h2>
+                                    <p class="mb-0">Paid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-secondary">
+                                        <i class="bi bi-receipt-cutoff fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="d-flex justify-content-between border-end p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">24</h2>
+                                    <p class="mb-0">Unpaid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-secondary">
+                                        <i class="bi bi-receipt fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="d-flex justify-content-between border-end p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">$4,000</h2>
+                                    <p class="mb-0">Paid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-secondary">
+                                        <i class="bi bi-bank fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="d-flex justify-content-between p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">$400</h2>
+                                    <p class="mb-0">Unpaid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-secondary">
+                                        <i class="bi bi-currency-dollar fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="text" class="form-control" id="searchInvoice" placeholder="Search Invoice"
+                                matInput (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                        </form>
+
+                        <!-- Button to Open the New Invoice Modal -->
+                        <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                            data-bs-target="#newInvoice">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="d-none d-xxl-inline ps-1" (click)="modalData = false">New</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
