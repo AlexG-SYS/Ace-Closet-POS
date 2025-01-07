@@ -80,7 +80,7 @@
 
 
 
-@media (max-width: 767.98px) {
+@media (max-width: 992px) {
     .vh-100 {
         position: absolute;
         z-index: 1000;
@@ -98,6 +98,7 @@
         border-top-right-radius: 1rem;
         border-bottom-right-radius: 1rem;
         position: fixed;
+        width: 30%;
     }
 
     .closeNav {
@@ -107,4 +108,22 @@
         z-index: 999;
     }
 
+}
+
+@media (max-width: 850px) {
+    .sidebar {
+        width: 40% !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        width: 55% !important;
+    }
+}
+
+@media (max-width: 450px) {
+    .sidebar {
+        width: 70% !important;
+    }
 }

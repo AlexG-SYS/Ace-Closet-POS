@@ -1,10 +1,10 @@
 <div class="row m-0">
     <!-- Sidebar -->
     <div [class.d-none]="!isSidebarVisible"
-        class="col-8 col-sm-6 col-md-3 col-xl-3 col-xxl-2 vh-100 p-0 d-md-block sidebar scrollable">
+        class="col-8 col-sm-6 col-md-3 col-xl-3 col-xxl-2 vh-100 p-0 d-lg-block sidebar scrollable">
         <ul class="nav flex-column">
             <div class="d-flex justify-content-end closeNav">
-                <div class="d-md-none pt-2 pe-2">
+                <div class="d-lg-none pt-2 pe-2">
                     <i (click)="toggleSidebar()" class="bi bi-x fs-1 "></i>
                 </div>
             </div>
@@ -82,7 +82,7 @@
     <!-- Main Content -->
     <div class="col">
         <div class="row topNav p-3 pt-4">
-            <div class="col-auto d-md-none">
+            <div class="col-auto d-lg-none">
                 <i (click)="toggleSidebar()" class="bi bi-list pe-2 fs-3 "></i>
             </div>
             <div class="col d-flex justify-content-end">

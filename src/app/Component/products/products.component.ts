@@ -154,7 +154,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
     private productService: ProductsService,
     private snackBar: MatSnackBar
   ) {
-    this.displaySmall = window.innerWidth < 768;
+    this.displaySmall = window.innerWidth <= 1223;
   }
 
   ngOnInit(): void {

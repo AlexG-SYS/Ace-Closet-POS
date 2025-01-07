@@ -20,12 +20,15 @@
     font-size: .9375rem;
 }
 
-.bg-secondary {
-    background-color: #ecedee !important;
-    color: #5a5959 !important;
+.bg-paid {
+    background-color: #e4f7d6 !important;
+    color: #56ca00 !important;
 }
 
-
+.bg-unpaid {
+    background-color: #ffe2e3 !important;
+    color: #ff0008 !important;
+}
 
 .clearBtn {
     position: absolute;
@@ -41,7 +44,7 @@
 }
 
 .mat-mdc-table {
-    width: 100%;
+    width: 100% !important;
     height: 460px !important;
     overflow: auto;
 }
@@ -50,6 +53,7 @@
 .scrollable {
     overflow-y: auto;
     overflow-x: auto;
+    width: 100% !important;
     height: 100%;
     scrollbar-width: thin;
     scrollbar-color: #a3a3a3 #f1f1f1;
@@ -63,7 +67,7 @@
 
 
 
-@media (max-width: 767.98px) {
+@media (max-width: 992px) {
 
     .border-end {
         border-right: none !important;
