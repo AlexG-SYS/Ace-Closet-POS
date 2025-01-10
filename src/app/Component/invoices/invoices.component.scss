@@ -44,8 +44,7 @@
 }
 
 .mat-mdc-table {
-    width: 100% !important;
-    height: 460px !important;
+    height: 335px !important;
     overflow: auto;
 }
 
@@ -53,7 +52,6 @@
 .scrollable {
     overflow-y: auto;
     overflow-x: auto;
-    width: 100% !important;
     height: 100%;
     scrollbar-width: thin;
     scrollbar-color: #a3a3a3 #f1f1f1;
@@ -77,4 +75,11 @@
         margin-right: 0 !important;
     }
 
+    .table-Container {
+        overflow: auto;
+    }
+
+    .mat-mdc-table {
+        height: 300px !important;
+    }
 }

@@ -20,7 +20,7 @@
                     </div>
                     @if(!tableSpinner){
                     <!-- Table Section -->
-                    <mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+                    <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
 
                         <!-- Name Column -->
                         <ng-container matColumnDef="name">
@@ -55,7 +55,7 @@
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 
-                    </mat-table>
+                    </table>
 
                     }@else {
                     <div class="d-flex justify-content-center">

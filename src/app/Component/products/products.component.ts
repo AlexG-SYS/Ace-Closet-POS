@@ -240,14 +240,14 @@ export class ProductsComponent implements AfterViewInit, OnInit {
     this.tableSpinner = true;
     this.productService
       .getProducts(status)
-      .then((produscts) => {
+      .then((products) => {
         this.tableSpinner = false;
-        this.activeProducts = produscts;
+        this.activeProducts = products;
         this.dataSource.data = this.activeProducts;
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Products Failed`, 'error');
-        console.error('Error retrieving active produscts:', error);
+        console.error('Error Retrieving Active Products:', error);
       });
 
     if (status == 'inactive') {

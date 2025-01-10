@@ -4,6 +4,7 @@ import {
   FormGroup,
   Validators,
   FormControl,
+  FormsModule,
 } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -21,6 +22,7 @@ import { Invoice } from '../../DataModels/invoiceData.model';
     MatSnackBarModule,
     MatPaginatorModule,
     DecimalPipe,
+    FormsModule,
   ],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.scss',
@@ -59,10 +61,16 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     tags: new FormControl('', [Validators.required]),
   });
 
+  filterFormInputs = new FormGroup({
+    status: new FormControl('-1'),
+    year: new FormControl(new Date().getFullYear()),
+    month: new FormControl('0'),
+  });
+
   tableSpinner = true;
   activeInvoice: Invoice[] = [];
   displayedColumns: string[] = [
-    'status',
+    'invoiceStatus',
     'invoiceNum',
     'customerName',
     'total',
@@ -72,11 +80,11 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     'options',
   ];
   displayedColumnsSmall: string[] = [
-    'upc',
-    'productName',
-    'price',
-    'qty',
-    'size',
+    'invoiceStatus',
+    'invoiceNum',
+    'customerName',
+    'total',
+    'balance',
     'options',
   ];
 
@@ -87,17 +95,23 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   modalData = false;
   invoiceDataLoaded = false;
   invoiceData: Partial<Invoice> = {};
-  invoiceTableStatus = '';
+  currentYear = new Date().getFullYear();
+  lastYear = new Date().getFullYear() - 1;
+  currentMonth = new Date().getMonth();
+  paidQty = 0;
+  unpaidQty = 0;
+  paidTotal = 0;
+  unpaidTotal = 0;
 
   constructor(
-    private productService: InvoicesService,
+    private invoiceService: InvoicesService,
     private snackBar: MatSnackBar
   ) {
-    this.displaySmall = window.innerWidth <= 1223;
+    this.displaySmall = window.innerWidth <= 435;
   }
 
   ngOnInit(): void {
-    this.populateInvoiceTable('active');
+    this.populateInvoiceTable(this.currentYear, this.currentMonth);
   }
 
   ngAfterViewInit() {
@@ -136,7 +150,43 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  populateInvoiceTable(arg0: string) {}
+  populateInvoiceTable(year: number, month: number) {
+    this.tableSpinner = true;
+    this.invoiceService
+      .getInvoicesFilterYearMonth(year, month)
+      .then((invoices) => {
+        this.tableSpinner = false;
+        this.activeInvoice = invoices;
+        this.dataSource.data = this.activeInvoice;
+        this.countInvoicesByStatus();
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        console.error('Error retrieving active Invoices:', error);
+      });
+  }
+
+  countInvoicesByStatus(): void {
+    // Reset counts
+    this.paidQty = 0;
+    this.unpaidQty = 0;
+    this.paidTotal = 0;
+    this.unpaidTotal = 0;
+
+    // Count invoices with status "Paid" and "Unpaid"
+    this.activeInvoice.forEach((invoice) => {
+      if (invoice.invoiceStatus == 'Paid') {
+        this.paidQty++;
+        this.paidTotal += invoice.grandTotal;
+      } else if (
+        invoice.invoiceStatus == 'Partial' ||
+        invoice.invoiceStatus == 'Past Due'
+      ) {
+        this.unpaidQty++;
+        this.unpaidTotal += invoice.invoiceBalance;
+      }
+    });
+  }
 
   clearNewInvoiceForm() {
     throw new Error('Method not implemented.');
@@ -149,4 +199,66 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   }
 
   modalInvoiceData(formData: Invoice) {}
+
+  showSnackBar(message: string, type: string) {
+    this.snackBar.open(message, '', {
+      duration: 5000,
+      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
+  }
+
+  filterStatus(): void {
+    const year = Number(this.filterFormInputs.value.year);
+    const month = Number(this.filterFormInputs.value.month);
+    const status = this.filterFormInputs.value.status!.toString();
+
+    if (this.filterFormInputs.value.status == '-1') {
+      this.populateInvoiceTable(year, month);
+    } else {
+      this.tableSpinner = true;
+      this.invoiceService
+        .getInvoicesFilterAll(year, month, status)
+        .then((invoices) => {
+          this.tableSpinner = false;
+          this.activeInvoice = invoices;
+          this.dataSource.data = this.activeInvoice;
+          this.countInvoicesByStatus();
+        })
+        .catch((error) => {
+          this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+          console.error('Error retrieving active Invoices:', error);
+        });
+    }
+  }
+
+  convertDate(day: number, month: number, year: number): string {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    // Ensure day and month are in the correct format (e.g., 01 instead of 1)
+    const formattedDay = day < 10 ? `0${day}` : `${day}`;
+    const formattedMonth = months[month]; // Use the month index directly
+
+    if (formattedMonth === undefined) {
+      throw new Error(
+        'Invalid month. Please provide a month between 0 and 11.'
+      );
+    }
+
+    return `${formattedMonth} ${formattedDay}, ${year}`;
+  }
 }
