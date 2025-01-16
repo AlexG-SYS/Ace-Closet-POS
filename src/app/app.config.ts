@@ -23,7 +23,13 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync('noop'),
     provideFirebaseApp(() =>
       initializeApp({
-        // Hidden
+        apiKey: 'AIzaSyAyGex2L4ZI3ZJT0e6R65yYXt3IfDe9V6E',
+        authDomain: 'ace-closet-website.firebaseapp.com',
+        projectId: 'ace-closet-website',
+        storageBucket: 'ace-closet-website.appspot.com',
+        messagingSenderId: '1053899946118',
+        appId: '1:1053899946118:web:3b165c20f9222ac2e0f907',
+        measurementId: 'G-39EED3G9PL',
       })
     ),
     provideAuth(() => getAuth()),

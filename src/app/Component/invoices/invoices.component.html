@@ -113,7 +113,8 @@
                                     <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
                                         data-bs-target="#newInvoice">
                                         <i class="bi bi-plus-lg"></i>
-                                        <span class="d-none d-xl-inline ps-1" (click)="modalData = false">New</span>
+                                        <span class="d-none d-xl-inline ps-1" (click)="modalData = false"
+                                            (click)="getCustomers()">New</span>
                                     </button>
                                 </div>
                             </div>
@@ -336,115 +337,86 @@
                                 (click)="clearNewInvoiceForm()"></button>
                         </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col d-flex justify-content-center">
-                            <h1 class="fw-medium">{{ modalData ? 'Edit Invoice' : 'New Invoice' }}</h1>
-                        </div>
-                    </div>
 
-                    <div class="card invoice-preview-card p-sm-12 p-6">
-                        <div class="card-body invoice-preview-header rounded p-6">
-                            <div class="d-flex flex-wrap flex-column flex-sm-row justify-content-between text-heading">
-                                <div class="mb-md-0 mb-6">
-                                    <div class="d-flex svg-illustration align-items-center gap-3 mb-6">
-                                        <span class="app-brand-logo demo">
-                                            <span style="color:var(--bs-primary);">
-                                                <svg width="30" height="24" viewBox="0 0 250 196" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M12.3002 1.25469L56.655 28.6432C59.0349 30.1128 60.4839 32.711 60.4839 35.5089V160.63C60.4839 163.468 58.9941 166.097 56.5603 167.553L12.2055 194.107C8.3836 196.395 3.43136 195.15 1.14435 191.327C0.395485 190.075 0 188.643 0 187.184V8.12039C0 3.66447 3.61061 0.0522461 8.06452 0.0522461C9.56056 0.0522461 11.0271 0.468577 12.3002 1.25469Z"
-                                                        fill="currentColor"></path>
-                                                    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M0 65.2656L60.4839 99.9629V133.979L0 65.2656Z" fill="black">
-                                                    </path>
-                                                    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M0 65.2656L60.4839 99.0795V119.859L0 65.2656Z" fill="black">
-                                                    </path>
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M237.71 1.22393L193.355 28.5207C190.97 29.9889 189.516 32.5905 189.516 35.3927V160.631C189.516 163.469 191.006 166.098 193.44 167.555L237.794 194.108C241.616 196.396 246.569 195.151 248.856 191.328C249.605 190.076 250 188.644 250 187.185V8.09597C250 3.64006 246.389 0.027832 241.935 0.027832C240.444 0.027832 238.981 0.441882 237.71 1.22393Z"
-                                                        fill="currentColor"></path>
-                                                    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M250 65.2656L189.516 99.8897V135.006L250 65.2656Z"
-                                                        fill="black"></path>
-                                                    <path opacity="0.077704" fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M250 65.2656L189.516 99.0497V120.886L250 65.2656Z"
-                                                        fill="black"></path>
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M12.2787 1.18923L125 70.3075V136.87L0 65.2465V8.06814C0 3.61223 3.61061 0 8.06452 0C9.552 0 11.0105 0.411583 12.2787 1.18923Z"
-                                                        fill="currentColor"></path>
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M12.2787 1.18923L125 70.3075V136.87L0 65.2465V8.06814C0 3.61223 3.61061 0 8.06452 0C9.552 0 11.0105 0.411583 12.2787 1.18923Z"
-                                                        fill="white" fill-opacity="0.15"></path>
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M237.721 1.18923L125 70.3075V136.87L250 65.2465V8.06814C250 3.61223 246.389 0 241.935 0C240.448 0 238.99 0.411583 237.721 1.18923Z"
-                                                        fill="currentColor"></path>
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M237.721 1.18923L125 70.3075V136.87L250 65.2465V8.06814C250 3.61223 246.389 0 241.935 0C240.448 0 238.99 0.411583 237.721 1.18923Z"
-                                                        fill="white" fill-opacity="0.3"></path>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="mb-0 app-brand-text fw-semibold">Materio</span>
+                    <div class="p-sm-12 p-4">
+                        <div class="invoice-preview-header rounded p-4">
+                            <div
+                                class="d-flex flex-wrap flex-column flex-md-row justify-content-between align-items-start text-heading">
+                                <!-- Logo and Address -->
+                                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                    <img src="../../../assets/aceClosetLogoFull.png" alt="Logo" class="img-fluid"
+                                        style="max-width: 100px;">
+                                    <div>
+                                        <p class="mb-1">#7 Panama Extension</p>
+                                        <p class="mb-1">Belmopan City,</p>
+                                        <p class="mb-1">Cayo, Belize</p>
+                                        <p class="mb-0">+501 628-9704</p>
                                     </div>
-                                    <p class="mb-1">Office 149, 450 South Brand Brooklyn</p>
-                                    <p class="mb-1">San Diego County, CA 91905, USA</p>
-                                    <p class="mb-0">+1 (123) 456 7891, +44 (876) 543 2198</p>
                                 </div>
-                                <div class="col-md-5 col-8 pe-0 ps-0 ps-md-2">
+                                <!-- Invoice Details -->
+                                <div class="col-12 col-md-5 mt-4 mt-md-0">
                                     <dl class="row mb-0 gx-4">
-                                        <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-start">
-                                            <span class="h5 text-capitalize mb-0 text-nowrap">Invoice</span>
+                                        <!-- Invoice ID -->
+                                        <dt class="col-sm-5 mb-2 d-flex align-items-center">
+                                            <span class="text-capitalize text-nowrap fs-5 fw-medium">Invoice</span>
                                         </dt>
                                         <dd class="col-sm-7">
-                                            <div class="input-group input-group-sm input-group-merge disabled">
+                                            <div class="input-group input-group-sm">
                                                 <span class="input-group-text">#</span>
-                                                <input type="text" class="form-control" disabled="" placeholder="3905"
-                                                    value="3905" id="invoiceId">
+                                                <input type="number" class="form-control" readonly id="invoiceId">
                                             </div>
                                         </dd>
-                                        <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-start">
+                                        <!-- Date Issued -->
+                                        <dt class="col-sm-5 mb-2 d-flex align-items-center">
                                             <span class="fw-normal text-nowrap">Date Issued:</span>
                                         </dt>
                                         <dd class="col-sm-7">
-                                            <input type="text"
-                                                class="form-control form-control-sm invoice-date flatpickr-input"
-                                                placeholder="YYYY-MM-DD" readonly="readonly">
+                                            <input type="text" class="form-control form-control-sm flatpickr-input"
+                                                placeholder="YYYY-MM-DD" id="dateIssued">
                                         </dd>
-                                        <dt class="col-sm-5 d-md-flex align-items-center justify-content-start">
+                                        <!-- Due Date -->
+                                        <dt class="col-sm-5 d-flex align-items-center">
                                             <span class="fw-normal">Due Date:</span>
                                         </dt>
                                         <dd class="col-sm-7 mb-0">
-                                            <input type="text"
-                                                class="form-control form-control-sm due-date flatpickr-input"
-                                                placeholder="YYYY-MM-DD" readonly="readonly">
+                                            <input type="text" class="form-control form-control-sm flatpickr-input"
+                                                placeholder="YYYY-MM-DD" id="dueDate">
                                         </dd>
                                     </dl>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="card-body px-0">
 
+                        <div class="card-body pt-4">
                             <div class="row my-1">
-                                <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-6">
-                                    <h6>Invoice To:</h6>
+                                <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-4">
+                                    <p class="fs-6 fw-medium">Invoice To:</p>
                                     <div class="row">
                                         <div class="col-lg-6 col-md-8 col-12">
-                                            <select class="form-select mb-6">
-                                                <option value="Thomas shelby">Thomas shelby</option>
-                                                <option value="Wesley Burland">Wesley Burland</option>
-                                                <option value="Vladamir Koschek">Vladamir Koschek</option>
-                                                <option value="Tyne Widmore">Tyne Widmore</option>
+                                            <select class="form-select" (change)='populateCustInv($event)'>
+                                                @for (customer of activeUsers; track customer.name) {
+                                                <option (value)="customer">{{ customer.name }}
+                                                </option>
+                                                } @empty {
+                                                <option>There Are No Customers</option>
+                                                }
                                             </select>
                                         </div>
                                     </div>
-                                    <p class="mb-1">Shelby Company Limited</p>
-                                    <p class="mb-1">Small Heath, B10 0HF, UK</p>
-                                    <p class="mb-1">718-986-6062</p>
-                                    <p class="mb-0">peakyFBlindersgmail.com</p>
+                                    <div class="p-2">
+                                        @if(showInvoiceCustomerData == true){
+                                        <p class="mb-1">{{selectedInvoiceCustomer.name}}</p>
+                                        <p class="mb-1">Small Heath, B10 0HF, UK</p>
+                                        <p class="mb-1">718-986-6062</p>
+                                        <p class="mb-0">peakyFBlindersgmail.com</p>
+                                        }@else {
+                                        <p class="mb-1">NULL</p>
+                                        }
+                                    </div>
                                 </div>
                                 <div class="col-md-6 col-sm-7">
-                                    <h6>Bill To:</h6>
+                                    <p class="fs-6 fw-medium">Bill To:</p>
                                     <table>
                                         <tbody>
                                             <tr>
@@ -472,7 +444,7 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="mt-0 mb-6">
+                        <hr class="mt-0 mb-4">
                         <div class="card-body pt-0 px-0">
                             <form class="source-item">
                                 <div class="mb-4" data-repeater-list="group-a">

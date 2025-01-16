@@ -12,6 +12,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
 import { InvoicesService } from '../../Service/invoices.service';
 import { Invoice } from '../../DataModels/invoiceData.model';
+import { UsersService } from '../../Service/users.service';
+import { User } from '../../DataModels/userData.model';
 
 @Component({
   selector: 'app-invoices',
@@ -102,9 +104,14 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   unpaidQty = 0;
   paidTotal = 0;
   unpaidTotal = 0;
+  activeUsers: User[] = [];
+  selectedInvoiceCustomer!: User;
+  showInvoiceCustomerData = false;
+  newInvoiceNum = 0;
 
   constructor(
     private invoiceService: InvoicesService,
+    private userService: UsersService,
     private snackBar: MatSnackBar
   ) {
     this.displaySmall = window.innerWidth <= 435;
@@ -159,6 +166,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.activeInvoice = invoices;
         this.dataSource.data = this.activeInvoice;
         this.countInvoicesByStatus();
+        this.newInvoiceNum = this.dataSource.data[0].invoiceNumber + 1;
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Invoices Failed`, 'error');
@@ -188,15 +196,9 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     });
   }
 
-  clearNewInvoiceForm() {
-    throw new Error('Method not implemented.');
-  }
-  updateInvoice() {
-    throw new Error('Method not implemented.');
-  }
-  newInvoiceForm() {
-    throw new Error('Method not implemented.');
-  }
+  clearNewInvoiceForm() {}
+  updateInvoice() {}
+  newInvoiceForm() {}
 
   modalInvoiceData(formData: Invoice) {}
 
@@ -260,5 +262,22 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     }
 
     return `${formattedMonth} ${formattedDay}, ${year}`;
+  }
+
+  getCustomers() {
+    this.userService
+      .getUsers('active')
+      .then((users) => {
+        this.activeUsers = users;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Users Failed`, 'error');
+        console.error('Error retrieving active users:', error);
+      });
+  }
+
+  populateCustInv(event: any) {
+    this.showInvoiceCustomerData = true;
+    console.log(event.target.value);
   }
 }
