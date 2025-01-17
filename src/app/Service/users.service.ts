@@ -25,7 +25,7 @@ export class UsersService {
   }
 
   // Add a new user to Firestore
-  async addUser(data: any): Promise<any> {
+  async addCustomer(data: any): Promise<any> {
     try {
       data.createdAt = Timestamp.now();
       const docRef = await addDoc(this.usersCollection, data); // Await the Firestore operation
@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   // Retrieve active users from Firestore
-  async getUsers(status: string): Promise<any[]> {
+  async getCustomer(status: string): Promise<any[]> {
     try {
       const activeUsersQuery = query(
         this.usersCollection,
@@ -61,7 +61,7 @@ export class UsersService {
   }
 
   // Update an existing user in Firestore
-  async updateUser(id: string, data: any): Promise<void> {
+  async updateCustomer(id: string, data: any): Promise<void> {
     try {
       data.updatedAt = Timestamp.now();
       const docRef = doc(this.firestore, `users/${id}`);

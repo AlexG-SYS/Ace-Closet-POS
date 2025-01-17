@@ -158,7 +158,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
       // Add user and handle success or error
       this.userService
-        .addUser(partialUser)
+        .addCustomer(partialUser)
         .then(() => {
           this.clearNewCustomerForm();
           this.modalData = false;
@@ -183,7 +183,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   populateUsersTable(status: string) {
     this.tableSpinner = true;
     this.userService
-      .getUsers(status)
+      .getCustomer(status)
       .then((users) => {
         this.tableSpinner = false;
         this.activeUsers = users;
@@ -274,7 +274,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         return;
       }
       this.userService
-        .updateUser(this.customerForm.value.id, updatedData)
+        .updateCustomer(this.customerForm.value.id, updatedData)
         .then(() => {
           this.clearNewCustomerForm();
           this.modalData = false;

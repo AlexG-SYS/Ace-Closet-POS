@@ -65,10 +65,21 @@
 
 .invoice-preview-header {
     background-color: #2e263d0f;
+    border-radius: 1rem;
+
 }
 
 .fs-5 {
     font-size: 1.2rem !important;
+}
+
+.btn-outline-secondary {
+    border-color: #dee2e6;
+}
+
+.itemCard {
+    border: solid 1px #dee2e6;
+    border-radius: 1rem;
 }
 
 @media (max-width: 767.98px) {

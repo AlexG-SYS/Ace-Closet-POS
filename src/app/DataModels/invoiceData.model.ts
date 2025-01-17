@@ -1,10 +1,12 @@
 import { Timestamp } from 'firebase/firestore';
 import { Product } from './productData.model';
+import { User } from './userData.model';
 
 export interface Invoice {
   id: string;
   orderId: string; // Reference to orders collection
   userId: string; // Customer ID
+  customer: User;
   invoiceNumber: number; // Unique invoice number
   invoiceBalance: number; // Balance due on the invoice
   salesRep: string; // Sales representative handling the invoice

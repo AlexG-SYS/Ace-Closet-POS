@@ -31,36 +31,63 @@ import { User } from '../../DataModels/userData.model';
 })
 export class InvoicesComponent implements AfterViewInit, OnInit {
   invoiceForm = new FormGroup({
-    id: new FormControl(),
-    upc: new FormControl('', [Validators.required, Validators.maxLength(25)]),
-    productName: new FormControl('', [
+    id: new FormControl('', [Validators.required]), // Unique ID
+    orderId: new FormControl('', [Validators.required]), // Reference to orders collection
+    userId: new FormControl('', [Validators.required]), // Customer ID
+    customer: new FormControl('', [Validators.required]),
+    invoiceNumber: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
-      Validators.maxLength(25),
-    ]), // Only letters and spaces
-    productColor: new FormControl('', [Validators.required]),
-    description: new FormControl('', [
+      Validators.min(0), // Invoice number must be non-negative
+    ]), // Unique invoice number
+    invoiceBalance: new FormControl('', [
       Validators.required,
-      Validators.maxLength(100),
+      Validators.min(0), // Balance cannot be negative
+    ]), // Balance due on the invoice
+    salesRep: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/), // Only letters and spaces
+    ]), // Sales representative handling the invoice
+    products: new FormControl([], [Validators.required]), // Array of product details
+    grandTotal: new FormControl('', [
+      Validators.required,
+      Validators.min(0), // Total cannot be negative
+    ]), // Total amount after taxes and adjustments
+    subTotal: new FormControl('', [
+      Validators.required,
+      Validators.min(0), // Subtotal cannot be negative
+    ]), // Total before taxes
+    taxTotal: new FormControl('', [
+      Validators.required,
+      Validators.min(0), // Tax cannot be negative
+    ]), // Total tax amount
+    invoiceStatus: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^(Past Due|Paid|Partial)$/), // Must match one of the predefined statuses
+    ]), // Status of the invoice
+    dueDate: new FormControl(new Date().toISOString().substring(0, 10), [
+      Validators.required,
+    ]), // Due date for payment
+    memo: new FormControl('', [Validators.maxLength(500)]), // Optional notes or memo
+    year: new FormControl('', [
+      Validators.required,
+      Validators.min(2000), // Ensure a reasonable year range
+      Validators.max(new Date().getFullYear()), // Cannot be in the future
     ]),
-    price: new FormControl('', [
+    month: new FormControl('', [
       Validators.required,
-      Validators.min(0), // Price cannot be negative
+      Validators.min(0), // Valid month range
+      Validators.max(11),
     ]),
-    cost: new FormControl('', [
+    day: new FormControl('', [
       Validators.required,
-      Validators.min(0), // Cost cannot be negative
+      Validators.min(1), // Valid day range
+      Validators.max(31),
     ]),
-    online: new FormControl(false, [Validators.required]), // Boolean value
-    category: new FormControl('', [Validators.required]),
-    quantity: new FormControl('', [
+    dateIssued: new FormControl(new Date().toISOString().substring(0, 10), [
       Validators.required,
-      Validators.min(0), // Quantity cannot be negative
-    ]),
-    size: new FormControl('', [Validators.required]),
-    status: new FormControl(),
-    tax: new FormControl(false, [Validators.required]), // Boolean value
-    tags: new FormControl('', [Validators.required]),
+    ]), // Timestamp when issued
+    createdAt: new FormControl('', [Validators.required]), // Timestamp when issued
+    updatedAt: new FormControl('', [Validators.required]), // Timestamp for the last update
   });
 
   filterFormInputs = new FormGroup({
@@ -106,8 +133,6 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   unpaidTotal = 0;
   activeUsers: User[] = [];
   selectedInvoiceCustomer!: User;
-  showInvoiceCustomerData = false;
-  newInvoiceNum = 0;
 
   constructor(
     private invoiceService: InvoicesService,
@@ -166,7 +191,9 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.activeInvoice = invoices;
         this.dataSource.data = this.activeInvoice;
         this.countInvoicesByStatus();
-        this.newInvoiceNum = this.dataSource.data[0].invoiceNumber + 1;
+        this.invoiceForm.patchValue({
+          invoiceNumber: (this.dataSource.data[0].invoiceNumber + 1).toString(),
+        });
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Invoices Failed`, 'error');
@@ -266,7 +293,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
   getCustomers() {
     this.userService
-      .getUsers('active')
+      .getCustomer('active')
       .then((users) => {
         this.activeUsers = users;
       })
@@ -277,7 +304,18 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   }
 
   populateCustInv(event: any) {
-    this.showInvoiceCustomerData = true;
-    console.log(event.target.value);
+    const inputValue = event.target.value; // Get the value from the event
+
+    // Find the matching user in activeUsers
+    const matchingUser = this.activeUsers.find(
+      (user) => user.name === inputValue
+    );
+
+    // Assign the matching user to selectedInvoiceCustomer if found
+    if (matchingUser) {
+      this.selectedInvoiceCustomer = matchingUser;
+    } else {
+      console.log('No matching user found.');
+    }
   }
 }

@@ -111,10 +111,10 @@
                                 <div class="col-auto p-0 pe-2">
                                     <!-- Button to Open the New Invoice Modal -->
                                     <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
-                                        data-bs-target="#newInvoice">
+                                        data-bs-target="#newInvoice" (click)="modalData = false"
+                                        (click)="getCustomers()">
                                         <i class="bi bi-plus-lg"></i>
-                                        <span class="d-none d-xl-inline ps-1" (click)="modalData = false"
-                                            (click)="getCustomers()">New</span>
+                                        <span class="d-none d-xl-inline ps-1">New</span>
                                     </button>
                                 </div>
                             </div>
@@ -339,11 +339,10 @@
                     </div>
 
                     <div class="p-sm-12 p-4">
-                        <div class="invoice-preview-header rounded p-4">
-                            <div
-                                class="d-flex flex-wrap flex-column flex-md-row justify-content-between align-items-start text-heading">
+                        <div class="invoice-preview-header  p-4">
+                            <div class="d-flex flex-wrap  flex-row justify-content-between ">
                                 <!-- Logo and Address -->
-                                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                <div class="col d-flex align-items-center gap-3 ">
                                     <img src="../../../assets/aceClosetLogoFull.png" alt="Logo" class="img-fluid"
                                         style="max-width: 100px;">
                                     <div>
@@ -354,7 +353,7 @@
                                     </div>
                                 </div>
                                 <!-- Invoice Details -->
-                                <div class="col-12 col-md-5 mt-4 mt-md-0">
+                                <div class="col col-md-12 col-lg-6 mt-4 mt-lg-0">
                                     <dl class="row mb-0 gx-4">
                                         <!-- Invoice ID -->
                                         <dt class="col-sm-5 mb-2 d-flex align-items-center">
@@ -363,7 +362,8 @@
                                         <dd class="col-sm-7">
                                             <div class="input-group input-group-sm">
                                                 <span class="input-group-text">#</span>
-                                                <input type="number" class="form-control" readonly id="invoiceId">
+                                                <input type="number" class="form-control" readonly
+                                                    formControlName="invoiceNumber" id="invoiceId">
                                             </div>
                                         </dd>
                                         <!-- Date Issued -->
@@ -371,23 +371,25 @@
                                             <span class="fw-normal text-nowrap">Date Issued:</span>
                                         </dt>
                                         <dd class="col-sm-7">
-                                            <input type="text" class="form-control form-control-sm flatpickr-input"
-                                                placeholder="YYYY-MM-DD" id="dateIssued">
+                                            <div class="input-group input-group-sm">
+                                                <input type="date" class="form-control" formControlName="dateIssued"
+                                                    placeholder="MM/DD/YYYY" id="dateIssued">
+                                            </div>
                                         </dd>
                                         <!-- Due Date -->
                                         <dt class="col-sm-5 d-flex align-items-center">
                                             <span class="fw-normal">Due Date:</span>
                                         </dt>
                                         <dd class="col-sm-7 mb-0">
-                                            <input type="text" class="form-control form-control-sm flatpickr-input"
-                                                placeholder="YYYY-MM-DD" id="dueDate">
+                                            <div class="input-group input-group-sm">
+                                                <input type="date" class="form-control" formControlName="dueDate"
+                                                    placeholder="MM/DD/YYYY" id="dueDate">
+                                            </div>
                                         </dd>
                                     </dl>
                                 </div>
                             </div>
                         </div>
-
-
                         <div class="card-body pt-4">
                             <div class="row my-1">
                                 <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-4">
@@ -395,153 +397,80 @@
                                     <div class="row">
                                         <div class="col-lg-6 col-md-8 col-12">
                                             <select class="form-select" (change)='populateCustInv($event)'>
+                                                <option selected disabled>Select Customer</option>
                                                 @for (customer of activeUsers; track customer.name) {
                                                 <option (value)="customer">{{ customer.name }}
                                                 </option>
                                                 } @empty {
-                                                <option>There Are No Customers</option>
+                                                <option disabled>There Are No Customers</option>
                                                 }
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="p-2">
-                                        @if(showInvoiceCustomerData == true){
-                                        <p class="mb-1">{{selectedInvoiceCustomer.name}}</p>
-                                        <p class="mb-1">Small Heath, B10 0HF, UK</p>
-                                        <p class="mb-1">718-986-6062</p>
-                                        <p class="mb-0">peakyFBlindersgmail.com</p>
+                                    <div class="p-2 pb-0">
+                                        @if(selectedInvoiceCustomer){
+                                        <p class="mb-0">{{selectedInvoiceCustomer.name}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.street}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.cityTown}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.phoneNumber}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.email}}</p>
                                         }@else {
-                                        <p class="mb-1">NULL</p>
+                                        <p class="mb-0"></p>
                                         }
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-sm-7">
                                     <p class="fs-6 fw-medium">Bill To:</p>
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td class="pe-4">Total Due:</td>
-                                                <td>$12,110.55</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="pe-4">Bank name:</td>
-                                                <td>American Bank</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="pe-4">Country:</td>
-                                                <td>United States</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="pe-4">IBAN:</td>
-                                                <td>ETD95476213874685</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="pe-4">SWIFT code:</td>
-                                                <td>BR91905</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="px-2">
+                                        @if(selectedInvoiceCustomer){
+                                        <p class="mb-0">{{selectedInvoiceCustomer.name}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.street}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.cityTown}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.phoneNumber}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.email}}</p>
+                                        }@else {
+                                        <p class="mb-0"></p>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <hr class="mt-0 mb-4">
-                        <div class="card-body pt-0 px-0">
+                        <hr class="mt-3 mb-4">
+                        <div class="itemCard pt-0 px-0">
                             <form class="source-item">
-                                <div class="mb-4" data-repeater-list="group-a">
-                                    <div class="repeater-wrapper pt-0 pt-md-9" data-repeater-item="">
-                                        <div class="d-flex border rounded position-relative pe-0">
-                                            <div class="row w-100 p-5 gx-5">
-                                                <div class="col-md-6 col-12 mb-md-0 mb-4">
-                                                    <p class="h6 repeater-title">Item</p>
-                                                    <select class="form-select item-details mb-5">
-                                                        <option selected="" disabled="">App Design</option>
-                                                        <option value="App Customization">App Customization</option>
-                                                        <option value="ABC Template">ABC Template</option>
-                                                        <option value="App Development">App Development</option>
-                                                    </select>
-                                                    <textarea class="form-control" rows="2"
-                                                        placeholder="Customization &amp; Bug Fixes"></textarea>
-                                                </div>
-                                                <div class="col-md-3 col-12 mb-md-0 mb-4">
-                                                    <p class="h6 repeater-title">Cost</p>
-                                                    <input type="text" class="form-control invoice-item-price mb-5"
-                                                        placeholder="00" min="12">
-                                                    <div class="text-heading">
-                                                        <div class="mb-1">Discount:</div>
-                                                        <span class="discount me-2">0%</span>
-                                                        <span class="tax-1 me-2" data-bs-toggle="tooltip"
-                                                            data-bs-placement="top"
-                                                            data-bs-original-title="Tax 1">0%</span>
-                                                        <span class="tax-2" data-bs-toggle="tooltip"
-                                                            data-bs-placement="top"
-                                                            data-bs-original-title="Tax 2">0%</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2 col-12 mb-md-0 mb-4">
-                                                    <p class="h6 repeater-title">Qty</p>
-                                                    <input type="text" class="form-control invoice-item-qty"
-                                                        placeholder="1" min="1" max="50">
-                                                </div>
-                                                <div class="col-md-1 col-12 pe-0">
-                                                    <p class="h6 repeater-title">Price</p>
-                                                    <p class="mb-0 mt-2 text-heading">$24.00</p>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="d-flex flex-column align-items-center justify-content-between border-start p-2">
-                                                <i class="ri-close-line cursor-pointer" data-repeater-delete=""></i>
-                                                <div class="dropdown">
-                                                    <i class="ri-settings-3-line cursor-pointer more-options-dropdown"
-                                                        role="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                                        data-bs-auto-close="outside" aria-expanded="false">
-                                                    </i>
-                                                    <div class="dropdown-menu dropdown-menu-end w-px-300 p-4"
-                                                        aria-labelledby="dropdownMenuButton">
-
-                                                        <div class="row g-3">
-                                                            <div class="col-12">
-                                                                <label for="discountInput"
-                                                                    class="form-label">Discount(%)</label>
-                                                                <input type="number" class="form-control"
-                                                                    id="discountInput" min="0" max="100">
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <label for="taxInput1" class="form-label">Tax 1</label>
-                                                                <select name="group-a[0][tax-1-input]" id="taxInput1"
-                                                                    class="form-select tax-select">
-                                                                    <option value="0%" selected="">0%</option>
-                                                                    <option value="1%">1%</option>
-                                                                    <option value="10%">10%</option>
-                                                                    <option value="18%">18%</option>
-                                                                    <option value="40%">40%</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <label for="taxInput2" class="form-label">Tax 2</label>
-                                                                <select name="group-a[0][tax-2-input]" id="taxInput2"
-                                                                    class="form-select tax-select">
-                                                                    <option value="0%" selected="">0%</option>
-                                                                    <option value="1%">1%</option>
-                                                                    <option value="10%">10%</option>
-                                                                    <option value="18%">18%</option>
-                                                                    <option value="40%">40%</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="dropdown-divider my-4"></div>
-                                                        <button type="button"
-                                                            class="btn btn-outline-primary btn-apply-changes waves-effect">Apply</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                <div class="p-3 m-2">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-12 pb-3">
+                                            <p class="h6 ">Item</p>
+                                            <select class="form-select item-details ">
+                                                <option selected="" disabled="">App Design</option>
+                                                <option value="App Customization">App Customization</option>
+                                                <option value="ABC Template">ABC Template</option>
+                                                <option value="App Development">App Development</option>
+                                            </select>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <button type="button" class="btn btn-primary btn-sm waves-effect waves-light"
-                                            data-repeater-create=""><i class="ri-add-line ri-14px me-1"></i> Add
-                                            Item</button>
+                                        <div class="col-lg col-6 pb-3">
+                                            <p class="h6 ">Qty</p>
+                                            <input type="text" class="form-control invoice-item-qty" placeholder="1"
+                                                min="1" max="50">
+                                        </div>
+                                        <div class="col-lg col-6 pb-3">
+                                            <p class="h6 ">Price</p>
+                                            <input type="text" class="form-control invoice-item-qty" placeholder="12.50"
+                                                min="1" max="50">
+                                        </div>
+                                        <div class="col-lg col-4 pb-3 text-center">
+                                            <p class="h6 ">Total</p>
+                                            <p class="mb-0 mt-2 text-heading">$24.00</p>
+                                        </div>
+                                        <div class="col-lg col-4 pb-3 text-center">
+                                            <p class="h6 ">TAX</p>
+                                            <p class="mb-0 mt-2 text-heading">12.5%</p>
+                                        </div>
+                                        <div class="col-lg-auto col-4 pb-3 d-flex align-items-center">
+                                            <p class="mb-0 mt-2 text-heading"><i class="bi bi-x-lg"></i><i
+                                                    class="bi bi-check2"></i></p>
+                                        </div>
                                     </div>
                                 </div>
                             </form>

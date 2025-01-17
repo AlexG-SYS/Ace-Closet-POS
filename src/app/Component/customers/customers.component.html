@@ -13,9 +13,9 @@
 
                         <!-- Button to Open the Modal -->
                         <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
-                            data-bs-target="#newCustomer">
+                            data-bs-target="#newCustomer" (click)="modalData = false">
                             <i class="bi bi-plus-lg"></i>
-                            <span class="d-none d-xxl-inline ps-1" (click)="modalData = false">New</span>
+                            <span class="d-none d-xxl-inline ps-1">New</span>
                         </button>
                     </div>
                     @if(!tableSpinner){
