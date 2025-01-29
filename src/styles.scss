@@ -43,8 +43,11 @@ body {
 
 /* Success Snackbar Style */
 .success-snackbar {
+    z-index: 1100 !important;
+
+    /* Higher than Bootstrap modal z-index */
     .mat-mdc-snackbar-surface {
-        background-color: rgba(54, 106, 226, 0.8) !important;
+        background-color: rgba(54, 106, 226, 0.9) !important;
         border-radius: 1rem !important;
         color: white !important;
     }
@@ -60,9 +63,11 @@ body {
 
 /* Error Snackbar Style */
 .error-snackbar {
+    z-index: 1100 !important;
+
     .mat-mdc-snackbar-surface {
         text-align: center !important;
-        background-color: rgba(240, 26, 40, 0.8) !important;
+        background-color: rgba(240, 26, 40, 0.9) !important;
         border-radius: 1rem !important;
         color: white !important;
     }
@@ -79,4 +84,15 @@ body {
 
 .text-danger {
     color: #ff4c51 !important;
+}
+
+
+.modal-backdrop {
+    z-index: 900 !important;
+    /* Lower than the snackbar */
+}
+
+.modal {
+    z-index: 950 !important;
+    /* Lower than the snackbar */
 }

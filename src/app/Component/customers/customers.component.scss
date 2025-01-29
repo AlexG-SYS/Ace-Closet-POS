@@ -13,7 +13,7 @@
 
 .mat-mdc-table {
     width: 100%;
-    height: 476px !important;
+    height: 455px !important;
     overflow: auto;
 }
 
@@ -23,6 +23,10 @@ mat-cell.balance {
 
 mat-header-cell.balance {
     padding-left: 2rem;
+}
+
+.colWidth {
+    flex: 3;
 }
 
 .scrollable {

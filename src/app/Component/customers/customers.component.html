@@ -6,7 +6,7 @@
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <form class="mx-2" style="position: relative;">
                             <input type="text" class="form-control" id="searchCustomer" placeholder="Search Customer"
-                                matInput (keyup)="applyFilter($event)" #input>
+                                autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
 
                             <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
@@ -24,9 +24,9 @@
 
                         <!-- Name Column -->
                         <ng-container matColumnDef="name">
-                            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef class="colWidth"> Name </mat-header-cell>
                             <mat-cell *matCellDef="let element" (click)="showUserData(element)"
-                                [class.text-danger]="element.status == 'inactive'"> {{element.name}}
+                                [class.text-danger]="element.status == 'inactive'" class="colWidth"> {{element.name}}
                             </mat-cell>
                         </ng-container>
 

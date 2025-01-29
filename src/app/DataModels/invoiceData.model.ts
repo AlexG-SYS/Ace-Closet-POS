@@ -5,8 +5,7 @@ import { User } from './userData.model';
 export interface Invoice {
   id: string;
   orderId: string; // Reference to orders collection
-  userId: string; // Customer ID
-  customer: User;
+  customer: Partial<User>;
   invoiceNumber: number; // Unique invoice number
   invoiceBalance: number; // Balance due on the invoice
   salesRep: string; // Sales representative handling the invoice
@@ -14,8 +13,9 @@ export interface Invoice {
   grandTotal: number; // Total amount after taxes and adjustments
   subTotal: number; // Total before taxes
   taxTotal: number; // Total tax amount
-  invoiceStatus: 'Past Due' | 'Paid' | 'Partial'; // Status of the invoice
-  dueDate: Timestamp; // Due date for payment
+  discount: number; // Total tax amount
+  invoiceStatus: 'Past Due' | 'Paid' | 'Partial' | 'Pending'; // Status of the invoice
+  dueDate: string; // Due date for payment
   memo: string; // Additional notes or memo for the invoice
   year: number;
   month: number;

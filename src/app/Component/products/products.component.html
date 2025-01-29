@@ -6,7 +6,7 @@
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <form class="mx-2" style="position: relative;">
                             <input type="text" class="form-control" id="searchProduct" placeholder="Search Product"
-                                matInput (keyup)="applyFilter($event)" #input>
+                                autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
 
                             <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
@@ -34,9 +34,9 @@
 
                             <!-- Name Column  -->
                             <ng-container matColumnDef="productName">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Name
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center colWidth"> Name
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center colWidth"
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{element.productName}}
                                 </mat-cell>

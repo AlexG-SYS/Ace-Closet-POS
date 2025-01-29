@@ -68,7 +68,7 @@
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <form class="mx-2" style="position: relative;">
                             <input type="text" class="form-control" id="searchInvoice" placeholder="Search Invoice"
-                                matInput (keyup)="applyFilter($event)" #input>
+                                autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
 
                             <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
@@ -81,6 +81,7 @@
                                         <option value="Paid">Paid</option>
                                         <option value="Partial">Partial</option>
                                         <option value="Past Due">Past Due</option>
+                                        <option value="Pending">Pending</option>
                                     </select>
                                 </div>
 
@@ -93,18 +94,18 @@
 
                                 <div class="col-auto px-2 d-none d-md-block">
                                     <select class="form-select" formControlName="month" (change)="filterStatus()">
-                                        <option value="0">Jan</option>
-                                        <option value="1">Feb</option>
-                                        <option value="2">Mar</option>
-                                        <option value="3">Apr</option>
-                                        <option value="4">May</option>
-                                        <option value="5">Jun</option>
-                                        <option value="6">Jul</option>
-                                        <option value="7">Aug</option>
-                                        <option value="8">Sep</option>
-                                        <option value="9">Oct</option>
-                                        <option value="10">Nov</option>
-                                        <option value="11">Dec</option>
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
                                     </select>
                                 </div>
 
@@ -112,7 +113,7 @@
                                     <!-- Button to Open the New Invoice Modal -->
                                     <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
                                         data-bs-target="#newInvoice" (click)="modalData = false"
-                                        (click)="getCustomers()">
+                                        (click)="getCustomersAndItems()">
                                         <i class="bi bi-plus-lg"></i>
                                         <span class="d-none d-xl-inline ps-1">New</span>
                                     </button>
@@ -184,10 +185,10 @@
 
                             <!-- Customer Name Column  -->
                             <ng-container matColumnDef="customerName">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Name
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center "> Name
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    {{element.customerName}}
+                                    {{element.customer.name}}
                                 </mat-cell>
                             </ng-container>
 
@@ -224,7 +225,7 @@
                                 <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Due Date
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    {{element.dueDate }}
+                                    {{formatDate(element.dueDate) }}
                                 </mat-cell>
                             </ng-container>
 
@@ -268,7 +269,7 @@
                                 <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Name
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    {{element.customerName}}
+                                    {{element.customer.name}}
                                 </mat-cell>
                             </ng-container>
 
@@ -396,15 +397,22 @@
                                     <p class="fs-6 fw-medium">Invoice To:</p>
                                     <div class="row">
                                         <div class="col-lg-6 col-md-8 col-12">
-                                            <select class="form-select" (change)='populateCustInv($event)'>
-                                                <option selected disabled>Select Customer</option>
-                                                @for (customer of activeUsers; track customer.name) {
-                                                <option (value)="customer">{{ customer.name }}
-                                                </option>
-                                                } @empty {
-                                                <option disabled>There Are No Customers</option>
+                                            <div class="autocomplete">
+                                                <input type="text" class="form-control w-100"
+                                                    placeholder="Select Customer" id="searchCustomer" autocomplete="off"
+                                                    (keyup)="filterCustomers($event)" />
+                                                <span id="clearButtonCustomer" class="clearBtn hoverColor"><i
+                                                        class="bi bi-x-lg"></i></span>
+                                                @if(searchTerm.length > 0){
+                                                <ul class="dropdown-menu show">
+                                                    @for(customer of filteredCustomers; track customer){
+                                                    <li class="dropdown-item" (click)="populateCustInv(customer)">
+                                                        {{ customer.name }}
+                                                    </li>
+                                                    }
+                                                </ul>
                                                 }
-                                            </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="p-2 pb-0">
@@ -438,87 +446,187 @@
                         <hr class="mt-3 mb-4">
                         <div class="itemCard pt-0 px-0">
                             <form class="source-item">
-                                <div class="p-3 m-2">
+                                <div class="p-2">
                                     <div class="row">
-                                        <div class="col-lg-6 col-12 pb-3">
-                                            <p class="h6 ">Item</p>
-                                            <select class="form-select item-details ">
-                                                <option selected="" disabled="">App Design</option>
-                                                <option value="App Customization">App Customization</option>
-                                                <option value="ABC Template">ABC Template</option>
-                                                <option value="App Development">App Development</option>
-                                            </select>
+                                        <div class="col m-1 mb-2 scrollable">
+                                            @if(dataSourceProduct.data.length != 0){
+                                            <!-- Table Section -->
+                                            <table mat-table [dataSource]="dataSourceProduct" class="my-2 productTable">
+
+                                                <!-- Item Column -->
+                                                <ng-container matColumnDef="item">
+                                                    <mat-header-cell *matHeaderCellDef class="colWidth"> Item
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" class="colWidth">
+                                                        {{element.productName}}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Qty Column  -->
+                                                <ng-container matColumnDef="qty">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center">Qty
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        {{element.quantity}}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Price Column  -->
+                                                <ng-container matColumnDef="price">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center"> Price
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{element.price | number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Discount Column  -->
+                                                <ng-container matColumnDef="discount">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center"> Discount (%)
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        {{element.discount}}%
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Total Column -->
+                                                <ng-container matColumnDef="total">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center">
+                                                        Total
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                                        || 0) / 100)) | number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- TAX Column -->
+                                                <ng-container matColumnDef="tax">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center">
+                                                        GST
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                                        || 0) / 100) * (element.gst / 100)) |
+                                                        number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+
+                                                <!-- Option Column -->
+                                                <ng-container matColumnDef="option">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="colWidthSm"></mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-end colWidthSm">
+                                                        <i class="bi bi-x-lg hoverColor"
+                                                            (click)="removeProductFromInvoice(element)"></i>
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <mat-header-row
+                                                    *matHeaderRowDef="displayedColumnsProduct"></mat-header-row>
+                                                <mat-row
+                                                    *matRowDef="let row; columns: displayedColumnsProduct;"></mat-row>
+
+                                            </table>
+                                            }
                                         </div>
-                                        <div class="col-lg col-6 pb-3">
-                                            <p class="h6 ">Qty</p>
-                                            <input type="text" class="form-control invoice-item-qty" placeholder="1"
-                                                min="1" max="50">
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-lg-5 col-12 pb-3">
+                                            <p class="fw-medium ps-1">New Item</p>
+                                            <div class="autocomplete">
+                                                <input type="text" class="form-control invoice-product-name w-100"
+                                                    placeholder="Select Product" id="searchProduct" autocomplete="off"
+                                                    (keyup)="filterProduct($event)" />
+                                                @if(searchTermProduct.length > 0){
+                                                <ul class="dropdown-menu show">
+                                                    @for(Product of filteredProduct; track Product){
+                                                    <li class="dropdown-item" (click)="populateProductInv(Product)">
+                                                        {{ Product.productName }}
+                                                    </li>
+                                                    }
+                                                </ul>
+                                                }
+                                            </div>
                                         </div>
-                                        <div class="col-lg col-6 pb-3">
-                                            <p class="h6 ">Price</p>
-                                            <input type="text" class="form-control invoice-item-qty" placeholder="12.50"
-                                                min="1" max="50">
+                                        <div class="col-lg-2 col-6 pb-3">
+                                            <p class="fw-medium ps-1">Qty</p>
+                                            <input type="number" class="form-control" id="invoice-product-qty" min="1"
+                                                value="1" (keyup)="calculateSelectedTotal()"
+                                                (change)="calculateSelectedTotal()">
                                         </div>
-                                        <div class="col-lg col-4 pb-3 text-center">
-                                            <p class="h6 ">Total</p>
-                                            <p class="mb-0 mt-2 text-heading">$24.00</p>
+
+                                        <div class="col-lg-1 col-6 pb-3 text-center">
+                                            <p class="fw-medium ps-1">Price</p>
+                                            <p class="py-2 my-2 text-heading">${{selectedProductPrice |
+                                                number:'1.2-2'}}</p>
                                         </div>
-                                        <div class="col-lg col-4 pb-3 text-center">
-                                            <p class="h6 ">TAX</p>
-                                            <p class="mb-0 mt-2 text-heading">12.5%</p>
+                                        <div class="col-lg-2 col-6 pb-3">
+                                            <p class="fw-medium ps-1">Discount (%)</p>
+                                            <input type="number" class="form-control" id="invoice-discount" min="0"
+                                                max="100" value="0" (keyup)="calculateSelectedTotal()"
+                                                (change)="calculateSelectedTotal()">
                                         </div>
-                                        <div class="col-lg-auto col-4 pb-3 d-flex align-items-center">
-                                            <p class="mb-0 mt-2 text-heading"><i class="bi bi-x-lg"></i><i
-                                                    class="bi bi-check2"></i></p>
+                                        <div class="col-lg-1 col-4 pb-3 text-center">
+                                            <p class="fw-medium ps-1">Total</p>
+                                            <p class="py-2 my-2 text-heading">${{(selectedProductTotal) |
+                                                number:'1.2-2'}}</p>
                                         </div>
+                                        @if(selectedInvoiceProduct){
+                                        <div class="col-lg-1 col-2 pb-3 d-flex align-items-center justify-content-end">
+                                            <p class="py-3 my-3 mt-4 text-heading">
+                                                <i class="bi bi-check2 fs-5 hoverColor"
+                                                    (click)="addProductToInvoice(selectedInvoiceProduct)"></i>
+                                            </p>
+                                        </div>
+                                        }
                                     </div>
                                 </div>
                             </form>
                         </div>
-
-                        <hr class="my-1">
-                        <div class="card-body px-0">
-                            <div class="row">
-                                <div class="col-md-6 mb-md-0 mb-3">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <label for="salesperson" class="me-2 h6 mb-2">Salesperson:</label>
-                                        <input type="text" class="form-control" id="salesperson"
-                                            placeholder="Tommy Shelby">
-                                    </div>
-                                    <input type="text" class="form-control" id="invoiceMsg"
-                                        placeholder="Thanks for your business">
+                        <hr class="my-1 my-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-md-0 mb-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <label for="salesperson" class="m-0 me-2 h6 text-center ">Salesperson:</label>
+                                    <input type="text" class="form-control" id="salesperson" formControlName="salesRep"
+                                        placeholder="User Goes Here">
                                 </div>
-                                <div class="col-md-6 d-flex justify-content-md-end mt-2">
-                                    <div class="invoice-calculations">
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span class="w-px-100">Subtotal:</span>
-                                            <h6 class="mb-0">$1800</h6>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span class="w-px-100">Discount:</span>
-                                            <h6 class="mb-0">$28</h6>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span class="w-px-100">Tax:</span>
-                                            <h6 class="mb-0">21%</h6>
-                                        </div>
-                                        <hr class="my-2">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="w-px-100">Total:</span>
-                                            <h6 class="mb-0">$1690</h6>
-                                        </div>
-                                    </div>
-                                </div>
+                                <label for="memo" class="m-0 me-2 mb-2 h6 text-center ">Note:</label>
+                                <textarea class="form-control" formControlName="memo" rows="2"
+                                    id="memo">{{memoControl?.value}}</textarea>
                             </div>
-                        </div>
-                        <hr class="my-1">
-                        <div class="card-body px-0">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-4">
-                                        <label for="note" class="h6 fw-normal mb-2">Note:</label>
-                                        <textarea class="form-control" rows="2" id="note"
-                                            placeholder="Invoice note"></textarea>
+                            <div class="col-md-6 d-flex justify-content-end mt-2">
+                                <div class="invoice-calculations ">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class=" me-3 fw-normal">Subtotal:</span>
+                                        <span class="mb-0 fw-normal">${{subTotalControl?.value | number:'1.2-2'}}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-normal me-3">Discount:</span>
+                                        <span class="mb-0 fw-normal">${{discountControl?.value | number:'1.2-2'}}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-normal me-3">GST:</span>
+                                        <span class="mb-0 fw-normal">${{gstControl?.value | number:'1.2-2'}}</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fs-5 fw-medium me-3">Total:</span>
+                                        <h6 class="mb-0 fs-5 fw-medium">${{grandTotalControl?.value | number:'1.2-2'}}
+                                        </h6>
                                     </div>
                                 </div>
                             </div>
@@ -529,8 +637,9 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearNewInvoiceForm()">Cancel</button>
-                            <button class="btn btn-primary" (click)="modalData ? updateInvoice() : newInvoiceForm()"
-                                [disabled]="invoiceForm.invalid">{{ modalData ? 'Update' : 'Save' }}</button>
+                            <button class="btn btn-primary" [disabled]="invoiceForm.invalid"
+                                (click)="modalData ? updateInvoice() : newInvoiceForm()">{{
+                                modalData ? 'Update' : 'Save' }}</button>
                         </div>
                     </div>
                 </div>

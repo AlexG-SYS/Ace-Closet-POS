@@ -12,7 +12,7 @@
 }
 
 .mat-mdc-table {
-    height: 460px !important;
+    height: 439px !important;
     overflow: auto;
 }
 
@@ -42,19 +42,13 @@
     display: inline-block;
 }
 
-
+.colWidth {
+    flex: 4;
+}
 
 @media (max-width: 767.98px) {
 
     .fs-5 {
         font-size: 1.1rem !important;
     }
-
-    .table-Container {
-        overflow: auto;
-    }
-
-
-
-
 }

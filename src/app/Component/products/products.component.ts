@@ -193,6 +193,11 @@ export class ProductsComponent implements AfterViewInit, OnInit {
   newProductForm() {
     if (this.productForm.valid) {
       const formData = this.productForm.value;
+      let gst = 0;
+
+      if (formData.tax) {
+        gst = 12.5;
+      }
       // Convert form data to a partial Product data model
       const partialProduct: Partial<Product> = {
         upc: formData.upc || '',
@@ -206,11 +211,10 @@ export class ProductsComponent implements AfterViewInit, OnInit {
         quantity: Number(formData.quantity),
         size: formData.size || '',
         tax: formData.tax!,
+        gst: gst,
         tags: formData.tags || '',
         status: 'active',
       };
-
-      console.log(partialProduct);
 
       // Add Product and handle success or error
       this.productService
@@ -298,6 +302,12 @@ export class ProductsComponent implements AfterViewInit, OnInit {
       const formData = this.productForm.value;
       const today = new Date();
 
+      let gst = 0;
+
+      if (formData.tax) {
+        gst = 12.5;
+      }
+
       // Convert form data to a partial Product data model
 
       const updatedData: Partial<Product> = {
@@ -312,6 +322,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
         quantity: Number(formData.quantity!.toString()),
         size: formData.size!,
         tax: formData.tax!,
+        gst: gst,
         online: formData.online!,
         status: formData.status,
       };

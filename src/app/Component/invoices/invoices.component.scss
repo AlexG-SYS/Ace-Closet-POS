@@ -40,14 +40,20 @@
 }
 
 .hoverColor:hover {
+    cursor: pointer;
     color: #16b1ff;
 }
 
 .mat-mdc-table {
-    height: 335px !important;
+    height: 329px !important;
     overflow: auto;
 }
 
+.productTable {
+    height: auto !important;
+    width: 100%;
+    overflow: auto !important;
+}
 
 .scrollable {
     overflow-y: auto;
@@ -64,7 +70,7 @@
 }
 
 .invoice-preview-header {
-    background-color: #2e263d0f;
+    background-color: #f4f5fa;
     border-radius: 1rem;
 
 }
@@ -80,6 +86,30 @@
 .itemCard {
     border: solid 1px #dee2e6;
     border-radius: 1rem;
+}
+
+.autocomplete {
+    position: relative;
+}
+
+.dropdown-menu {
+    width: 100%;
+    max-height: 200px;
+    scrollbar-width: thin;
+    scrollbar-color: #a3a3a3 #f1f1f1;
+}
+
+.dropdown-item {
+    cursor: pointer;
+    padding: 8px 12px;
+}
+
+.colWidth {
+    flex: 4;
+}
+
+.colWidthSm {
+    flex: 0;
 }
 
 @media (max-width: 767.98px) {
@@ -100,11 +130,4 @@
         margin-right: 0 !important;
     }
 
-    .table-Container {
-        overflow: auto;
-    }
-
-    .mat-mdc-table {
-        height: 300px !important;
-    }
 }
