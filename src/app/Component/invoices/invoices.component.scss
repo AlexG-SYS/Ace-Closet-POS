@@ -97,6 +97,7 @@
     max-height: 200px;
     scrollbar-width: thin;
     scrollbar-color: #a3a3a3 #f1f1f1;
+    z-index: 1000 !important;
 }
 
 .dropdown-item {
@@ -108,9 +109,34 @@
     flex: 4;
 }
 
+.colWidthMD {
+    flex: 1.5;
+}
+
+.colWidthSMMD {
+    flex: 2;
+}
+
 .colWidthSm {
     flex: 0;
 }
+
+.invoiceNumWidth {
+    width: 6.3rem;
+}
+
+.printTable {
+    height: auto !important;
+
+    .mat-mdc-row:hover .mat-mdc-cell {
+        cursor: auto;
+        background-color: inherit;
+        font-weight: normal;
+    }
+}
+
+
+
 
 @media (max-width: 767.98px) {
 

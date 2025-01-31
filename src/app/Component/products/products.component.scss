@@ -27,6 +27,7 @@
 
 .mat-mdc-row:hover .mat-mdc-cell {
     cursor: pointer;
+    width: 100% !important;
     background-color: #f5f5f5;
     font-weight: 500;
 }

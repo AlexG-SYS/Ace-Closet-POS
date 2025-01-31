@@ -16,6 +16,7 @@ import { UsersService } from '../../Service/users.service';
 import { User } from '../../DataModels/userData.model';
 import { Product } from '../../DataModels/productData.model';
 import { ProductsService } from '../../Service/products.service';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-invoices',
@@ -147,10 +148,19 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     'option',
   ];
 
+  displayedColumnsPrintProduct: string[] = [
+    'item',
+    'qty',
+    'price',
+    'discount',
+    'total',
+    'tax',
+  ];
+
   dataSource = new MatTableDataSource(this.activeInvoice);
   dataSourceProduct = new MatTableDataSource(this.activeProduct);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('newProductModal') newProductModal: any;
+  @ViewChild('printInvoiceModal') printInvoiceModal: any;
   displaySmall = false;
   modalData = false;
   invoiceDataLoaded = false;
@@ -168,6 +178,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   selectedProductPrice = 0;
   selectedProductTotal = 0;
   newInvoiceNumber = '0';
+  maxDate!: string;
 
   searchTerm: string = '';
   searchTermProduct: string = '';
@@ -259,28 +270,25 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     this.tableSpinner = true;
     this.invoiceService
       .getInvoicesFilterYearMonth(year, month)
-      .then((invoices) => {
+      .then(async (invoices) => {
         this.tableSpinner = false;
         this.activeInvoice = invoices;
         this.dataSource.data = this.activeInvoice;
         this.countInvoicesByStatus();
 
-        if (
-          this.dataSource.data.length > 0 &&
-          this.dataSource.data[0].invoiceNumber != null
-        ) {
+        try {
+          const latestInvoiceNumber =
+            await this.invoiceService.getLatestInvoiceNumber();
+
           this.invoiceForm.patchValue({
-            invoiceNumber: (
-              Number(this.dataSource.data[0].invoiceNumber) + 1
-            ).toString(),
+            invoiceNumber: latestInvoiceNumber.toString(),
           });
 
-          this.newInvoiceNumber = (
-            Number(this.dataSource.data[0].invoiceNumber) + 1
-          ).toString();
-        } else {
+          this.newInvoiceNumber = latestInvoiceNumber.toString();
+        } catch (error) {
+          console.error('Error setting invoice number:', error);
           this.invoiceForm.patchValue({
-            invoiceNumber: this.newInvoiceNumber, // Default value if data is unavailable
+            invoiceNumber: '1', // Fallback if there's an error
           });
         }
       })
@@ -347,39 +355,45 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   }
 
   convertDate(day: number, month: number, year: number): string {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
+    if (day != undefined && month != undefined && year != undefined) {
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
 
-    // Ensure day and month are in the correct format (e.g., 01 instead of 1)
-    const formattedDay = day < 10 ? `0${day}` : `${day}`;
-    const formattedMonth = months[month - 1]; // Use the month index directly
+      // Ensure day and month are in the correct format (e.g., 01 instead of 1)
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+      const formattedMonth = months[month - 1]; // Use the month index directly
 
-    if (formattedMonth === undefined) {
-      throw new Error(
-        'Invalid month. Please provide a month between 0 and 11.'
-      );
+      if (formattedMonth === undefined) {
+        console.log('Invalid month. Please provide a month between 0 and 11.');
+      }
+
+      return `${formattedMonth} ${formattedDay}, ${year}`;
+    } else {
+      return '';
     }
-
-    return `${formattedMonth} ${formattedDay}, ${year}`;
   }
 
   formatDate(inputDate: string): string {
-    const [year, month, day] = inputDate.split('-').map(Number);
+    if (inputDate != undefined) {
+      const [year, month, day] = inputDate.split('-').map(Number);
 
-    // Adjust month to match 0-based index used in convertDate
-    return this.convertDate(day, month, year);
+      // Adjust month to match 0-based index used in convertDate
+      return this.convertDate(day, month, year);
+    } else {
+      return '';
+    }
   }
 
   getCustomersAndItems() {
@@ -652,7 +666,6 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       this.invoiceService
         .addInvoice(partialInvoice)
         .then(() => {
-          this.clearNewInvoiceForm();
           this.modalData = false;
           this.showSnackBar('Invoice added successfully!', 'success');
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
@@ -669,4 +682,19 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   }
 
   modalInvoiceData(formData: Invoice) {}
+  receivePayment(formData: Invoice) {}
+
+  printInvoiceData: Invoice = { customer: {} } as Invoice;
+  dataSourcePrintInvoiceProduct = new MatTableDataSource(this.activeProduct);
+  viewInvoice(invoiceData: Invoice) {
+    this.printInvoiceData = invoiceData; // Assign the invoice data
+    this.dataSourcePrintInvoiceProduct.data = invoiceData.products;
+
+    if (this.printInvoiceModal) {
+      const printInvoiceModal = new bootstrap.Modal(
+        this.printInvoiceModal.nativeElement
+      );
+      printInvoiceModal.show();
+    }
+  }
 }

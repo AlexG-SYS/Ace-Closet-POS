@@ -13,6 +13,7 @@ import {
   orderBy,
   writeBatch,
   getDoc,
+  limit,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -197,6 +198,28 @@ export class InvoicesService {
     } catch (error) {
       console.error(`Error updating invoice with ID ${id}: `, error);
       throw new Error('Failed to update invoice. Please try again later.');
+    }
+  }
+
+  async getLatestInvoiceNumber(): Promise<number> {
+    try {
+      const invoicesQuery = query(
+        this.invoicesCollection,
+        orderBy('invoiceNumber', 'desc'),
+        limit(1) // Get only the latest invoice
+      );
+
+      const querySnapshot = await getDocs(invoicesQuery);
+
+      if (!querySnapshot.empty) {
+        const latestInvoice = querySnapshot.docs[0].data();
+        return Number(latestInvoice?.['invoiceNumber']) + 1;
+      } else {
+        return 1; // Default to 1 if no invoices exist
+      }
+    } catch (error) {
+      console.error('Error retrieving latest invoice number: ', error);
+      throw new Error('Failed to retrieve latest invoice number.');
     }
   }
 }

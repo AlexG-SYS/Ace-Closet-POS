@@ -34,9 +34,9 @@
 
                             <!-- Name Column  -->
                             <ng-container matColumnDef="productName">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center colWidth"> Name
+                                <mat-header-cell *matHeaderCellDef class="colWidth"> Name
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center colWidth"
+                                <mat-cell *matCellDef="let element" class="colWidth"
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{element.productName}}
                                 </mat-cell>
@@ -44,9 +44,9 @@
 
                             <!-- Category Column  -->
                             <ng-container matColumnDef="category">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Category
+                                <mat-header-cell *matHeaderCellDef class=""> Category
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class="r"
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{element.category}}
                                 </mat-cell>
@@ -54,9 +54,9 @@
 
                             <!-- Price Column  -->
                             <ng-container matColumnDef="price">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Price
+                                <mat-header-cell *matHeaderCellDef class=""> Price
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class=""
                                     [class.text-danger]="element.status == 'inactive'">
                                     ${{element.price | number:'1.2-2' }}
                                 </mat-cell>
@@ -64,9 +64,9 @@
 
                             <!-- Qty Column  -->
                             <ng-container matColumnDef="qty">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Qty
+                                <mat-header-cell *matHeaderCellDef class=""> Qty
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class=""
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{element.quantity}}
                                 </mat-cell>
@@ -74,9 +74,9 @@
 
                             <!-- Size Column  -->
                             <ng-container matColumnDef="size">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Size
+                                <mat-header-cell *matHeaderCellDef class=""> Size
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class=""
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{element.size}}
                                 </mat-cell>
@@ -84,9 +84,9 @@
 
                             <!-- Cost Column  -->
                             <ng-container matColumnDef="cost">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Cost
+                                <mat-header-cell *matHeaderCellDef class=""> Cost
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class=""
                                     [class.text-danger]="element.status == 'inactive'">
                                     ${{element.cost | number:'1.2-2' }}
                                 </mat-cell>
@@ -94,9 +94,9 @@
 
                             <!-- Profit Column  -->
                             <ng-container matColumnDef="profit">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Profit
+                                <mat-header-cell *matHeaderCellDef class=""> Profit
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
+                                <mat-cell *matCellDef="let element" class=""
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{ ((element.price - element.cost) / element.cost) * 100 | number:'1.2-2' }}%
                                 </mat-cell>
