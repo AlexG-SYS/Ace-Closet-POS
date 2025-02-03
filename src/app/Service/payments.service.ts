@@ -6,8 +6,17 @@ import {
   collectionData,
   doc,
   setDoc,
+  Timestamp,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  writeBatch,
+  getDoc,
+  limit,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { Payment } from '../DataModels/paymentData.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,19 +28,142 @@ export class PaymentsService {
     this.paymentsCollection = collection(this.firestore, 'payments');
   }
 
-  // Method to write data to Firestore
-  addItem(data: any): Promise<any> {
-    return addDoc(this.paymentsCollection, data);
+  // Add a new payment to Firestore
+  async addPayment(data: Partial<Payment>): Promise<any> {
+    try {
+      data.createdAt = Timestamp.now();
+      const batch = writeBatch(this.firestore);
+
+      // Add payment to the payments collection
+      const docRef = doc(this.paymentsCollection);
+      batch.set(docRef, data);
+
+      // Update user balance and invoice balance (if applicable)
+      if (data.userId && data.amount && data.invoiceId) {
+        await this.updateBalances(batch, data);
+      }
+
+      // If bankName is provided, find the corresponding bank account
+      if (data.paymentMethod && data.amount) {
+        // Query the bankAccounts collection to find the bank account by name
+        const bankQuery = query(
+          collection(this.firestore, 'bankAccounts'),
+          where('bankName', '==', data.paymentMethod)
+        );
+        const bankQuerySnap = await getDocs(bankQuery);
+
+        if (!bankQuerySnap.empty) {
+          // Assuming there's only one document with the given bank name
+          const bankAccountDoc = bankQuerySnap.docs[0]; // Get the first matching bank account
+          const bankAccountData = bankAccountDoc.data();
+          const bankAccountRef = bankAccountDoc.ref;
+
+          let bankBalance = bankAccountData?.['balance'] || 0;
+
+          // Add the payment amount to the bank account balance
+          bankBalance += data.amount;
+
+          const updatedAt = Timestamp.now(); // Update the timestamp
+
+          // Update the bank account balance and timestamp in batch
+          batch.update(bankAccountRef, { balance: bankBalance, updatedAt });
+        } else {
+          throw new Error(
+            `Bank account with name ${data.paymentMethod} not found.`
+          );
+        }
+      }
+
+      // Commit all changes atomically
+      await batch.commit();
+      return docRef; // Return the payment document reference
+    } catch (error) {
+      let message = error instanceof Error ? error.message : String(error);
+      console.error('Error adding payment: ', error);
+      throw new Error(message);
+    }
   }
 
-  // Method to read data from Firestore
-  getItems(): Observable<any[]> {
-    return collectionData(this.paymentsCollection, { idField: 'id' });
+  private async updateBalances(batch: any, data: Partial<Payment>) {
+    const userDocRef = doc(this.firestore, `users/${data.userId}`);
+    const invoiceDocRef = doc(this.firestore, `invoices/${data.invoiceId}`);
+
+    const [userDocSnap, invoiceDocSnap] = await Promise.all([
+      getDoc(userDocRef),
+      getDoc(invoiceDocRef),
+    ]);
+
+    if (userDocSnap.exists() && invoiceDocSnap.exists()) {
+      const userData = userDocSnap.data();
+      const invoiceData = invoiceDocSnap.data();
+
+      let paymentAmount = data.amount;
+      let invoiceBalance = invoiceData['invoiceBalance'];
+      let userBalance = userData['accountBalance'];
+      let invoiceStatus = invoiceData['invoiceStatus'];
+
+      // First, cover the invoice balance with the payment amount
+      if (paymentAmount! >= invoiceBalance) {
+        const excessAmount = paymentAmount! - invoiceBalance; // Calculate the excess
+
+        // Fully pay the invoice and add the excess to the user balance
+        userBalance -= invoiceBalance!;
+        invoiceBalance = 0;
+        userBalance -= excessAmount;
+        invoiceStatus = 'Paid';
+      } else {
+        // If the payment amount is less than the invoice balance, just reduce the invoice balance
+        invoiceBalance -= paymentAmount!;
+        userBalance -= paymentAmount!;
+        invoiceStatus = 'Partial';
+      }
+
+      const updatedAt = Timestamp.now();
+
+      batch.update(userDocRef, { accountBalance: userBalance, updatedAt });
+      batch.update(invoiceDocRef, {
+        invoiceBalance,
+        updatedAt,
+        invoiceStatus: invoiceStatus,
+      });
+    }
   }
 
-  // Method to update a specific document
-  updateItem(id: string, data: any): Promise<void> {
-    const docRef = doc(this.firestore, `payments/${id}`);
-    return setDoc(docRef, data, { merge: true });
+  // Retrieve payments filtered by year and month
+  async getPaymentsFilterYearMonth(
+    year: number,
+    month: number
+  ): Promise<any[]> {
+    try {
+      const paymentsQuery = query(
+        this.paymentsCollection,
+        where('year', '==', year),
+        where('month', '==', month),
+        orderBy('createdAt', 'desc')
+      );
+
+      const querySnapshot = await getDocs(paymentsQuery);
+      const payments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Partial<Payment>),
+      }));
+
+      return payments;
+    } catch (error) {
+      console.error('Error retrieving payments: ', error);
+      throw new Error('Failed to retrieve payments. Please try again later.');
+    }
+  }
+
+  // Update an existing payment in Firestore
+  async updatePayment(id: string, data: Partial<Payment>): Promise<void> {
+    try {
+      data.updatedAt = Timestamp.now();
+      const docRef = doc(this.firestore, `payments/${id}`);
+      await setDoc(docRef, data, { merge: true });
+    } catch (error) {
+      console.error(`Error updating payment with ID ${id}: `, error);
+      throw new Error('Failed to update payment. Please try again later.');
+    }
   }
 }

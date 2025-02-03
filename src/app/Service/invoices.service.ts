@@ -31,12 +31,16 @@ export class InvoicesService {
     const db = this.firestore; // Firestore instance
     const batch = writeBatch(db); // Firestore batch operation
     const productsCollection = collection(db, 'products'); // Reference to products collection
+    const userRef = doc(db, `users/${data.customer.id}`); // Reference to the user document
 
     try {
       data.createdAt = Timestamp.now(); // Add timestamp
 
       // Fetch product details from Firestore
       const productUpdates: { ref: any; newQuantity: number }[] = [];
+
+      // Calculate the total invoice amount
+      let totalAmount = 0;
 
       for (const item of data.products) {
         // Reference the product document directly
@@ -52,13 +56,16 @@ export class InvoicesService {
 
         if (currentStock < item.quantity) {
           throw new Error(
-            `Insufficient Stock for Product:   ${item?.['productName']}`
+            `Insufficient stock for product: ${item?.['productName']}`
           );
         }
 
         // Deduct the purchased quantity
         const newQuantity = currentStock - item.quantity;
         productUpdates.push({ ref: productRef, newQuantity });
+
+        // Calculate the total price for the product
+        totalAmount += item.price * item.quantity;
       }
 
       // Apply product quantity updates in batch
@@ -66,11 +73,28 @@ export class InvoicesService {
         batch.update(update.ref, { quantity: update.newQuantity });
       }
 
+      // Fetch user document to get current balance
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        throw new Error(`User ${data.customer.id} does not exist.`);
+      }
+
+      const userData = userSnap.data();
+      let userBalance = userData['accountBalance'] || 0;
+
+      // Deduct the invoice amount from the user's balance
+      userBalance += totalAmount;
+
+      // Update the user balance in batch
+      batch.update(userRef, { accountBalance: userBalance });
+
       // Save the invoice after stock validation
       const invoiceRef = doc(collection(db, 'invoices'));
       batch.set(invoiceRef, data);
 
-      await batch.commit(); // Commit all changes atomically
+      // Commit all changes atomically
+      await batch.commit();
+
       return invoiceRef;
     } catch (error: any) {
       let message = error instanceof Error ? error.message : String(error);

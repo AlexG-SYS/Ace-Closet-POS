@@ -161,7 +161,7 @@
                     </div>
 
                     @if(!tableSpinner){
-                    <div class="scrollable mb-2">
+                    <div class="scrollable">
                         @if(!displaySmall){
                         <!-- Table Section -->
                         <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
@@ -235,8 +235,6 @@
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
                                     <i class="bi bi-cash-coin hoverColor mx-2" (click)="receivePayment(element)"></i>
                                     <i class="bi bi-eye-fill hoverColor mx-2" (click)="viewInvoice(element)"></i>
-                                    <i class="bi bi-pencil-square hoverColor mx-2"
-                                        (click)="modalInvoiceData(element)"></i>
                                 </mat-cell>
                             </ng-container>
 
@@ -298,11 +296,9 @@
                             <!-- Options Column -->
                             <ng-container matColumnDef="options">
                                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
                                     <i class="bi bi-cash-coin hoverColor mx-2" (click)="receivePayment(element)"></i>
                                     <i class="bi bi-eye-fill hoverColor mx-2" (click)="viewInvoice(element)"></i>
-                                    <i class="bi bi-pencil-square hoverColor mx-2"
-                                        (click)="modalInvoiceData(element)"></i>
                                 </mat-cell>
                             </ng-container>
 
@@ -322,7 +318,7 @@
                     }
                     <div class="row d-flex align-items-end">
                         <div class="col p-0">
-                            <mat-paginator [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
+                            <mat-paginator [pageSizeOptions]="[tableRow]" hidePageSize class="p-0"></mat-paginator>
                         </div>
                     </div>
                 </div>
@@ -662,16 +658,15 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col d-flex justify-content-end">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                            (click)="clearNewInvoiceForm()"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>
-                <div class="p-sm-12 p-4">
+                <div class="p-sm-12 p-4" id="print-invoice-section">
                     <div class="invoice-preview-header  p-2 py-4">
                         <div class="container-fluid">
                             <div class="row justify-content-between align-items-center">
                                 <!-- Logo and Address -->
-                                <div class="col-12 col-lg d-flex align-items-center gap-3 mb-3 mb-lg-0">
+                                <div class="col-auto col-lg d-flex align-items-center gap-3 mb-3 mb-lg-0">
                                     <img src="../../../assets/aceClosetLogoFull.png" alt="Logo" class="img-fluid"
                                         style="max-width: 100px;">
                                     <div>
@@ -683,8 +678,8 @@
                                 </div>
 
                                 <!-- Invoice Details -->
-                                <div class="col-12 col-lg-auto">
-                                    <div class="row pb-2 align-items-center">
+                                <div class="col-auto col-lg-auto">
+                                    <div class="row pb-2 align-items-center ">
                                         <!-- Invoice ID -->
                                         <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
                                         <div class="col">
@@ -701,7 +696,7 @@
                                         <div class="col text-lg-end fw-normal">Date Issued:</div>
                                         <div class="col">
                                             <div class="input-group input-group-sm">
-                                                <span class="input-group-text">
+                                                <span class="input-group-text invoiceNumWidth">
                                                     {{ convertDate(printInvoiceData.day, printInvoiceData.month,
                                                     printInvoiceData.year) }}
                                                 </span>
@@ -714,7 +709,8 @@
                                         <div class="col text-lg-end fw-normal">Due Date:</div>
                                         <div class="col">
                                             <div class="input-group input-group-sm">
-                                                <span class="input-group-text">{{ formatDate(printInvoiceData.dueDate)
+                                                <span class="input-group-text invoiceNumWidth">{{
+                                                    formatDate(printInvoiceData.dueDate)
                                                     }}</span>
                                             </div>
                                         </div>
@@ -724,10 +720,10 @@
                         </div>
                     </div>
                     <div class="card-body pt-4">
-                        <div class="row my-1">
-                            <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-4">
-                                <p class="fs-6 fw-medium">Invoice To:</p>
+                        <div class="row my-1 ">
+                            <div class="col ">
                                 <div class="px-2">
+                                    <p class="fs-6 fw-medium">Invoice To:</p>
                                     <p class="mb-0">{{printInvoiceData.customer!.name}}</p>
                                     <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.street}}</p>
                                     <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.cityTown}}</p>
@@ -735,9 +731,9 @@
                                     <p class="mb-0">{{printInvoiceData.customer.email}}</p>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-sm-7">
-                                <p class="fs-6 fw-medium">Bill To:</p>
+                            <div class="col ">
                                 <div class="px-2">
+                                    <p class="fs-6 fw-medium">Bill To:</p>
                                     <p class="mb-0">{{printInvoiceData.customer.name}}</p>
                                     <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.street}}</p>
                                     <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.cityTown}}</p>
@@ -747,99 +743,80 @@
                             </div>
                         </div>
                     </div>
-                    <hr class="mt-3 mb-4">
-                    <div class="itemCard pt-0 px-0">
-                        <form class="source-item">
-                            <div class="p-2">
-                                <div class="row">
-                                    <div class="col m-1 scrollable">
-                                        <!-- Table Section -->
-                                        <table mat-table [dataSource]="dataSourcePrintInvoiceProduct"
-                                            class="my-2 printTable">
-
-                                            <!-- Item Column -->
-                                            <ng-container matColumnDef="item">
-                                                <mat-header-cell *matHeaderCellDef class="colWidth noHover"> Item
-                                                </mat-header-cell>
-                                                <mat-cell *matCellDef="let element" class="colWidth noHover">
-                                                    {{element.productName}}
-                                                </mat-cell>
-                                            </ng-container>
-
-                                            <!-- Qty Column  -->
-                                            <ng-container matColumnDef="qty">
-                                                <mat-header-cell *matHeaderCellDef
-                                                    class="d-flex justify-content-center noHover">Qty
-                                                </mat-header-cell>
-                                                <mat-cell *matCellDef="let element"
-                                                    class="d-flex justify-content-center noHover">
-                                                    {{element.quantity}}
-                                                </mat-cell>
-                                            </ng-container>
-
-                                            <!-- Price Column  -->
-                                            <ng-container matColumnDef="price">
-                                                <mat-header-cell *matHeaderCellDef
-                                                    class="d-flex justify-content-center"> Price
-                                                </mat-header-cell>
-                                                <mat-cell *matCellDef="let element"
-                                                    class="d-flex justify-content-center">
-                                                    ${{element.price | number:'1.2-2' }}
-                                                </mat-cell>
-                                            </ng-container>
-
-                                            <!-- Discount Column  -->
-                                            <ng-container matColumnDef="discount">
-                                                <mat-header-cell *matHeaderCellDef
-                                                    class="d-flex justify-content-center"> Discount
-                                                </mat-header-cell>
-                                                <mat-cell *matCellDef="let element"
-                                                    class="d-flex justify-content-center">
-                                                    ${{ (element.discount / 100) * element.price * element.quantity |
-                                                    number:'1.2-2' }}
-                                                </mat-cell>
-                                            </ng-container>
-
-                                            <!-- Total Column -->
-                                            <ng-container matColumnDef="total">
-                                                <mat-header-cell *matHeaderCellDef
-                                                    class="d-flex justify-content-center">
-                                                    Total
-                                                </mat-header-cell>
-                                                <mat-cell *matCellDef="let element"
-                                                    class="d-flex justify-content-center">
-                                                    ${{ (element.quantity * element.price * (1 - (element.discount
-                                                    || 0) / 100)) | number:'1.2-2' }}
-                                                </mat-cell>
-                                            </ng-container>
-
-                                            <!-- TAX Column -->
-                                            <ng-container matColumnDef="tax">
-                                                <mat-header-cell *matHeaderCellDef
-                                                    class="d-flex justify-content-center">
-                                                    GST
-                                                </mat-header-cell>
-                                                <mat-cell *matCellDef="let element"
-                                                    class="d-flex justify-content-center">
-                                                    ${{ (element.quantity * element.price * (1 - (element.discount
-                                                    || 0) / 100) * (element.gst / 100)) |
-                                                    number:'1.2-2' }}
-                                                </mat-cell>
-                                            </ng-container>
-
-                                            <mat-header-row
-                                                *matHeaderRowDef="displayedColumnsPrintProduct"></mat-header-row>
-                                            <mat-row
-                                                *matRowDef="let row; columns: displayedColumnsPrintProduct;"></mat-row>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <hr class="my-1 my-4">
+                    <hr class="mt-4 mb-0">
                     <div class="row">
-                        <div class="col-md-6 mb-md-0 mb-3">
+                        <div class="col scrollable p-0 m-1 mx-2">
+                            <!-- Table Section -->
+                            <table mat-table [dataSource]="dataSourcePrintInvoiceProduct" class=" printTable">
+
+                                <!-- Item Column -->
+                                <ng-container matColumnDef="item">
+                                    <mat-header-cell *matHeaderCellDef class="colWidth noHover"> Item
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="colWidth noHover">
+                                        {{element.productName}}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Qty Column  -->
+                                <ng-container matColumnDef="qty">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center noHover">Qty
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center noHover">
+                                        {{element.quantity}}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Price Column  -->
+                                <ng-container matColumnDef="price">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Price
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{element.price | number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Discount Column  -->
+                                <ng-container matColumnDef="discount">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">
+                                        Discount
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{ (element.discount / 100) * element.price * element.quantity |
+                                        number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Total Column -->
+                                <ng-container matColumnDef="total">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">
+                                        Total
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                        || 0) / 100)) | number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- TAX Column -->
+                                <ng-container matColumnDef="tax">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">
+                                        GST
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                        || 0) / 100) * (element.gst / 100)) |
+                                        number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumnsPrintProduct"></mat-header-row>
+                                <mat-row *matRowDef="let row; columns: displayedColumnsPrintProduct;"></mat-row>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col mb-3">
                             <div class="d-flex align-items-center mb-3">
                                 <label for="salesperson" class="m-0 me-2 h6 text-center ">Sold By:
                                     <span class="fw-normal">{{printInvoiceData.salesRep}}</span></label>
@@ -847,7 +824,7 @@
                             <label for="memo" class="m-0 me-2 mb-2 h6 text-center ">Note:
                                 <span class="fw-normal">{{printInvoiceData.memo}}</span></label>
                         </div>
-                        <div class="col-md-6 d-flex justify-content-end mt-2">
+                        <div class="col d-flex justify-content-end mt-2">
                             <div class="invoice-calculations ">
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class=" me-3 fw-normal">Subtotal:</span>
@@ -864,8 +841,8 @@
                                 <hr class="my-2">
                                 <div class="d-flex justify-content-between">
                                     <span class="fs-5 fw-medium me-3">Total:</span>
-                                    <h6 class="mb-0 fs-5 fw-medium">${{printInvoiceData.grandTotal | number:'1.2-2'}}
-                                    </h6>
+                                    <span class="mb-0 fs-5 fw-medium">${{printInvoiceData.grandTotal | number:'1.2-2'}}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -876,7 +853,132 @@
                     <div class="col d-flex justify-content-center">
                         <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
                             aria-label="Close">Cancel</button>
-                        <button class="btn btn-primary" (click)="newInvoiceForm()">Print</button>
+                        <button class="btn btn-primary" ngxPrint printSectionId="print-invoice-section"
+                            printTitle="Invoice" [useExistingCss]="true">Print</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To Receive Payment  -->
+<div class="modal fade" id="paymentModal" data-bs-backdrop="static" tabindex="-1" #paymentModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Receive Payment</span>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                            <div>
+                                <p class="fs-6 fw-medium">Invoice To:</p>
+                                <div class="ps-2">
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.name}}</p>
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{recPymtInvoiceData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{recPymtInvoiceData.customer.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto col-lg-auto">
+                            <div class="row pb-2 align-items-center ">
+                                <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm ">
+                                        <span class="input-group-text invoiceNumWidth"># {{
+                                            recPymtInvoiceData.invoiceNumber
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Date Issued:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text invoiceNumWidth">
+                                            {{ convertDate(recPymtInvoiceData.day, recPymtInvoiceData.month,
+                                            recPymtInvoiceData.year) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Due Date:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text invoiceNumWidth">{{
+                                            formatDate(recPymtInvoiceData.dueDate)
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row align-items-center">
+                                <div class="col text-lg-end fw-normal">Balance:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span
+                                            class="input-group-text invoiceNumWidth">${{recPymtInvoiceData.invoiceBalance
+                                            |
+                                            number:'1.2-2' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <form [formGroup]="paymentFormInputs">
+                    <div class="row m-3">
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" formControlName="date">
+                            </div>
+                        </div>
+                        <div class="col col-md-6 ">
+                            <div class="mb-3">
+                                <label for="pymtAmount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="pymtAmount" formControlName="amount">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1">
+                                <label for="pymtMethod" class="form-label">Payment Method</label>
+                                <select id="pymtMethod" class="form-select" formControlName="paymentMethod">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="Digi Wallet">Digi Wallet</option>
+                                    <option value="ekyash">eKyash Wallet</option>
+                                    <option value="Belize Bank">Belize Bank</option>
+                                    <option value="Atlantic Bank">Atlantic Bank</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Cancel</button>
+                        <button class="btn btn-primary" (click)="paymentSubmit()"
+                            [disabled]="paymentFormInputs.invalid">Save</button>
                     </div>
                 </div>
             </div>

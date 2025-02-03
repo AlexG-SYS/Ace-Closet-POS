@@ -17,6 +17,9 @@ import { User } from '../../DataModels/userData.model';
 import { Product } from '../../DataModels/productData.model';
 import { ProductsService } from '../../Service/products.service';
 import * as bootstrap from 'bootstrap';
+import { NgxPrintModule } from 'ngx-print';
+import { Payment } from '../../DataModels/paymentData.model';
+import { PaymentsService } from '../../Service/payments.service';
 
 @Component({
   selector: 'app-invoices',
@@ -28,11 +31,16 @@ import * as bootstrap from 'bootstrap';
     MatPaginatorModule,
     DecimalPipe,
     FormsModule,
+    NgxPrintModule,
   ],
   templateUrl: './invoices.component.html',
   styleUrl: './invoices.component.scss',
 })
 export class InvoicesComponent implements AfterViewInit, OnInit {
+  today = new Date();
+  formattedDate = this.today.toLocaleDateString('en-CA');
+  tableRow = 6;
+
   invoiceForm = new FormGroup({
     id: new FormControl(''), // Unique ID
     orderId: new FormControl(''), // Reference to orders collection
@@ -65,9 +73,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       Validators.min(0), // Total cannot be negative
     ]), // Total amount after taxes and adjustments
     invoiceStatus: new FormControl(''), // Status of the invoice
-    dueDate: new FormControl(new Date().toISOString().substring(0, 10), [
-      Validators.required,
-    ]), // Due date for payment
+    dueDate: new FormControl(this.formattedDate, [Validators.required]), // Due date for payment
     memo: new FormControl('Thank you for your business!', [
       Validators.maxLength(500),
     ]), // Optional notes or memo
@@ -83,9 +89,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       Validators.min(1), // Valid day range
       Validators.max(31),
     ]),
-    dateIssued: new FormControl(new Date().toISOString().substring(0, 10), [
-      Validators.required,
-    ]), // Timestamp when issued
+    dateIssued: new FormControl(this.formattedDate, [Validators.required]), // Timestamp when issued
     createdAt: new FormControl(''), // Timestamp when issued
     updatedAt: new FormControl(''), // Timestamp for the last update
   });
@@ -113,7 +117,13 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   filterFormInputs = new FormGroup({
     status: new FormControl('-1'),
     year: new FormControl(new Date().getFullYear()),
-    month: new FormControl('1'),
+    month: new FormControl(this.today.getMonth() + 1),
+  });
+
+  paymentFormInputs = new FormGroup({
+    amount: new FormControl('', [Validators.required, Validators.min(1)]),
+    paymentMethod: new FormControl('Cash'),
+    date: new FormControl(this.formattedDate),
   });
 
   tableSpinner = true;
@@ -161,6 +171,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   dataSourceProduct = new MatTableDataSource(this.activeProduct);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('printInvoiceModal') printInvoiceModal: any;
+  @ViewChild('paymentModal') paymentModal: any;
   displaySmall = false;
   modalData = false;
   invoiceDataLoaded = false;
@@ -189,6 +200,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     private invoiceService: InvoicesService,
     private userService: UsersService,
     private productService: ProductsService,
+    private paymentService: PaymentsService,
     private snackBar: MatSnackBar
   ) {
     this.displaySmall = window.innerWidth <= 435;
@@ -603,14 +615,9 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
   clearNewInvoiceForm() {
     this.invoiceForm.reset();
-    this.filterFormInputs.get('month')?.setValue('1');
     this.invoiceForm.get('invoiceNumber')?.setValue(this.newInvoiceNumber);
-    this.invoiceForm
-      .get('dateIssued')
-      ?.setValue(new Date().toISOString().substring(0, 10));
-    this.invoiceForm
-      .get('dueDate')
-      ?.setValue(new Date().toISOString().substring(0, 10));
+    this.invoiceForm.get('dateIssued')?.setValue(this.formattedDate);
+    this.invoiceForm.get('dueDate')?.setValue(this.formattedDate);
 
     this.invoiceForm.get('subTotal')?.setValue('0');
     this.invoiceForm.get('taxTotal')?.setValue('0');
@@ -672,17 +679,15 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
           this.clearNewInvoiceForm();
         })
         .catch((error) => {
-          this.showSnackBar(error.message, error);
+          this.showSnackBar(error.message, 'error');
           console.log(error.message);
         });
     } else {
+      this.showSnackBar('Invalid Action', 'error');
       console.log('Form is invalid');
       this.invoiceForm.markAllAsTouched(); // Highlight invalid fields
     }
   }
-
-  modalInvoiceData(formData: Invoice) {}
-  receivePayment(formData: Invoice) {}
 
   printInvoiceData: Invoice = { customer: {} } as Invoice;
   dataSourcePrintInvoiceProduct = new MatTableDataSource(this.activeProduct);
@@ -695,6 +700,53 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.printInvoiceModal.nativeElement
       );
       printInvoiceModal.show();
+    }
+  }
+
+  recPymtInvoiceData: Invoice = { customer: {} } as Invoice;
+  receivePayment(invoiceData: Invoice) {
+    this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
+    this.paymentFormInputs.get('paymentMethod')?.setValue('Cash');
+    this.recPymtInvoiceData = invoiceData;
+    if (this.paymentModal) {
+      const paymentModal = new bootstrap.Modal(this.paymentModal.nativeElement);
+      paymentModal.show();
+    }
+  }
+
+  paymentSubmit() {
+    if (this.paymentFormInputs.valid) {
+      const formData = this.paymentFormInputs.value;
+      const [year, month, day] = formData.date!.split('-').map(Number);
+
+      // Convert form data to a partial Payment data model
+      const partialPayment: Partial<Payment> = {
+        invoiceId: this.recPymtInvoiceData.id || '',
+        userId: this.recPymtInvoiceData.customer.id || '',
+        amount: Number(formData.amount),
+        invoiceNumber: this.recPymtInvoiceData.invoiceNumber,
+        customerName: this.recPymtInvoiceData.customer.name,
+        day: day,
+        month: month,
+        year: year,
+        paymentMethod: formData.paymentMethod || '',
+      };
+
+      this.paymentService
+        .addPayment(partialPayment)
+        .then(() => {
+          this.showSnackBar('Payment Applied Successfully!', 'success');
+          this.populateInvoiceTable(this.currentYear, this.currentMonth);
+          this.recPymtInvoiceData = { customer: {} } as Invoice;
+          this.paymentFormInputs.reset();
+        })
+        .catch((error) => {
+          this.showSnackBar(error.message, 'error');
+          console.log(error.message);
+        });
+    } else {
+      this.showSnackBar('Invalid Action', 'error');
+      console.log('Form is invalid');
     }
   }
 }
