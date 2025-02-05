@@ -43,22 +43,17 @@ export class PaymentsService {
         await this.updateBalances(batch, data);
       }
 
-      // If bankName is provided, find the corresponding bank account
-      if (data.paymentMethod && data.amount) {
-        // Query the bankAccounts collection to find the bank account by name
-        const bankQuery = query(
-          collection(this.firestore, 'bankAccounts'),
-          where('bankName', '==', data.paymentMethod)
+      // If bankAccountId is provided, update the corresponding bank account
+      if (data.bankAccountId) {
+        const bankAccountRef = doc(
+          this.firestore,
+          `bankAccounts/${data.bankAccountId}`
         );
-        const bankQuerySnap = await getDocs(bankQuery);
+        const bankAccountSnap = await getDoc(bankAccountRef);
 
-        if (!bankQuerySnap.empty) {
-          // Assuming there's only one document with the given bank name
-          const bankAccountDoc = bankQuerySnap.docs[0]; // Get the first matching bank account
-          const bankAccountData = bankAccountDoc.data();
-          const bankAccountRef = bankAccountDoc.ref;
-
-          let bankBalance = bankAccountData?.['balance'] || 0;
+        if (bankAccountSnap.exists()) {
+          const bankAccountData = bankAccountSnap.data();
+          let bankBalance = bankAccountData['balance'];
 
           // Add the payment amount to the bank account balance
           bankBalance += data.amount;
@@ -69,16 +64,20 @@ export class PaymentsService {
           batch.update(bankAccountRef, { balance: bankBalance, updatedAt });
         } else {
           throw new Error(
-            `Bank account with name ${data.paymentMethod} not found.`
+            `Bank Account with ID ${data.bankAccountId} not found.`
           );
         }
+      } else {
+        throw new Error(
+          `Bank Account with ID ${data.bankAccountId} not found.`
+        );
       }
 
       // Commit all changes atomically
       await batch.commit();
       return docRef; // Return the payment document reference
     } catch (error) {
-      let message = error instanceof Error ? error.message : String(error);
+      const message = error instanceof Error ? error.message : String(error);
       console.error('Error adding payment: ', error);
       throw new Error(message);
     }

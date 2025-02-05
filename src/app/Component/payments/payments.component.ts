@@ -14,6 +14,9 @@ import * as bootstrap from 'bootstrap';
 import { NgxPrintModule } from 'ngx-print';
 import { Payment } from '../../DataModels/paymentData.model';
 import { PaymentsService } from '../../Service/payments.service';
+import { Invoice } from '../../DataModels/invoiceData.model';
+import { InvoicesService } from '../../Service/invoices.service';
+import { BankAccountsService } from '../../Service/bank-accounts.service';
 
 @Component({
   selector: 'app-payments',
@@ -33,11 +36,24 @@ import { PaymentsService } from '../../Service/payments.service';
 export class PaymentsComponent implements AfterViewInit, OnInit {
   today = new Date();
   tableRow = 8;
+  formattedDate = this.today.toLocaleDateString('en-CA');
 
   filterFormInputs = new FormGroup({
     year: new FormControl(new Date().getFullYear()),
     month: new FormControl(this.today.getMonth() + 1),
   });
+
+  paymentFormInputs = new FormGroup({
+    amount: new FormControl('', [Validators.required, Validators.min(1)]),
+    paymentMethod: new FormControl(''),
+    bankAccountId: new FormControl('', [Validators.required]),
+    date: new FormControl(this.formattedDate),
+  });
+
+  searchInvoiceForPaymentInput = new FormGroup({
+    invoiceNumber: new FormControl(''),
+  });
+
   currentYear = new Date().getFullYear();
   lastYear = new Date().getFullYear() - 1;
   currentMonth = new Date().getMonth() + 1;
@@ -54,9 +70,13 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
 
   dataSource = new MatTableDataSource(this.activePayment);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('paymentModalView') paymentModal: any;
+  @ViewChild('newPaymentModal') newPaymentModal: any;
 
   constructor(
     private paymentService: PaymentsService,
+    private invoiceService: InvoicesService,
+    private bankAccountsService: BankAccountsService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -68,7 +88,9 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
     const inputField = document.getElementById(
       'searchPayment'
     ) as HTMLInputElement;
-    const clearButton = document.getElementById('clearButton') as HTMLElement;
+    const clearButton = document.getElementById(
+      'clearButtonPayment'
+    ) as HTMLElement;
 
     if (clearButton && inputField) {
       clearButton.addEventListener('click', () => {
@@ -161,5 +183,121 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
     });
+  }
+
+  recPymtData: any = { customer: {} } as any;
+  paymentInfoPopulate(data: Payment) {
+    this.invoiceService
+      .getInvoiceById(data.invoiceId)
+      .then((invoiceData) => {
+        // Merge invoiceData and data into recPymtData
+        this.recPymtData = { ...invoiceData, ...data };
+
+        // Show the payment modal
+        if (this.paymentModal) {
+          const paymentModal = new bootstrap.Modal(
+            this.paymentModal.nativeElement
+          );
+          paymentModal.show();
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading payment info:', error);
+      });
+  }
+
+  formatDate(inputDate: string): string {
+    if (inputDate != undefined) {
+      const [year, month, day] = inputDate.split('-').map(Number);
+
+      // Adjust month to match 0-based index used in convertDate
+      return this.convertDate(day, month, year);
+    } else {
+      return '';
+    }
+  }
+
+  bankAccounts: any[] = [];
+
+  getBankAccountName(id: string): string {
+    const account = this.bankAccounts.find((account) => account.id === id);
+    return account ? account.bankName : ''; // Return empty string if not found
+  }
+
+  receivePayment() {
+    this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
+
+    // Query all bank accounts
+    this.bankAccountsService
+      .getAllBankAccounts()
+      .then((accounts) => {
+        this.bankAccounts = accounts;
+      })
+      .catch((error) => {
+        console.error('Error fetching bank accounts:', error);
+      });
+  }
+
+  recPymtInvoiceData: Invoice = { customer: {} } as Invoice;
+  findInvoice() {
+    const invoiceNumber =
+      this.searchInvoiceForPaymentInput.get('invoiceNumber')?.value!;
+
+    this.invoiceService
+      .getInvoiceByNumber(invoiceNumber)
+      .then((invoice) => {
+        if (invoice) {
+          this.recPymtInvoiceData = invoice;
+        } else {
+          alert('Invoice not found.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error finding invoice:', error);
+        this.showSnackBar('Failed to Retrieve Invoice', 'error');
+      });
+  }
+
+  paymentSubmit() {
+    if (this.paymentFormInputs.valid) {
+      const formData = this.paymentFormInputs.value;
+      const [year, month, day] = formData.date!.split('-').map(Number);
+
+      // Convert form data to a partial Payment data model
+      const partialPayment: Partial<Payment> = {
+        invoiceId: this.recPymtInvoiceData.id || '',
+        userId: this.recPymtInvoiceData.customer.id || '',
+        amount: Number(formData.amount),
+        invoiceNumber: this.recPymtInvoiceData.invoiceNumber,
+        customerName: this.recPymtInvoiceData.customer.name,
+        day: day,
+        month: month,
+        year: year,
+        paymentMethod: this.getBankAccountName(formData.bankAccountId!) || '',
+        bankAccountId: formData.bankAccountId || '',
+      };
+
+      this.paymentService
+        .addPayment(partialPayment)
+        .then(() => {
+          this.showSnackBar('Payment Applied Successfully!', 'success');
+          this.populatePaymentTable(this.currentYear, this.currentMonth);
+          this.clearPaymentForm();
+        })
+        .catch((error) => {
+          this.showSnackBar(error.message, 'error');
+          console.log(error.message);
+        });
+    } else {
+      this.showSnackBar('Invalid Action', 'error');
+      console.log('Form is invalid');
+    }
+  }
+
+  clearPaymentForm() {
+    this.paymentFormInputs.reset();
+    this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
+    this.recPymtInvoiceData = { customer: {} } as Invoice;
+    this.searchInvoiceForPaymentInput.reset();
   }
 }

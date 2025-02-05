@@ -1,0 +1,25 @@
+.bg-paid {
+    background-color: #ecedee !important;
+    color: #505152 !important;
+}
+
+.avatar {
+    position: relative;
+    width: 6rem;
+    height: 3rem;
+}
+
+.avatar-initial {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    color: #fff;
+    background-color: #f0eff0;
+    font-size: .9375rem;
+}

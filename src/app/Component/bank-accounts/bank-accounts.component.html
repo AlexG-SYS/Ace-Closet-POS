@@ -1,0 +1,33 @@
+<div class="conatiner px-2">
+    <div class="row">
+        @for(bankAcc of activeBankAccount; track bankAcc){
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-2">
+                        <div class="me-4">
+                            <h2 class="mb-0 fw-medium fs-4">${{bankAcc.balance | number:'1.2-2'}}</h2>
+                            <p class="mb-0">Balance</p>
+                        </div>
+                        <div class="avatar my-auto">
+                            <span class="avatar-initial rounded bg-paid d-flex justify-content-between">
+                                <span class="px-2">{{bankAcc.bankName}}</span>
+                                <i class="bi bi-bank fs-4 pe-2"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+
+        <div class="col-auto">
+            <!-- Button to Open the New Invoice Modal -->
+            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#newInvoice">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-xl-inline ps-1">New</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -70,7 +70,7 @@
                             <input type="text" class="form-control" id="searchInvoice" placeholder="Search Invoice"
                                 autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
 
-                            <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                            <span id="clearButtonInvoice" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
 
                         <form [formGroup]="filterFormInputs">
@@ -170,7 +170,11 @@
                             <ng-container matColumnDef="invoiceStatus">
                                 <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
                                 <mat-cell *matCellDef="let element">
-                                    {{element.invoiceStatus}}
+                                    <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                        [class.pending]="element.invoiceStatus == 'Pending'"
+                                        [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                        [class.partial]="element.invoiceStatus == 'Partial'"
+                                        class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
                                 </mat-cell>
                             </ng-container>
 
@@ -251,7 +255,11 @@
                             <ng-container matColumnDef="invoiceStatus">
                                 <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
                                 <mat-cell *matCellDef="let element">
-                                    {{element.invoiceStatus}}
+                                    <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                        [class.pending]="element.invoiceStatus == 'Pending'"
+                                        [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                        [class.partial]="element.invoiceStatus == 'Partial'"
+                                        class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
                                 </mat-cell>
                             </ng-container>
 
@@ -400,9 +408,9 @@
                                         <div class="col-lg-6 col-md-8 col-12">
                                             <div class="autocomplete">
                                                 <input type="text" class="form-control w-100"
-                                                    placeholder="Select Customer" id="searchCustomer" autocomplete="off"
-                                                    (keyup)="filterCustomers($event)" />
-                                                <span id="clearButtonCustomer" class="clearBtn hoverColor"><i
+                                                    placeholder="Select Customer" id="searchCustomer2"
+                                                    autocomplete="off" (keyup)="filterCustomers($event)" />
+                                                <span id="clearButtonCustomer2" class="clearBtn hoverColor"><i
                                                         class="bi bi-x-lg"></i></span>
                                                 @if(searchTerm.length > 0){
                                                 <ul class="dropdown-menu show">
@@ -879,7 +887,7 @@
                 </div>
                 <div class="container-fluid">
                     <div class="row justify-content-between align-items-center">
-                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                        <div class="col-auto col-lg mb-4">
                             <div>
                                 <p class="fs-6 fw-medium">Invoice To:</p>
                                 <div class="ps-2">
@@ -892,8 +900,8 @@
                             </div>
                         </div>
 
-                        <div class="col-auto col-lg-auto">
-                            <div class="row pb-2 align-items-center ">
+                        <div class="col-auto col-lg-auto mx-auto mx-sm-0">
+                            <div class="row pb-2 d-flex align-items-center">
                                 <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
                                 <div class="col">
                                     <div class="input-group input-group-sm ">
@@ -942,6 +950,7 @@
                     </div>
                 </div>
                 <hr class="my-4">
+                @if(recPymtInvoiceData.invoiceBalance != 0){
                 <form [formGroup]="paymentFormInputs">
                     <div class="row m-3">
                         <div class="col-auto col-md-6">
@@ -959,19 +968,20 @@
                         <div class="col-12">
                             <div class="mb-1">
                                 <label for="pymtMethod" class="form-label">Payment Method</label>
-                                <select id="pymtMethod" class="form-select" formControlName="paymentMethod">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Credit Card">Credit Card</option>
-                                    <option value="Debit Card">Debit Card</option>
-                                    <option value="Digi Wallet">Digi Wallet</option>
-                                    <option value="ekyash">eKyash Wallet</option>
-                                    <option value="Belize Bank">Belize Bank</option>
-                                    <option value="Atlantic Bank">Atlantic Bank</option>
+                                <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
+                                    @for(account of bankAccounts; track account){
+                                    <option [value]="account.id">
+                                        {{ account.bankName
+                                        }}
+                                    </option>
+                                    }
                                 </select>
                             </div>
                         </div>
                     </div>
                 </form>
+                }
+
 
                 <div class="row py-2">
                     <div class="col d-flex justify-content-center">

@@ -103,30 +103,6 @@ export class InvoicesService {
     }
   }
 
-  async getInvoices(year: number): Promise<any[]> {
-    try {
-      const invoicesQuery = query(
-        this.invoicesCollection,
-        where('year', '==', year),
-        orderBy('invoiceNumber', 'desc')
-      );
-
-      // Await the Firestore operation to get the documents
-      const querySnapshot = await getDocs(invoicesQuery);
-
-      // Map the query snapshot to an array of invoice objects
-      const invoices = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as any), // Spread the invoice data
-      }));
-
-      return invoices; // Return the list of invoices if successful
-    } catch (error) {
-      console.error('Error retrieving invoices: ', error);
-      throw new Error('Failed to retrieve invoices. Please try again later.');
-    }
-  }
-
   async getInvoicesFilterAll(
     year: number,
     month: number,
@@ -137,34 +113,6 @@ export class InvoicesService {
         this.invoicesCollection,
         where('year', '==', year),
         where('month', '==', month),
-        where('invoiceStatus', '==', status),
-        orderBy('invoiceNumber', 'desc')
-      );
-
-      // Await the Firestore operation to get the documents
-      const querySnapshot = await getDocs(invoicesQuery);
-
-      // Map the query snapshot to an array of invoice objects
-      const invoices = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as any), // Spread the invoice data
-      }));
-
-      return invoices; // Return the list of invoices if successful
-    } catch (error) {
-      console.error('Error retrieving invoices: ', error);
-      throw new Error('Failed to retrieve invoices. Please try again later.');
-    }
-  }
-
-  async getInvoicesFilterStatusYear(
-    year: number,
-    status: string
-  ): Promise<any[]> {
-    try {
-      const invoicesQuery = query(
-        this.invoicesCollection,
-        where('year', '==', year),
         where('invoiceStatus', '==', status),
         orderBy('invoiceNumber', 'desc')
       );
@@ -244,6 +192,71 @@ export class InvoicesService {
     } catch (error) {
       console.error('Error retrieving latest invoice number: ', error);
       throw new Error('Failed to retrieve latest invoice number.');
+    }
+  }
+
+  async getInvoiceById(invoiceId: string): Promise<any> {
+    try {
+      const invoiceRef = doc(this.firestore, `invoices/${invoiceId}`);
+      const invoiceSnap = await getDoc(invoiceRef);
+
+      if (invoiceSnap.exists()) {
+        return { id: invoiceSnap.id, ...invoiceSnap.data() };
+      } else {
+        throw new Error(`Invoice not found.`);
+      }
+    } catch (error) {
+      console.error(`Error fetching invoice with ID ${invoiceId}:`, error);
+      throw new Error('Failed to get invoice.');
+    }
+  }
+
+  async getInvoiceByUserId(userId: string): Promise<any> {
+    try {
+      const invoicesQuery = query(
+        this.invoicesCollection,
+        where('customer.id', '==', userId),
+        orderBy('invoiceNumber', 'desc')
+      );
+
+      // Await the Firestore operation to get the documents
+      const querySnapshot = await getDocs(invoicesQuery);
+
+      // Map the query snapshot to an array of invoice objects
+      const invoices = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as any), // Spread the invoice data
+      }));
+
+      return invoices; // Return the list of invoices if successful
+    } catch (error) {
+      console.error('Error retrieving invoices: ', error);
+      throw new Error('Failed to retrieve invoices. Please try again later.');
+    }
+  }
+
+  async getInvoiceByNumber(invoiceNumber: string): Promise<any> {
+    try {
+      const invoicesQuery = query(
+        this.invoicesCollection,
+        where('invoiceNumber', '==', Number(invoiceNumber))
+      );
+      const querySnapshot = await getDocs(invoicesQuery);
+
+      if (!querySnapshot.empty) {
+        return {
+          id: querySnapshot.docs[0].id,
+          ...querySnapshot.docs[0].data(),
+        };
+      } else {
+        throw new Error('Invoice not found.');
+      }
+    } catch (error) {
+      console.error(
+        `Error fetching invoice with number ${invoiceNumber}:`,
+        error
+      );
+      throw new Error('Failed to get invoice.');
     }
   }
 }

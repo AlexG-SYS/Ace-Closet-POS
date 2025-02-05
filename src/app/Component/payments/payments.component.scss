@@ -17,18 +17,6 @@
     overflow: auto;
 }
 
-mat-cell.balance {
-    padding-left: 2rem;
-}
-
-mat-header-cell.balance {
-    padding-left: 2rem;
-}
-
-.colWidth {
-    flex: 3;
-}
-
 .scrollable {
     overflow-y: auto;
     height: 100%;
@@ -40,4 +28,8 @@ mat-header-cell.balance {
     cursor: pointer;
     background-color: #f5f5f5;
     font-weight: 500;
+}
+
+.paymentNumWidth {
+    width: 6.5rem;
 }

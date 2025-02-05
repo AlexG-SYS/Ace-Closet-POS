@@ -12,6 +12,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
 import * as bootstrap from 'bootstrap';
+import { Invoice } from '../../DataModels/invoiceData.model';
+import { InvoicesService } from '../../Service/invoices.service';
 
 @Component({
   selector: 'app-customers',
@@ -81,10 +83,21 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   }
 
   tableSpinner = true;
+  tableSpinnerInv = true;
   activeUsers: User[] = [];
+  activeUsersInvoice: Invoice[] = [];
   displayedColumns: string[] = ['name', 'accountBalance', 'options'];
+  displayedColumnsInvoice: string[] = [
+    'status',
+    'invNumber',
+    'name',
+    'total',
+    'balance',
+  ];
   dataSource = new MatTableDataSource(this.activeUsers);
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  dataSourceInvoice = new MatTableDataSource(this.activeUsersInvoice);
+  @ViewChild('paginator1') paginator!: MatPaginator;
+  @ViewChild('paginator2') paginatorInvoice!: MatPaginator;
   @ViewChild('newCustomerModal') newCustomerModal: any;
   displaySmall = false;
   modalData = false;
@@ -101,6 +114,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
   constructor(
     private userService: UsersService,
+    private invoiceService: InvoicesService,
     private snackBar: MatSnackBar
   ) {
     this.displaySmall = window.innerWidth < 768;
@@ -211,8 +225,22 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   }
 
   showUserData(data: User) {
+    this.tableSpinnerInv = true;
     this.customerDataLoaded = true;
     this.customerData = data;
+
+    this.invoiceService
+      .getInvoiceByUserId(data.id)
+      .then((invoices) => {
+        this.tableSpinnerInv = false;
+        this.activeUsersInvoice = invoices;
+        this.dataSourceInvoice.data = this.activeUsersInvoice;
+        this.dataSourceInvoice.paginator = this.paginatorInvoice;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        console.error('Error retrieving active users:', error);
+      });
   }
 
   modalUserData(data: User) {

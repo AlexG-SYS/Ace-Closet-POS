@@ -8,7 +8,7 @@
                             <input type="text" class="form-control" id="searchPayment" placeholder="Search Payment"
                                 autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
 
-                            <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                            <span id="clearButtonPayment" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
 
                         <form [formGroup]="filterFormInputs">
@@ -38,9 +38,9 @@
                                 </div>
 
                                 <div class="col-auto p-0 pe-2">
-                                    <!-- Button to Open the New Invoice Modal -->
+                                    <!-- Button to Open the New Payment Modal -->
                                     <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
-                                        data-bs-target="#newPayment">
+                                        data-bs-target="#newPaymentModal" (click)="receivePayment()">
                                         <i class="bi bi-plus-lg"></i>
                                         <span class="d-none d-xl-inline ps-1">New</span>
                                     </button>
@@ -57,46 +57,46 @@
 
                             <!-- Invoice Num Column  -->
                             <ng-container matColumnDef="invoiceNum">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">Inv. Number
+                                <mat-header-cell *matHeaderCellDef>Inv. Num.
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                <mat-cell *matCellDef="let element">
                                     {{element.invoiceNumber}}
                                 </mat-cell>
                             </ng-container>
 
                             <!-- Customer Name Column  -->
                             <ng-container matColumnDef="customerName">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-start colWidthMD">
+                                <mat-header-cell *matHeaderCellDef>
                                     Customer Name
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-start colWidthMD">
+                                <mat-cell *matCellDef="let element">
                                     {{element.customerName}}
                                 </mat-cell>
                             </ng-container>
 
                             <!-- Amount Column  -->
                             <ng-container matColumnDef="total">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Total
+                                <mat-header-cell *matHeaderCellDef> Total
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                <mat-cell *matCellDef="let element">
                                     ${{element.amount | number:'1.2-2' }}
                                 </mat-cell>
                             </ng-container>
 
                             <!-- Payment Method Colum -->
                             <ng-container matColumnDef="pymtMethod">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Pymt. Method
+                                <mat-header-cell *matHeaderCellDef> Pymt. Method
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center text-center">
+                                <mat-cell *matCellDef="let element">
                                     {{element.paymentMethod}}
                                 </mat-cell>
                             </ng-container>
 
                             <!-- Date Column  -->
                             <ng-container matColumnDef="date">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
+                                <mat-header-cell *matHeaderCellDef> Date
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                <mat-cell *matCellDef="let element">
                                     {{convertDate(element.day, element.month ,element.year)}}
                                 </mat-cell>
                             </ng-container>
@@ -105,7 +105,7 @@
                             <ng-container matColumnDef="options">
                                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
-                                    <i class="bi bi-eye-fill hoverColor mx-2"></i>
+                                    <i class="bi bi-eye-fill hoverColor" (click)="paymentInfoPopulate(element)"></i>
                                 </mat-cell>
                             </ng-container>
 
@@ -126,6 +126,245 @@
                         <div class="col p-0">
                             <mat-paginator [pageSizeOptions]="[tableRow]" hidePageSize class="p-0"></mat-paginator>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To Receive Payment  -->
+<div class="modal fade" id="newPaymentModal" data-bs-backdrop="static" tabindex="-1" #newPaymentModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="clearPaymentForm()"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Receive Payment</span>
+                    </div>
+                </div>
+                <form class="mx-4" [formGroup]="searchInvoiceForPaymentInput">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Search Invoice #"
+                            aria-label="Search Invoice" aria-describedby="button-addon2"
+                            formControlName="invoiceNumber">
+                        <button class="btn btn-light border" type="button" id="button-addon2" (click)="findInvoice()"><i
+                                class="bi bi-search"></i></button>
+                    </div>
+                </form>
+                @if(recPymtInvoiceData.invoiceNumber != null){
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                            <div>
+                                <p class="fs-6 fw-medium">Invoice To:</p>
+                                <div class="ps-2">
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.name}}</p>
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{recPymtInvoiceData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{recPymtInvoiceData.customer.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto col-lg-auto mx-auto mx-sm-0">
+                            <div class="row pb-2 align-items-center ">
+                                <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm ">
+                                        <span class="input-group-text paymentNumWidth"># {{
+                                            recPymtInvoiceData.invoiceNumber
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Date Issued:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">
+                                            {{ convertDate(recPymtInvoiceData.day, recPymtInvoiceData.month,
+                                            recPymtInvoiceData.year) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Due Date:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">{{
+                                            formatDate(recPymtInvoiceData.dueDate)
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row align-items-center">
+                                <div class="col text-lg-end fw-normal">Balance:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span
+                                            class="input-group-text paymentNumWidth">${{recPymtInvoiceData.invoiceBalance
+                                            |
+                                            number:'1.2-2' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                <hr class="my-4">
+                @if(recPymtInvoiceData.invoiceBalance != 0){
+                <form [formGroup]="paymentFormInputs">
+                    <div class="row m-3">
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" formControlName="date">
+                            </div>
+                        </div>
+                        <div class="col col-md-6 ">
+                            <div class="mb-3">
+                                <label for="pymtAmount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="pymtAmount" formControlName="amount">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1">
+                                <label for="pymtMethod" class="form-label">Payment Method</label>
+                                <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
+                                    @for(account of bankAccounts; track account){
+                                    <option [value]="account.id">
+                                        {{ account.bankName
+                                        }}
+                                    </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                }
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="clearPaymentForm()">Cancel</button>
+                        <button class="btn btn-primary" (click)="paymentSubmit()"
+                            [disabled]="paymentFormInputs.invalid">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To View Payment  -->
+<div class="modal fade" id="paymentModalView" data-bs-backdrop="static" tabindex="-1" #paymentModalView>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Payment Receipt</span>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                            <div>
+                                <p class="fs-6 fw-medium">Invoice To:</p>
+                                <div class="ps-2">
+                                    <p class="mb-1">{{recPymtData.customer.name}}</p>
+                                    <p class="mb-1">{{recPymtData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{recPymtData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{recPymtData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{recPymtData.customer.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto col-lg-auto mx-auto mx-sm-0">
+                            <div class="row pb-2 align-items-center ">
+                                <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm ">
+                                        <span class="input-group-text paymentNumWidth"># {{
+                                            recPymtData.invoiceNumber
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-4 align-items-center">
+                                <div class="col text-lg-end fw-normal">Inv. Balance:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">${{recPymtData.invoiceBalance
+                                            |
+                                            number:'1.2-2' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Method</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">
+                                            {{ recPymtData.paymentMethod }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Amount</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">${{
+                                            recPymtData.amount|
+                                            number:'1.2-2'
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Date</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">
+                                            {{ convertDate(recPymtData.day, recPymtData.month,
+                                            recPymtData.year) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
                     </div>
                 </div>
             </div>

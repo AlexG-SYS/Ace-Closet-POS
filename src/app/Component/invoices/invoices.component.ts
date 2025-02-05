@@ -20,6 +20,7 @@ import * as bootstrap from 'bootstrap';
 import { NgxPrintModule } from 'ngx-print';
 import { Payment } from '../../DataModels/paymentData.model';
 import { PaymentsService } from '../../Service/payments.service';
+import { BankAccountsService } from '../../Service/bank-accounts.service';
 
 @Component({
   selector: 'app-invoices',
@@ -122,7 +123,8 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
   paymentFormInputs = new FormGroup({
     amount: new FormControl('', [Validators.required, Validators.min(1)]),
-    paymentMethod: new FormControl('Cash'),
+    paymentMethod: new FormControl(''),
+    bankAccountId: new FormControl('', [Validators.required]),
     date: new FormControl(this.formattedDate),
   });
 
@@ -201,10 +203,9 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     private userService: UsersService,
     private productService: ProductsService,
     private paymentService: PaymentsService,
-    private snackBar: MatSnackBar
-  ) {
-    this.displaySmall = window.innerWidth <= 435;
-  }
+    private snackBar: MatSnackBar,
+    private bankAccountsService: BankAccountsService
+  ) {}
 
   ngOnInit(): void {
     this.populateInvoiceTable(this.currentYear, this.currentMonth);
@@ -214,7 +215,9 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     const inputField = document.getElementById(
       'searchInvoice'
     ) as HTMLInputElement;
-    const clearButton = document.getElementById('clearButton') as HTMLElement;
+    const clearButton = document.getElementById(
+      'clearButtonInvoice'
+    ) as HTMLElement;
 
     if (clearButton && inputField) {
       clearButton.addEventListener('click', () => {
@@ -238,10 +241,10 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     }
 
     const inputFieldCusotmer = document.getElementById(
-      'searchCustomer'
+      'searchCustomer2'
     ) as HTMLInputElement;
     const clearButtonCustomer = document.getElementById(
-      'clearButtonCustomer'
+      'clearButtonCustomer2'
     ) as HTMLElement;
 
     if (clearButtonCustomer && inputFieldCusotmer) {
@@ -435,7 +438,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
     this.searchTerm = '';
     const inputFieldProduct = document.getElementById(
-      'searchCustomer'
+      'searchCustomer2'
     ) as HTMLInputElement;
     inputFieldProduct.value = '';
 
@@ -703,15 +706,35 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     }
   }
 
+  bankAccounts: any[] = [];
   recPymtInvoiceData: Invoice = { customer: {} } as Invoice;
+
   receivePayment(invoiceData: Invoice) {
     this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
-    this.paymentFormInputs.get('paymentMethod')?.setValue('Cash');
     this.recPymtInvoiceData = invoiceData;
-    if (this.paymentModal) {
-      const paymentModal = new bootstrap.Modal(this.paymentModal.nativeElement);
-      paymentModal.show();
-    }
+
+    // Query all bank accounts
+    this.bankAccountsService
+      .getAllBankAccounts()
+      .then((accounts) => {
+        this.bankAccounts = accounts;
+
+        // Show the payment modal after fetching bank accounts
+        if (this.paymentModal) {
+          const paymentModal = new bootstrap.Modal(
+            this.paymentModal.nativeElement
+          );
+          paymentModal.show();
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching bank accounts:', error);
+      });
+  }
+
+  getBankAccountName(id: string): string {
+    const account = this.bankAccounts.find((account) => account.id === id);
+    return account ? account.bankName : ''; // Return empty string if not found
   }
 
   paymentSubmit() {
@@ -729,7 +752,8 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         day: day,
         month: month,
         year: year,
-        paymentMethod: formData.paymentMethod || '',
+        paymentMethod: this.getBankAccountName(formData.bankAccountId!) || '',
+        bankAccountId: formData.bankAccountId || '',
       };
 
       this.paymentService

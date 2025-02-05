@@ -165,7 +165,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
     const inputField = document.getElementById(
       'searchProduct'
     ) as HTMLInputElement;
-    const clearButton = document.getElementById('clearButton') as HTMLElement;
+    const clearButton = document.getElementById('clearButton2') as HTMLElement;
 
     if (clearButton && inputField) {
       clearButton.addEventListener('click', () => {

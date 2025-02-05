@@ -32,10 +32,10 @@
 
                         <!-- Account Balance Column -->
                         <ng-container matColumnDef="accountBalance">
-                            <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
+                            <mat-header-cell *matHeaderCellDef> Balance
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
-                                (click)="showUserData(element)" [class.text-danger]="element.status == 'inactive'">
+                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"
+                                [class.text-danger]="element.status == 'inactive'">
                                 ${{element.accountBalance | number:'1.2-2' }}
                             </mat-cell>
                         </ng-container>
@@ -70,7 +70,7 @@
                                 (click)="populateUsersTable(userTableStatus)">Show {{userTableStatus}}</button>
                         </div>
                         <div class="col-auto p-0">
-                            <mat-paginator [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
+                            <mat-paginator #paginator1 [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
                         </div>
                     </div>
 
@@ -139,7 +139,7 @@
                             </div>
                             <div class="d-flex justify-content-around row px-4">
                                 <div class="col col-xl-12 col-xxl-4">
-                                    <ul class="list-unstyled">
+                                    <ul class="list-unstyled mb-1">
                                         <li class="mb-2">
                                             <span class="h6 me-1">Name:</span>
                                             <span>{{customerData.name}}</span>
@@ -151,7 +151,7 @@
                                     </ul>
                                 </div>
                                 <div class="col col-xl-6 col-xxl-4">
-                                    <ul class="list-unstyled">
+                                    <ul class="list-unstyled mb-1">
                                         <li class="mb-1">
                                             <span class="h6 me-1">Status:</span>
                                             <span [class.inactive]="customerData.status == 'inactive'"
@@ -165,7 +165,7 @@
                                     </ul>
                                 </div>
                                 <div class="col col-xl-6 col-xxl-4">
-                                    <ul class="list-unstyled ">
+                                    <ul class="list-unstyled mb-1">
                                         <li class="mb-2">
                                             <span class="h6 me-1">Street:</span>
                                             <span
@@ -181,7 +181,76 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
+                    @if(!tableSpinnerInv){
+                    <!-- Table Section -->
+                    <table mat-table [dataSource]="dataSourceInvoice" class="scrollable invoice">
+
+                        <!-- Status Column -->
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                    [class.pending]="element.invoiceStatus == 'Pending'"
+                                    [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                    [class.partial]="element.invoiceStatus == 'Partial'"
+                                    class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Invoice Number Column -->
+                        <ng-container matColumnDef="invNumber">
+                            <mat-header-cell *matHeaderCellDef> Inv. Number
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.invoiceNumber}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef> Name
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.customer.name}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Total Column -->
+                        <ng-container matColumnDef="total">
+                            <mat-header-cell *matHeaderCellDef> Total
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                ${{element.grandTotal | number:'1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Balance Column -->
+                        <ng-container matColumnDef="balance">
+                            <mat-header-cell *matHeaderCellDef> Balance
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                ${{element.invoiceBalance | number:'1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumnsInvoice"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsInvoice;"></mat-row>
+
+                    </table>
+                    }@else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row px-4">
+                        <div class="col ">
+                        </div>
+                        <div class="col-auto p-0">
+                            <mat-paginator #paginator2 [pageSizeOptions]="[5]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
