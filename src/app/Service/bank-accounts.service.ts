@@ -105,7 +105,8 @@ export class BankAccountsService {
 
   // Method to get all bank accounts
   async getAllBankAccounts(): Promise<any[]> {
-    const querySnapshot = await getDocs(this.bankAccountCollection);
+    const q = query(this.bankAccountCollection, orderBy('createdAt', 'asc'));
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 }

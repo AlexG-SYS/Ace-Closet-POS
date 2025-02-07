@@ -45,10 +45,10 @@
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
                                 @if(displaySmall){
-                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="showUserData(element)"
+                                <i class="bi bi-eye-fill hoverColor pe-2" (click)="showUserData(element)"
                                     data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
                                 }
-                                <i class="bi bi-pencil-square hoverColor mx-2" (click)="modalUserData(element)"></i>
+                                <i class="bi bi-pencil-square hoverColor " (click)="modalUserData(element)"></i>
                             </mat-cell>
                         </ng-container>
 
@@ -79,7 +79,7 @@
             </div>
         </div>
         @if(customerDataLoaded){
-        <div class="col-xxl-8 col-xl-8 col-md-7 d-none d-md-inline">
+        <div class="col-xxl-8 col-xl-8 col-md-7 d-none d-md-inline pb-4">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
