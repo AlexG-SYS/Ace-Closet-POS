@@ -34,13 +34,13 @@
                                 </mat-cell>
                             </ng-container>
 
-                            <!-- Name Column  -->
+                            <!-- Description Column  -->
                             <ng-container matColumnDef="productName">
-                                <mat-header-cell *matHeaderCellDef class="colWidthLg"> Name
+                                <mat-header-cell *matHeaderCellDef class="colWidthLg"> Description
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="colWidthLg"
                                     [class.text-danger]="element.status == 'inactive'">
-                                    {{element.productName}}
+                                    {{element.description}}
                                 </mat-cell>
                             </ng-container>
 

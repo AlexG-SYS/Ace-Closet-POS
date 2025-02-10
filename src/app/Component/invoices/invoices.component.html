@@ -467,7 +467,7 @@
                                                     <mat-header-cell *matHeaderCellDef class="colWidth"> Item
                                                     </mat-header-cell>
                                                     <mat-cell *matCellDef="let element" class="colWidth">
-                                                        {{element.productName}}
+                                                        {{element.description}} - {{element.size}}
                                                     </mat-cell>
                                                 </ng-container>
 
@@ -564,7 +564,7 @@
                                                 <ul class="dropdown-menu show">
                                                     @for(Product of filteredProduct; track Product.id){
                                                     <li class="dropdown-item" (click)="populateProductInv(Product)">
-                                                        {{ Product.productName }}
+                                                        {{ Product.description }} - {{ Product.size }}
                                                     </li>
                                                     }
                                                 </ul>
@@ -762,7 +762,7 @@
                                     <mat-header-cell *matHeaderCellDef class="colWidth noHover"> Item
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let element" class="colWidth noHover">
-                                        {{element.productName}}
+                                        {{element.description}} - {{element.size}}
                                     </mat-cell>
                                 </ng-container>
 

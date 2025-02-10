@@ -9,31 +9,57 @@
                     <img src="../../../assets/aceClosetLogo.png" alt="Logo" class="pb-4" width="100rem">
                 </div>
                 <h1 class="text-center mb-1">Welcome to Ace Closet POS!</h1>
-                <p class="text-center">Please sign-in to your account</p>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="username"><i class="bi bi-person-fill"></i></span>
-                    <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-                        aria-describedby="username">
+                <p class="text-center">Please sign in to your account</p>
+                @if(loginError != null){
+                <div class="text-danger text-center pb-2">
+                    <small>Invalid Credentials</small>
                 </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text" id="password"><i class="bi bi-lock-fill"></i></span>
-                    <input type="password" class="form-control" placeholder="Password" aria-label="Password"
-                        aria-describedby="Password">
-                </div>
-                <div class="d-flex justify-content-between flex-wrap py-2">
-                    <div class="mb-0">
+                }
+                <form [formGroup]="loginForm">
 
+                    <div class="input-group">
+                        <span class="input-group-text" id="username"><i class="bi bi-person-fill"></i></span>
+                        <input type="text" class="form-control" placeholder="Email" aria-label="Email"
+                            aria-describedby="Email" formControlName="email">
                     </div>
-                    <a href="#" class="float-end mb-1 forgotPwdLink">
-                        <span>Forgot Password?</span>
-                    </a>
-                </div>
-                <button class="btn btn-primary d-grid w-100 waves-effect waves-light" routerLink="/dashboard/home">
-                    Login
-                </button>
-                <div class="d-sm d-lg-none pt-4">
-                    <img src="../../../assets/login-Icon-Phone.png" alt="" width="100%">
-                </div>
+                    @if(emailControl?.invalid && emailControl?.touched){
+                    <div class="text-danger text-center pt-1">
+                        @if(emailControl?.errors?.['required']){
+                        <small>Email is required.</small>
+                        }
+                        @if(emailControl?.errors?.['email']){
+                        <small>Enter a Valid Email</small>
+                        }
+                    </div>
+                    }
+                    <div class="input-group mt-3">
+                        <span class="input-group-text" id="password"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" class="form-control" placeholder="Password" aria-label="Password"
+                            aria-describedby="Password" formControlName="password">
+                    </div>
+                    @if(passwordControl?.invalid && passwordControl?.touched){
+                    <div class="text-danger text-center pt-1">
+                        @if(passwordControl?.errors?.['required']){
+                        <small>Password is required.</small>
+                        }
+                    </div>
+                    }
+                    <div class="d-flex justify-content-between flex-wrap py-2">
+                        <div class="mb-0">
+
+                        </div>
+                        <!-- <a href="#" class="float-end mb-1 forgotPwdLink">
+                            <span>Forgot Password?</span>
+                        </a> -->
+                    </div>
+                    <button class="btn btn-primary d-grid w-100 waves-effect waves-light" (click)="onLoginClicked()">
+                        Login
+                    </button>
+                    <div class="d-sm d-lg-none pt-4">
+                        <img src="../../../assets/login-Icon-Phone.png" alt="" width="100%">
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>

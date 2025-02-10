@@ -467,7 +467,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     const inputFieldProduct = document.getElementById(
       'searchProduct'
     ) as HTMLInputElement;
-    inputFieldProduct.value = event.productName;
+    inputFieldProduct.value = event.productName + ' - ' + event.size;
     this.filteredProduct = [];
 
     const matchingProduct = this.activeProduct.find(
@@ -494,7 +494,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     const term = (event.target as HTMLInputElement).value.toLowerCase(); // Extract the input value
     this.searchTermProduct = term;
     this.filteredProduct = this.activeProduct.filter((product) =>
-      product.productName.toLowerCase().includes(term)
+      product.description.toLowerCase().includes(term)
     );
   }
 

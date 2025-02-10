@@ -92,8 +92,10 @@
 }
 
 .dropdown-menu {
+    height: auto !important;
     width: 100%;
-    max-height: 200px;
+    overflow: auto !important;
+    max-height: 250px;
     scrollbar-width: thin;
     scrollbar-color: #a3a3a3 #f1f1f1;
     z-index: 1000 !important;

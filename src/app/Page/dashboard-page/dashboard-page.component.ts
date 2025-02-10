@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   RouterOutlet,
   Router,
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
+import { tap } from 'rxjs';
+import { AuthenticateService } from '../../Service/authenticate.service';
+import { GlobalService } from '../../Service/global.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -19,11 +22,13 @@ export class DashboardPageComponent {
   currentDate = new Date();
   time = this.currentDate.getHours();
 
+  authService = inject(AuthenticateService);
+
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
 
-  constructor() {
+  constructor(private router: Router, private globalService: GlobalService) {
     // Set greeting message based on time of day
     this.setGreetingMessage();
 
@@ -33,6 +38,20 @@ export class DashboardPageComponent {
         topNav!.classList.add('scrolled');
       } else {
         topNav!.classList.remove('scrolled');
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.authService.user$.subscribe((user) => {
+      if (user != null || user != undefined) {
+        this.authService.currentUserSig.set({
+          email: user.email!,
+          displayName: user.displayName!,
+        });
+      } else {
+        this.router.navigateByUrl('/login');
+        this.authService.currentUserSig.set(null);
       }
     });
   }
@@ -51,4 +70,20 @@ export class DashboardPageComponent {
     }
   }
   // -----------------------------------------------------------------------------------------------------------
+
+  logout() {
+    this.authService
+      .logout()
+      .pipe(
+        tap(() => {
+          this.globalService.username = null;
+          this.router.navigate(['/login']); // Redirect to login page
+        })
+      )
+      .subscribe({
+        error: (error) => {
+          console.error('Logout Error:', error);
+        },
+      });
+  }
 }
