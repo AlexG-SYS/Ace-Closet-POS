@@ -10,13 +10,15 @@
 
                             <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
+                        <div class="col-auto p-0">
+                            <!-- Button to Open the Modal -->
+                            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                                data-bs-target="#newCustomer" (click)="modalData = false">
+                                <i class="bi bi-plus-lg"></i>
+                                <span class=" ps-1">New</span>
+                            </button>
+                        </div>
 
-                        <!-- Button to Open the Modal -->
-                        <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
-                            data-bs-target="#newCustomer" (click)="modalData = false">
-                            <i class="bi bi-plus-lg"></i>
-                            <span class="d-none d-xxl-inline ps-1">New</span>
-                        </button>
                     </div>
                     @if(!tableSpinner){
                     <!-- Table Section -->

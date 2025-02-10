@@ -694,6 +694,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
   printInvoiceData: Invoice = { customer: {} } as Invoice;
   dataSourcePrintInvoiceProduct = new MatTableDataSource(this.activeProduct);
+
   viewInvoice(invoiceData: Invoice) {
     this.printInvoiceData = invoiceData; // Assign the invoice data
     this.dataSourcePrintInvoiceProduct.data = invoiceData.products;

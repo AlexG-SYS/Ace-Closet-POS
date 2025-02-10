@@ -11,36 +11,40 @@
     </div>
     <div class="row">
         @if(!bankSpinner){
-        @for(bankAcc of activeBankAccount; track bankAcc){
+        @for(bankAcc of activeBankAccount; track bankAcc.id){
         <div class="col mb-4">
             <div class="card">
                 <div class="card-body pe-2">
                     <div class="d-flex justify-content-between p-1">
                         <div class="me-4">
                             <h2 class="mb-0 fw-medium fs-4">${{bankAcc.balance | number:'1.2-2'}}</h2>
-                            <span class="fw-medium">{{bankAcc.bankName}}</span>
-                            <p class="mb-0">Balance</p>
-                        </div>
-                        <div class="row">
-                            <div class="col avatar my-auto">
-                                <span class="avatar-initial rounded bg-paid">
-                                    <i class="bi bi-bank fs-4 mx-auto"></i>
-                                </span>
-                            </div>
-                            <div class="col dropdown my-auto ps-1">
-                                <i type="button" class="bi bi-three-dots-vertical fs-5 hoverColor"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="revenueID">
-                                    <a class="dropdown-item" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#bankDepositModal"
-                                        (click)="setBankInfo('Deposit', bankAcc)">Deposit</a>
-                                    <a class="dropdown-item" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#bankExpenseModal"
-                                        (click)="setBankInfo('Expense', bankAcc)">Expense</a>
-                                    <a class="dropdown-item" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#bankTransferModal"
-                                        (click)="setBankInfo('Transfer', bankAcc)">Transfer</a>
+                            <div class="row">
+                                <div class="col-auto d-flex align-items-center">
+                                    <i class="bi bi-bank fs-4"></i>
                                 </div>
+                                <div class="col p-0">
+                                    <span class="fw-medium">{{bankAcc.bankName}}</span>
+                                    <p class="mb-0">Balance</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown my-auto ps-1">
+                            <i type="button" class="bi bi-three-dots-vertical fs-5 hoverColor" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"></i>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="revenueID">
+                                <a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#bankDepositModal"
+                                    (click)="setBankInfo('Deposit', bankAcc)">Deposit</a>
+                                <a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#bankExpenseModal"
+                                    (click)="setBankInfo('Expense', bankAcc)">Expense</a>
+                                <a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#bankWithdrawModal"
+                                    (click)="setBankInfo('Withdraw', bankAcc)">Withdraw</a>
+                                <a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#bankTransferModal"
+                                    (click)="setBankInfo('Transfer', bankAcc)">Transfer</a>
                             </div>
                         </div>
                     </div>
@@ -81,23 +85,62 @@
 
                         <form [formGroup]="filterFormInputs">
                             <div class="row ps-1 pb-0 pt-1">
-                                <div class="col px-2 ">
+                                <div class="col px-2 px-2 d-none d-md-block">
                                     <select class="form-select" formControlName="bankAcc" (change)="filterBankAcc()">
                                         <option value="-1" selected>All Bank Acc</option>
-                                        @for(bankAcc of activeBankAccount; track bankAcc){
+                                        @for(bankAcc of activeBankAccount; track bankAcc.id){
                                         <option [value]="bankAcc.id">{{bankAcc.bankName}}</option>
                                         }
                                     </select>
                                 </div>
 
-                                <div class="col-auto px-2">
+                                <div class="col-auto px-2 px-2 d-none d-md-block">
                                     <select class="form-select" formControlName="year" (change)="filterBankAcc()">
                                         <option value="{{currentYear}}">{{currentYear}}</option>
                                         <option value="{{lastYear}}">{{lastYear}}</option>
                                     </select>
                                 </div>
 
-                                <div class="col-auto px-2 ">
+                                <div class="col-auto px-2 px-2 d-none d-md-block">
+                                    <select class="form-select" formControlName="month" (change)="filterBankAcc()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="row p-2 pb-0 d-block d-md-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row ps-1 pb-0 pt-1">
+                                <div class="col px-2 px-2 ">
+                                    <select class="form-select" formControlName="bankAcc" (change)="filterBankAcc()">
+                                        <option value="-1" selected>All Bank Acc</option>
+                                        @for(bankAcc of activeBankAccount; track bankAcc.id){
+                                        <option [value]="bankAcc.id">{{bankAcc.bankName}}</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 px-2 ">
+                                    <select class="form-select" formControlName="year" (change)="filterBankAcc()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 px-2 ">
                                     <select class="form-select" formControlName="month" (change)="filterBankAcc()">
                                         <option value="1">Jan</option>
                                         <option value="2">Feb</option>
@@ -172,7 +215,7 @@
                             <ng-container matColumnDef="options">
                                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
-                                    <i class="bi bi-eye-fill hoverColor"></i>
+                                    <i class="bi bi-eye-fill hoverColor" (click)="viewTransaction(element)"></i>
                                 </mat-cell>
                             </ng-container>
 
@@ -299,7 +342,7 @@
 
 <!-- Modal For Bank Account Deposit -->
 <div class="modal fade" id="bankDepositModal" data-bs-backdrop="static" tabindex="-1" #bankDepositModal>
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form [formGroup]="bankDepositForm">
                 <div class="modal-body">
@@ -314,19 +357,17 @@
                             <h1 class="fw-medium">New Deposit</h1>
                         </div>
                     </div>
-                    <!-- Bank Account Name -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Name -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <input type="text" class="form-control bg-body-secondary" placeholder="Bank Name"
                                     formControlName="bankName" readonly />
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Bank Account Number -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+                        <!-- Bank Account Number -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <input type="number" class="form-control bg-body-secondary"
                                     placeholder="Bank Account Number" formControlName="accountNumber" readonly />
@@ -334,35 +375,33 @@
                         </div>
                     </div>
 
-                    <!-- Date -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
-                            <div class="mb-3 w-75">
+                    <div class="row mx-2">
+                        <!-- Date -->
+                        <div class="col-6">
+                            <div class="mb-3">
                                 <input type="date" class="form-control" formControlName="date" />
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Deposit Amount -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
-                            <div class="input-group mb-3 mx-4">
-                                <span class="input-group-text ms-1">$</span>
-                                <input type="number" class="form-control me-1" placeholder="Deposit Amount"
+                        <!-- Deposit Amount -->
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Deposit Amount"
                                     formControlName="amount" />
                             </div>
                         </div>
                     </div>
 
                     <!-- Description -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+                    <div class="row mx-2">
+                        <div class="col">
                             <div class="mb-3">
                                 <textarea class="form-control" placeholder="Description"
                                     formControlName="description"></textarea>
                             </div>
                         </div>
                     </div>
+
                     <div class="row py-2">
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
@@ -379,7 +418,7 @@
 
 <!-- Modal For Expense -->
 <div class="modal fade" id="bankExpenseModal" data-bs-backdrop="static" tabindex="-1" #bankExpenseModal>
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form [formGroup]="bankExpenseForm">
                 <div class="modal-body">
@@ -394,19 +433,17 @@
                             <h1 class="fw-medium">New Expense</h1>
                         </div>
                     </div>
-                    <!-- Bank Account Name -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Name -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <input type="text" class="form-control bg-body-secondary" placeholder="Bank Name"
                                     formControlName="bankName" readonly />
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Bank Account Number -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+                        <!-- Bank Account Number -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <input type="number" class="form-control bg-body-secondary"
                                     placeholder="Bank Account Number" formControlName="accountNumber" readonly />
@@ -414,29 +451,199 @@
                         </div>
                     </div>
 
-                    <!-- Date -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
-                            <div class="mb-3 w-75">
+
+
+                    <div class="row mx-2">
+                        <!-- Date -->
+                        <div class="col-6">
+                            <div class="mb-3">
                                 <input type="date" class="form-control" formControlName="date" />
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Expense Amount -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
-                            <div class="input-group mb-3 mx-4">
-                                <span class="input-group-text ms-1">$</span>
-                                <input type="number" class="form-control me-1" placeholder="Expense Amount"
+                        <!-- Expense Amount -->
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Expense Amount"
                                     formControlName="amount" />
                             </div>
                         </div>
                     </div>
 
                     <!-- Description -->
-                    <div class="row">
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <textarea class="form-control" placeholder="Description"
+                                    formControlName="description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
                         <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearBankExpenseForm()">Cancel</button>
+                            <button class="btn btn-primary" (click)="saveBankExpense()"
+                                [disabled]="bankExpenseForm.invalid">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Bank Account Withdraw -->
+<div class="modal fade" id="bankWithdrawModal" data-bs-backdrop="static" tabindex="-1" #bankWithdrawModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="bankWithdrawForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearBankWithdrawForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">New Withdraw</h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Name -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary" placeholder="Bank Name"
+                                    formControlName="bankName" readonly />
+                            </div>
+                        </div>
+                        <!-- Bank Account Number -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="number" class="form-control bg-body-secondary"
+                                    placeholder="Bank Account Number" formControlName="accountNumber" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Date -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="date" class="form-control" formControlName="date" />
+                            </div>
+                        </div>
+                        <!-- Deposit Amount -->
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Deposit Amount"
+                                    formControlName="amount" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <textarea class="form-control" placeholder="Description"
+                                    formControlName="description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearBankWithdrawForm()">Cancel</button>
+                            <button class="btn btn-primary" (click)="saveBankWithdraw()"
+                                [disabled]="bankWithdrawForm.invalid">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Transfer -->
+<div class="modal fade" id="bankTransferModal" data-bs-backdrop="static" tabindex="-1" #bankTransferModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="bankTransferForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearBankTransferForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">New Bank Transfer</h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Name -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control bg-body-secondary" placeholder="Bank Name"
+                                formControlName="oldBankName" readonly>
+                            <span class="input-group-text p-0 px-2"><i class="bi bi-arrow-right-short fs-4"></i></span>
+                            <div class="col-6">
+                                <input type="text" class="form-control" placeholder="Bank Name" id="searchBankAcc"
+                                    autocomplete="off" formControlName="newBankName"
+                                    (keyup)="filterTransferBankAcc($event)">
+                                @if(searchTerm.length > 0){
+                                <ul class="dropdown-menu show">
+                                    @for(bankAcc of filterBankAccForTransfer; track bankAcc.id){
+                                    <li class="dropdown-item" (click)="addToBankTransfer(bankAcc)">
+                                        {{ bankAcc.bankName }}
+                                    </li>
+                                    }
+                                </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Number -->
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control bg-body-secondary" placeholder="Bank Acc Number"
+                                formControlName="oldAccountNumber" readonly>
+                            <span class="input-group-text p-0 px-2"><i class="bi bi-arrow-right-short fs-4"></i></span>
+                            <div class="col-6">
+                                <input type="number" class="form-control " placeholder="Bank Acc Number"
+                                    formControlName="newAccountNumber" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Date -->
+                        <div class="col-6  ">
+                            <div class="mb-3">
+                                <input type="date" class="form-control" formControlName="date" />
+                            </div>
+                        </div>
+                        <!-- Amount -->
+                        <div class="col-6  ">
+                            <div class="input-group mb-3 ">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Amount"
+                                    formControlName="amount" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row mx-2">
+                        <div class="col ">
                             <div class="mb-3">
                                 <textarea class="form-control" placeholder="Description"
                                     formControlName="description"></textarea>
@@ -446,9 +653,86 @@
                     <div class="row py-2">
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
-                                (click)="clearBankExpenseForm()">Cancel</button>
-                            <button class="btn btn-primary" (click)="saveBankExpense()"
-                                [disabled]="bankExpenseForm.invalid">Save</button>
+                                (click)="clearBankTransferForm()">Cancel</button>
+                            <button class="btn btn-primary" (click)="saveBankTransfer()"
+                                [disabled]="bankTransferForm.invalid">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal For View Transaction -->
+<div class="modal fade" id="bankTransactionViewModal" data-bs-backdrop="static" tabindex="-1" #bankTransactionViewModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">{{showTransactionData.type}}</h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Name -->
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary" placeholder="Bank Name"
+                                    [value]="showTransactionData.bankName" readonly />
+                            </div>
+                        </div>
+                        <!-- Bank Account Number -->
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="number" class="form-control bg-body-secondary"
+                                    placeholder="Bank Account Number" [value]="showTransactionData.accountNumber"
+                                    readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Date -->
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary"
+                                    [value]="convertDate(showTransactionData.day, showTransactionData.month ,showTransactionData.year)"
+                                    readonly />
+                            </div>
+                        </div>
+                        <!-- Expense Amount -->
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control bg-body-secondary" placeholder="Expense Amount"
+                                    [value]="showTransactionData.amount" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <textarea class="form-control bg-body-secondary" placeholder="Description"
+                                    [value]="showTransactionData.description" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                                aria-label="Close">Close</button>
                         </div>
                     </div>
                 </div>

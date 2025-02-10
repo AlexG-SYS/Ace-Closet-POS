@@ -10,13 +10,14 @@
 
                             <span id="clearButton2" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
                         </form>
-
-                        <!-- Button to Open the Modal -->
-                        <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
-                            data-bs-target="#newProduct" (click)="modalData = false">
-                            <i class="bi bi-plus-lg"></i>
-                            <span class="d-none d-xl-inline ps-1">New</span>
-                        </button>
+                        <div class="col-auto p-0">
+                            <!-- Button to Open the Modal -->
+                            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                                data-bs-target="#newProduct" (click)="modalData = false">
+                                <i class="bi bi-plus-lg"></i>
+                                <span class=" ps-1">New</span>
+                            </button>
+                        </div>
                     </div>
                     @if(!tableSpinner){
                     <div class="scrollable mb-3">
@@ -26,17 +27,18 @@
 
                             <!-- UPC Column -->
                             <ng-container matColumnDef="upc">
-                                <mat-header-cell *matHeaderCellDef> UPC </mat-header-cell>
-                                <mat-cell *matCellDef="let element" [class.text-danger]="element.status == 'inactive'">
+                                <mat-header-cell *matHeaderCellDef class="colWidthMd"> UPC </mat-header-cell>
+                                <mat-cell *matCellDef="let element" [class.text-danger]="element.status == 'inactive'"
+                                    class="colWidthMd">
                                     {{element.upc}}
                                 </mat-cell>
                             </ng-container>
 
                             <!-- Name Column  -->
                             <ng-container matColumnDef="productName">
-                                <mat-header-cell *matHeaderCellDef class="colWidth"> Name
+                                <mat-header-cell *matHeaderCellDef class="colWidthLg"> Name
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="colWidth"
+                                <mat-cell *matCellDef="let element" class="colWidthLg"
                                     [class.text-danger]="element.status == 'inactive'">
                                     {{element.productName}}
                                 </mat-cell>
@@ -133,18 +135,20 @@
 
                             <!-- UPC Column -->
                             <ng-container matColumnDef="upc">
-                                <mat-header-cell *matHeaderCellDef> UPC </mat-header-cell>
-                                <mat-cell *matCellDef="let element" [class.text-danger]="element.status == 'inactive'">
+                                <mat-header-cell *matHeaderCellDef class="colWidthLg"> UPC </mat-header-cell>
+                                <mat-cell *matCellDef="let element" [class.text-danger]="element.status == 'inactive'"
+                                    class="colWidthLg">
                                     {{element.upc}}
                                 </mat-cell>
                             </ng-container>
 
                             <!-- Name Column  -->
                             <ng-container matColumnDef="productName">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Name
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"
+                                    class="colWidthXLg"> Name
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let element" class="d-flex justify-content-center"
-                                    [class.text-danger]="element.status == 'inactive'">
+                                    [class.text-danger]="element.status == 'inactive'" class="colWidthXLg">
                                     {{element.productName}}
                                 </mat-cell>
                             </ng-container>
@@ -374,11 +378,13 @@
                                     <option value="" disabled selected>Select Category</option>
                                     <option value="T-Shirts">T-Shirts</option>
                                     <option value="Shirts">Shirts</option>
+                                    <option value="Polo">Polo</option>
                                     <option value="Shorts">Shorts</option>
                                     <option value="Pants">Pants</option>
                                     <option value="Jeans">Jeans</option>
                                     <option value="Jackets">Jackets</option>
                                     <option value="Sweaters">Sweaters</option>
+                                    <option value="Long Sleeve">Long Sleeve</option>
                                     <option value="Underwear">Underwear</option>
                                     <option value="Activewear">Activewear</option>
                                     <option value="Accessories">Accessories</option>

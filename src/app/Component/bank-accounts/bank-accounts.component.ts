@@ -56,7 +56,10 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
   bankDepositForm = new FormGroup({
     id: new FormControl('', []),
     bankAccountId: new FormControl(''),
-    bankName: new FormControl('', [Validators.pattern(/^[a-zA-Z\s]+$/)]),
+    bankName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/),
+    ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     amount: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.required]),
@@ -67,8 +70,45 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
   bankExpenseForm = new FormGroup({
     id: new FormControl('', []),
     bankAccountId: new FormControl(''),
-    bankName: new FormControl('', [Validators.pattern(/^[a-zA-Z\s]+$/)]),
+    bankName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/),
+    ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
+    amount: new FormControl('', [Validators.required]),
+    description: new FormControl('', [Validators.required]),
+    date: new FormControl(this.formattedDate),
+    type: new FormControl(''),
+  });
+
+  bankWithdrawForm = new FormGroup({
+    id: new FormControl('', []),
+    bankAccountId: new FormControl(''),
+    bankName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/),
+    ]),
+    accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
+    amount: new FormControl('', [Validators.required]),
+    description: new FormControl('', [Validators.required]),
+    date: new FormControl(this.formattedDate),
+    type: new FormControl(''),
+  });
+
+  bankTransferForm = new FormGroup({
+    id: new FormControl('', []),
+    oldBankAccountId: new FormControl(''),
+    newBankAccountId: new FormControl(''),
+    oldBankName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/),
+    ]),
+    newBankName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/),
+    ]),
+    oldAccountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
+    newAccountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     amount: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.required]),
     date: new FormControl(this.formattedDate),
@@ -94,9 +134,13 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
   activeTransactions: Transactions[] = [];
   dataSource = new MatTableDataSource(this.activeTransactions);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('bankTransactionViewModal') bankTransactionViewModal: any;
   currentYear = new Date().getFullYear();
   lastYear = new Date().getFullYear() - 1;
   currentMonth = new Date().getMonth() + 1;
+
+  searchTerm: string = '';
+  filterBankAccForTransfer = [...this.activeBankAccount];
 
   displayedColumns: string[] = [
     'bankName',
@@ -244,7 +288,28 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     }
   }
 
-  filterBankAcc() {}
+  filterBankAcc() {
+    const year = Number(this.filterFormInputs.value.year);
+    const month = Number(this.filterFormInputs.value.month);
+    const bankAccountId = this.filterFormInputs.value.bankAcc!.toString();
+
+    if (this.filterFormInputs.value.bankAcc == '-1') {
+      this.populateTransactionTable(year, month);
+    } else {
+      this.tableSpinner = true;
+      this.transactionService
+        .getTransactionsFilterAll(year, month, bankAccountId)
+        .then((transaction) => {
+          this.tableSpinner = false;
+          this.activeTransactions = transaction;
+          this.dataSource.data = this.activeTransactions;
+        })
+        .catch((error) => {
+          this.showSnackBar(`Retrieving Transactions Failed`, 'error');
+          console.error('Error retrieving active Invoices:', error);
+        });
+    }
+  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value
@@ -268,44 +333,84 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         bankAccountId: bankAcc.id,
         type: type,
       });
+    } else if (type == 'Withdraw') {
+      this.bankWithdrawForm.patchValue({
+        bankName: bankAcc.bankName,
+        accountNumber: bankAcc.accountNumber,
+        bankAccountId: bankAcc.id,
+        type: type,
+      });
     } else if (type == 'Transfer') {
+      this.bankTransferForm.patchValue({
+        oldBankName: bankAcc.bankName,
+        oldAccountNumber: bankAcc.accountNumber,
+        oldBankAccountId: bankAcc.id,
+        type: type,
+      });
     }
   }
 
-  saveBankDeposit() {
-    if (this.bankDepositForm.valid) {
-      const formData = this.bankDepositForm.value;
+  saveBankTransaction(
+    form: FormGroup,
+    successMessage: string,
+    clearFormCallback: () => void
+  ) {
+    if (form.valid) {
+      const formData = form.value;
       const [year, month, day] = formData.date!.split('-').map(Number);
 
-      // Convert form data to a partial Payment data model
-      const partialDeposit: Partial<Transactions> = {
+      const transactionData: Partial<Transactions> = {
         bankAccountId: formData.bankAccountId!,
         bankName: formData.bankName!,
         accountNumber: formData.accountNumber || '',
         amount: Number(formData.amount),
         type: formData.type!,
         description: formData.description!,
-        day: day,
-        month: month,
-        year: year,
+        day,
+        month,
+        year,
       };
 
       this.transactionService
-        .addTransactionDepositExpense(partialDeposit)
+        .addTransactionDepositExpenseWithdraw(transactionData)
         .then(() => {
-          this.showSnackBar('Deposit Applied Successfully!', 'success');
+          this.showSnackBar(successMessage, 'success');
           this.populateBankAccount();
           this.populateTransactionTable(this.currentYear, this.currentMonth);
-          this.clearBankDepositForm();
+          clearFormCallback();
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');
-          console.log(error.message);
+          console.error(error.message);
         });
     } else {
       console.log('Form is invalid');
-      this.bankForm.markAllAsTouched(); // Highlight invalid fields
+      form.markAllAsTouched(); // Highlight invalid fields
     }
+  }
+
+  saveBankDeposit() {
+    this.saveBankTransaction(
+      this.bankDepositForm,
+      'Deposit Applied Successfully!',
+      this.clearBankDepositForm.bind(this)
+    );
+  }
+
+  saveBankExpense() {
+    this.saveBankTransaction(
+      this.bankExpenseForm,
+      'Expense Applied Successfully!',
+      this.clearBankExpenseForm.bind(this)
+    );
+  }
+
+  saveBankWithdraw() {
+    this.saveBankTransaction(
+      this.bankWithdrawForm,
+      'Withdraw Applied Successfully!',
+      this.clearBankWithdrawForm.bind(this)
+    );
   }
 
   clearBankDepositForm() {
@@ -313,45 +418,14 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     this.bankDepositForm.get('date')?.setValue(this.formattedDate);
   }
 
-  saveBankExpense() {
-    if (this.bankExpenseForm.valid) {
-      const formData = this.bankExpenseForm.value;
-      const [year, month, day] = formData.date!.split('-').map(Number);
-
-      // Convert form data to a partial Payment data model
-      const partialExpense: Partial<Transactions> = {
-        bankAccountId: formData.bankAccountId!,
-        bankName: formData.bankName!,
-        accountNumber: formData.accountNumber || '',
-        amount: Number(formData.amount),
-        type: formData.type!,
-        description: formData.description!,
-        day: day,
-        month: month,
-        year: year,
-      };
-
-      this.transactionService
-        .addTransactionDepositExpense(partialExpense)
-        .then(() => {
-          this.showSnackBar('Expense Applied Successfully!', 'success');
-          this.populateBankAccount();
-          this.populateTransactionTable(this.currentYear, this.currentMonth);
-          this.clearBankExpenseForm();
-        })
-        .catch((error) => {
-          this.showSnackBar(error.message, 'error');
-          console.log(error.message);
-        });
-    } else {
-      console.log('Form is invalid');
-      this.bankForm.markAllAsTouched(); // Highlight invalid fields
-    }
-  }
-
   clearBankExpenseForm() {
     this.bankExpenseForm.reset();
     this.bankExpenseForm.get('date')?.setValue(this.formattedDate);
+  }
+
+  clearBankWithdrawForm() {
+    this.bankWithdrawForm.reset();
+    this.bankWithdrawForm.get('date')?.setValue(this.formattedDate);
   }
 
   showSnackBar(message: string, type: string) {
@@ -361,5 +435,79 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
     });
+  }
+
+  filterTransferBankAcc(event: Event): void {
+    const term = (event.target as HTMLInputElement).value.toLowerCase(); // Extract the input value
+    this.searchTerm = term;
+    this.filterBankAccForTransfer = this.activeBankAccount.filter((bankAcc) =>
+      bankAcc.bankName.toLowerCase().includes(term)
+    );
+  }
+
+  addToBankTransfer(bankAcc: BankAccount) {
+    this.bankTransferForm.patchValue({
+      newBankName: bankAcc.bankName,
+      newAccountNumber: bankAcc.accountNumber,
+      newBankAccountId: bankAcc.id,
+    });
+    this.searchTerm = '';
+    this.filterBankAccForTransfer = [];
+  }
+
+  saveBankTransfer() {
+    if (this.bankTransferForm.valid) {
+      const formData = this.bankTransferForm.value;
+      const [year, month, day] = formData.date!.split('-').map(Number);
+
+      const transferData = {
+        oldBankAccountId: formData.oldBankAccountId,
+        oldBankName: formData.oldBankName,
+        oldAccountNumber: formData.oldAccountNumber,
+
+        newBankAccountId: formData.newBankAccountId,
+        newBankName: formData.newBankName,
+        newAccountNumber: formData.newAccountNumber,
+
+        amount: Number(formData.amount),
+        description: formData.description,
+        day: day,
+        month: month,
+        year: year,
+      };
+
+      this.transactionService
+        .addBankTransfer(transferData)
+        .then(() => {
+          this.showSnackBar('Bank Transfer Successful!', 'success');
+          this.populateBankAccount();
+          this.populateTransactionTable(this.currentYear, this.currentMonth);
+          this.clearBankTransferForm();
+        })
+        .catch((error) => {
+          this.showSnackBar(error.message, 'error');
+          console.log(error.message);
+        });
+    } else {
+      console.log('Form is invalid');
+      this.bankTransferForm.markAllAsTouched();
+    }
+  }
+
+  clearBankTransferForm() {
+    this.bankTransferForm.reset();
+    this.bankTransferForm.get('date')?.setValue(this.formattedDate);
+  }
+
+  showTransactionData: Transactions = {} as Transactions;
+  viewTransaction(transactionData: Transactions) {
+    this.showTransactionData = transactionData; // Assign the invoice data
+
+    if (this.bankTransactionViewModal) {
+      const bankTransactionViewModal = new bootstrap.Modal(
+        this.bankTransactionViewModal.nativeElement
+      );
+      bankTransactionViewModal.show();
+    }
   }
 }

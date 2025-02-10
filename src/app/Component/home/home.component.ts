@@ -36,15 +36,15 @@ export class HomeComponent {
       series: [
         {
           name: 'Income',
-          data: [30, 20, 25, 30, 20, 55, 30, 25, 30, 20, 65, 20], // Example values
+          data: [], // Example values
         },
         {
           name: 'Profit',
-          data: [25, 10, 5, 55, 10, 25, 10, 5, 55, 25, 15, 69], // Example values
+          data: [], // Example values
         },
         {
           name: 'Expense',
-          data: [5, 8, 2, 5, 15, 18, 5, 55, 5, 18, 8, 14], // Example values
+          data: [], // Example values
         },
       ],
       chart: {

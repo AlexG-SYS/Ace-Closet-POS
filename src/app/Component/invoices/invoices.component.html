@@ -115,7 +115,7 @@
                                         data-bs-target="#newInvoice" (click)="modalData = false"
                                         (click)="getCustomersAndItems()">
                                         <i class="bi bi-plus-lg"></i>
-                                        <span class="d-none d-xl-inline ps-1">New</span>
+                                        <span class=" ps-1">New</span>
                                     </button>
                                 </div>
                             </div>
@@ -414,7 +414,7 @@
                                                         class="bi bi-x-lg"></i></span>
                                                 @if(searchTerm.length > 0){
                                                 <ul class="dropdown-menu show">
-                                                    @for(customer of filteredCustomers; track customer){
+                                                    @for(customer of filteredCustomers; track customer.id){
                                                     <li class="dropdown-item" (click)="populateCustInv(customer)">
                                                         {{ customer.name }}
                                                     </li>
@@ -562,7 +562,7 @@
                                                     (keyup)="filterProduct($event)" />
                                                 @if(searchTermProduct.length > 0){
                                                 <ul class="dropdown-menu show">
-                                                    @for(Product of filteredProduct; track Product){
+                                                    @for(Product of filteredProduct; track Product.id){
                                                     <li class="dropdown-item" (click)="populateProductInv(Product)">
                                                         {{ Product.productName }}
                                                     </li>
@@ -969,7 +969,7 @@
                             <div class="mb-1">
                                 <label for="pymtMethod" class="form-label">Payment Method</label>
                                 <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
-                                    @for(account of bankAccounts; track account){
+                                    @for(account of bankAccounts; track account.id){
                                     <option [value]="account.id">
                                         {{ account.bankName
                                         }}

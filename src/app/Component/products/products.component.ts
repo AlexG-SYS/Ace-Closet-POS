@@ -32,8 +32,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
     upc: new FormControl('', [Validators.required, Validators.maxLength(25)]),
     productName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
-      Validators.maxLength(25),
+      Validators.maxLength(50),
     ]), // Only letters and spaces
     productColor: new FormControl('', [Validators.required]),
     description: new FormControl('', [
@@ -236,8 +235,15 @@ export class ProductsComponent implements AfterViewInit, OnInit {
   }
 
   clearNewProductForm() {
+    var lastColor = this.productForm.get('productColor')?.value;
     this.productForm.reset();
     this.modalData = false;
+    this.productForm.get('tax')?.setValue(false);
+    this.productForm.get('online')?.setValue(false);
+    this.productForm.get('tags')?.setValue('');
+    this.productForm.get('size')?.setValue('');
+    this.productForm.get('productColor')?.setValue(lastColor!);
+    this.productForm.get('category')?.setValue('');
   }
 
   populateProductTable(status: string) {

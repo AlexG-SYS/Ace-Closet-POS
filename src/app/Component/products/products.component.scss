@@ -41,10 +41,19 @@
     height: 20px;
     border-radius: 50%;
     display: inline-block;
+    border: 1px solid #d2d2d2;
 }
 
-.colWidth {
+.colWidthLg {
     flex: 4;
+}
+
+.colWidthXLg {
+    flex: 5;
+}
+
+.colWidthMd {
+    flex: 2;
 }
 
 @media (max-width: 767.98px) {
