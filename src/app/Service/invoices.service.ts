@@ -41,6 +41,7 @@ export class InvoicesService {
 
       // Calculate the total invoice amount
       let totalAmount = 0;
+      totalAmount = data.grandTotal;
 
       for (const item of data.products) {
         // Reference the product document directly
@@ -63,9 +64,6 @@ export class InvoicesService {
         // Deduct the purchased quantity
         const newQuantity = currentStock - item.quantity;
         productUpdates.push({ ref: productRef, newQuantity });
-
-        // Calculate the total price for the product
-        totalAmount += item.price * item.quantity;
       }
 
       // Apply product quantity updates in batch
