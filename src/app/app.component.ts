@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
     clearTimeout(this.inactivityTimeout);
     this.inactivityTimeout = setTimeout(() => {
       this.handleInactivityLogout();
-    }, 200000); // 15 minutes
+    }, 900000); // 15 minutes
   }
 
   handleInactivityLogout() {
