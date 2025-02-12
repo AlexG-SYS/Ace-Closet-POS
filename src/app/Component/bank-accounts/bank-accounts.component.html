@@ -386,7 +386,7 @@
                         <div class="col-6">
                             <div class="input-group mb-3">
                                 <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" placeholder="Deposit Amount"
+                                <input type="number" class="form-control" placeholder="Amount"
                                     formControlName="amount" />
                             </div>
                         </div>
@@ -464,7 +464,7 @@
                         <div class="col-6">
                             <div class="input-group mb-3">
                                 <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" placeholder="Expense Amount"
+                                <input type="number" class="form-control" placeholder="Amount"
                                     formControlName="amount" />
                             </div>
                         </div>
@@ -540,7 +540,7 @@
                         <div class="col-6">
                             <div class="input-group mb-3">
                                 <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" placeholder="Deposit Amount"
+                                <input type="number" class="form-control" placeholder="Amount"
                                     formControlName="amount" />
                             </div>
                         </div>
@@ -713,8 +713,8 @@
                         <div class="col">
                             <div class="input-group mb-3">
                                 <span class="input-group-text">$</span>
-                                <input type="number" class="form-control bg-body-secondary" placeholder="Expense Amount"
-                                    [value]="showTransactionData.amount" readonly />
+                                <input type="text" class="form-control bg-body-secondary" placeholder="Expense Amount"
+                                    [value]="showTransactionData.amount | number:'1.2-2'" readonly />
                             </div>
                         </div>
                     </div>
