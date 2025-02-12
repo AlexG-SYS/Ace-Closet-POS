@@ -30,7 +30,6 @@ export const appConfig: ApplicationConfig = {
     // Initialize Firebase FIRST
     provideFirebaseApp(() =>
       initializeApp({
-        // Define firebaseConfig separately
         apiKey: 'AIzaSyCFXnE0MFYtoAeupRaQIQ2tDvN-rznIfpM',
         authDomain: 'ace-closet-website.firebaseapp.com',
         projectId: 'ace-closet-website',
