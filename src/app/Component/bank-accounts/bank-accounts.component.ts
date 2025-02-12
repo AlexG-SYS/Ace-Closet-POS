@@ -217,7 +217,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Transactions Failed`, 'error');
-        console.error('Error retrieving active Transactions:', error);
+        console.error('Error Retrieving Transactions:', error);
       });
   }
 
@@ -242,11 +242,11 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewBankForm();
           this.modalData = false;
-          this.showSnackBar('User added successfully!', 'success');
+          this.showSnackBar('Bank Account Added Successfully!', 'success');
           this.populateBankAccount();
         })
         .catch((error) => {
-          this.showSnackBar(`Failed to add user`, 'error');
+          this.showSnackBar(`Failed to Add Bank Account`, 'error');
           console.log(error.message);
         });
     } else {
@@ -306,7 +306,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         })
         .catch((error) => {
           this.showSnackBar(`Retrieving Transactions Failed`, 'error');
-          console.error('Error retrieving active Invoices:', error);
+          console.error('Error Retrieving Transactions:', error);
         });
     }
   }

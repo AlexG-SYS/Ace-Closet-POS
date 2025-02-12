@@ -301,7 +301,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
           this.newInvoiceNumber = latestInvoiceNumber.toString();
         } catch (error) {
-          console.error('Error setting invoice number:', error);
+          console.error('Error Setting Invoice Number:', error);
           this.invoiceForm.patchValue({
             invoiceNumber: '1', // Fallback if there's an error
           });
@@ -309,7 +309,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Invoices Failed`, 'error');
-        console.error('Error retrieving active Invoices:', error);
+        console.error('Error rRtrieving Active Invoices:', error);
       });
   }
 
@@ -364,7 +364,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         })
         .catch((error) => {
           this.showSnackBar(`Retrieving Invoices Failed`, 'error');
-          console.error('Error retrieving active Invoices:', error);
+          console.error('Error Retrieving Active Invoices:', error);
         });
     }
   }
@@ -419,7 +419,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Users Failed`, 'error');
-        console.error('Error retrieving active users:', error);
+        console.error('Error retrieving Active Users:', error);
       });
 
     this.productService
@@ -429,7 +429,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Product Failed`, 'error');
-        console.error('Error retrieving active product:', error);
+        console.error('Error Retrieving Active Product:', error);
       });
   }
 
@@ -677,7 +677,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         .addInvoice(partialInvoice)
         .then(() => {
           this.modalData = false;
-          this.showSnackBar('Invoice added successfully!', 'success');
+          this.showSnackBar('Invoice Added Successfully!', 'success');
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
           this.clearNewInvoiceForm();
         })

@@ -340,8 +340,11 @@ export class ProductsComponent implements AfterViewInit, OnInit {
       }
 
       if (!this.productForm.value.id) {
-        console.error('User ID is missing');
-        this.showSnackBar('Failed to update user: Missing user ID', 'error');
+        console.error('Product ID is missing');
+        this.showSnackBar(
+          'Failed to Update Product: Missing Product ID',
+          'error'
+        );
         return;
       }
       this.productService
@@ -349,12 +352,12 @@ export class ProductsComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewProductForm();
           this.modalData = false;
-          this.showSnackBar('User updated successfully!', 'success');
+          this.showSnackBar('Product Updated Successfully!', 'success');
           this.populateProductTable('active');
         })
         .catch((error) => {
-          this.showSnackBar('Failed to update user', 'error');
-          console.error('Error updating user:', error.message);
+          this.showSnackBar('Failed to Update Product', 'error');
+          console.error('Error Updating Product:', error.message);
         });
     } else {
       this.productForm.markAllAsTouched(); // Highlight invalid fields

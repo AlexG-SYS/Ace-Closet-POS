@@ -134,7 +134,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Payment Failed`, 'error');
-        console.error('Error retrieving Payments:', error);
+        console.error('Error Retrieving Payments:', error);
       });
   }
 

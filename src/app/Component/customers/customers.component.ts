@@ -176,11 +176,11 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewCustomerForm();
           this.modalData = false;
-          this.showSnackBar('User added successfully!', 'success');
+          this.showSnackBar('User Added Successfully!', 'success');
           this.populateUsersTable('active');
         })
         .catch((error) => {
-          this.showSnackBar(`Failed to add user`, 'error');
+          this.showSnackBar(`Failed to Add User`, 'error');
           console.log(error.message);
         });
     } else {
@@ -205,7 +205,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Users Failed`, 'error');
-        console.error('Error retrieving active users:', error);
+        console.error('Error Retrieving Active Users:', error);
       });
 
     if (status == 'inactive') {
@@ -239,7 +239,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         this.showSnackBar(`Retrieving Invoices Failed`, 'error');
-        console.error('Error retrieving active users:', error);
+        console.error('Error Retrieving Active Invoices:', error);
       });
   }
 
@@ -298,7 +298,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
       if (!this.customerForm.value.id) {
         console.error('User ID is missing');
-        this.showSnackBar('Failed to update user: Missing user ID', 'error');
+        this.showSnackBar('Failed to Update User: Missing User ID', 'error');
         return;
       }
       this.userService
@@ -306,12 +306,12 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewCustomerForm();
           this.modalData = false;
-          this.showSnackBar('User updated successfully!', 'success');
+          this.showSnackBar('User Updated Successfully!', 'success');
           this.populateUsersTable('active');
         })
         .catch((error) => {
-          this.showSnackBar('Failed to update user', 'error');
-          console.error('Error updating user:', error.message);
+          this.showSnackBar('Failed to Update User', 'error');
+          console.error('Error Updating User:', error.message);
         });
     } else {
       this.customerForm.markAllAsTouched(); // Highlight invalid fields
