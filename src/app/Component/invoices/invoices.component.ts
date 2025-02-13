@@ -738,8 +738,10 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     return account ? account.bankName : ''; // Return empty string if not found
   }
 
+  isProcessing = false;
   paymentSubmit() {
     if (this.paymentFormInputs.valid) {
+      this.isProcessing = true;
       const formData = this.paymentFormInputs.value;
       const [year, month, day] = formData.date!.split('-').map(Number);
 
@@ -764,6 +766,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
           this.recPymtInvoiceData = { customer: {} } as Invoice;
           this.paymentFormInputs.reset();
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');

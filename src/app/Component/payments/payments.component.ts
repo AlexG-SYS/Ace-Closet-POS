@@ -258,8 +258,11 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       });
   }
 
+  isProcessing = false;
   paymentSubmit() {
     if (this.paymentFormInputs.valid) {
+      this.isProcessing = true;
+
       const formData = this.paymentFormInputs.value;
       const [year, month, day] = formData.date!.split('-').map(Number);
 
@@ -283,6 +286,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
           this.showSnackBar('Payment Applied Successfully!', 'success');
           this.populatePaymentTable(this.currentYear, this.currentMonth);
           this.clearPaymentForm();
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');
