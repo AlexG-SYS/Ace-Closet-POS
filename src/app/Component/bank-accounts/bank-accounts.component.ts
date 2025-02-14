@@ -225,8 +225,10 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     this.bankForm.reset();
   }
 
+  isProcessing = false;
   newBankAccount() {
     if (this.bankForm.valid) {
+      this.isProcessing = true;
       const formData = this.bankForm.value;
       // Convert form data to a partial User data model
       const partialBankAcc: Partial<BankAccount> = {
@@ -244,6 +246,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
           this.modalData = false;
           this.showSnackBar('Bank Account Added Successfully!', 'success');
           this.populateBankAccount();
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(`Failed to Add Bank Account`, 'error');
@@ -356,6 +359,8 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     clearFormCallback: () => void
   ) {
     if (form.valid) {
+      this.isProcessing = true;
+
       const formData = form.value;
       const [year, month, day] = formData.date!.split('-').map(Number);
 
@@ -378,6 +383,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
           this.populateBankAccount();
           this.populateTransactionTable(this.currentYear, this.currentMonth);
           clearFormCallback();
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');
@@ -457,6 +463,8 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
 
   saveBankTransfer() {
     if (this.bankTransferForm.valid) {
+      this.isProcessing = true;
+
       const formData = this.bankTransferForm.value;
       const [year, month, day] = formData.date!.split('-').map(Number);
 
@@ -483,6 +491,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
           this.populateBankAccount();
           this.populateTransactionTable(this.currentYear, this.currentMonth);
           this.clearBankTransferForm();
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');

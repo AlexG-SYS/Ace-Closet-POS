@@ -61,11 +61,11 @@ export const routes: Routes = [
         title: 'Bank Acc | Ace Closet POS',
         component: BankAccountsComponent,
       },
-      // {
-      //   path: 'reports',
-      //   title: 'Reports | Ace Closet POS',
-      //   component: ReportsComponent,
-      // },
+      {
+        path: 'reports',
+        title: 'Reports | Ace Closet POS',
+        component: ReportsComponent,
+      },
       // {
       //   path: 'refunds',
       //   title: 'Refunds | Ace Closet POS',

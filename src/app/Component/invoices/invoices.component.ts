@@ -636,8 +636,10 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
 
   updateInvoice() {}
 
+  isProcessing = false;
   newInvoiceForm() {
     if (this.invoiceForm.valid) {
+      this.isProcessing = true;
       const formData = this.invoiceForm.value;
       const dueDateString = formData.dateIssued!.toString();
       // Split the string and parse each value
@@ -680,6 +682,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
           this.showSnackBar('Invoice Added Successfully!', 'success');
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
           this.clearNewInvoiceForm();
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');
@@ -738,10 +741,10 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     return account ? account.bankName : ''; // Return empty string if not found
   }
 
-  isProcessing = false;
+  isProcessing2 = false;
   paymentSubmit() {
     if (this.paymentFormInputs.valid) {
-      this.isProcessing = true;
+      this.isProcessing2 = true;
       const formData = this.paymentFormInputs.value;
       const [year, month, day] = formData.date!.split('-').map(Number);
 
@@ -766,7 +769,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
           this.recPymtInvoiceData = { customer: {} } as Invoice;
           this.paymentFormInputs.reset();
-          this.isProcessing = false;
+          this.isProcessing2 = false;
         })
         .catch((error) => {
           this.showSnackBar(error.message, 'error');

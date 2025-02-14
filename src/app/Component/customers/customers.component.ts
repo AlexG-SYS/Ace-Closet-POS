@@ -153,8 +153,10 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  isProcessing = false;
   newCustomerForm() {
     if (this.customerForm.valid) {
+      this.isProcessing = true;
       const formData = this.customerForm.value;
       // Convert form data to a partial User data model
       const partialUser: Partial<User> = {
@@ -178,6 +180,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
           this.modalData = false;
           this.showSnackBar('User Added Successfully!', 'success');
           this.populateUsersTable('active');
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(`Failed to Add User`, 'error');
@@ -276,6 +279,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
   updateCustomer() {
     if (this.customerForm.valid) {
+      this.isProcessing = true;
       const formData = this.customerForm.value;
       const today = new Date();
 
@@ -308,6 +312,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
           this.modalData = false;
           this.showSnackBar('User Updated Successfully!', 'success');
           this.populateUsersTable('active');
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar('Failed to Update User', 'error');

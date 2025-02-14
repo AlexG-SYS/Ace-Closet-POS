@@ -329,9 +329,17 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearNewBankForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
                             <button class="btn btn-primary" (click)="modalData ? updateBankAccount() : newBankAccount()"
                                 [disabled]="bankForm.invalid">{{ modalData ? 'Update' : 'Save'
                                 }}</button>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -406,8 +414,16 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearBankDepositForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
                             <button class="btn btn-primary" (click)="saveBankDeposit()"
                                 [disabled]="bankDepositForm.invalid">Save</button>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -484,8 +500,16 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearBankExpenseForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
                             <button class="btn btn-primary" (click)="saveBankExpense()"
                                 [disabled]="bankExpenseForm.invalid">Save</button>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -560,8 +584,16 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearBankWithdrawForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
                             <button class="btn btn-primary" (click)="saveBankWithdraw()"
                                 [disabled]="bankWithdrawForm.invalid">Save</button>
+                            }
+
                         </div>
                     </div>
                 </div>
@@ -654,8 +686,16 @@
                         <div class="col d-flex justify-content-center">
                             <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
                                 (click)="clearBankTransferForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
                             <button class="btn btn-primary" (click)="saveBankTransfer()"
                                 [disabled]="bankTransferForm.invalid">Save</button>
+                            }
+
                         </div>
                     </div>
                 </div>

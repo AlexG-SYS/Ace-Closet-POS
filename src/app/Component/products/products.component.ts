@@ -189,8 +189,10 @@ export class ProductsComponent implements AfterViewInit, OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  isProcessing = false;
   newProductForm() {
     if (this.productForm.valid) {
+      this.isProcessing = true;
       const formData = this.productForm.value;
       let gst = 0;
 
@@ -223,6 +225,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
           this.modalData = false;
           this.showSnackBar('Product added successfully!', 'success');
           this.populateProductTable('active');
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar(`Failed to Add Product`, 'error');
@@ -305,6 +308,8 @@ export class ProductsComponent implements AfterViewInit, OnInit {
 
   updateProduct() {
     if (this.productForm.valid) {
+      this.isProcessing = true;
+
       const formData = this.productForm.value;
       const today = new Date();
 
@@ -354,6 +359,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
           this.modalData = false;
           this.showSnackBar('Product Updated Successfully!', 'success');
           this.populateProductTable('active');
+          this.isProcessing = false;
         })
         .catch((error) => {
           this.showSnackBar('Failed to Update Product', 'error');
