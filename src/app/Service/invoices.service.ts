@@ -257,4 +257,48 @@ export class InvoicesService {
       throw new Error('Failed to get invoice.');
     }
   }
+
+  // Add this method inside the InvoicesService class
+  async checkAndMarkPastDueInvoices(): Promise<void> {
+    try {
+      const db = this.firestore; // Firestore instance
+
+      // Calculate the date for yesterday
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const formattedYesterday = yesterday.toISOString().split('T')[0];
+
+      // Query invoices with a due date of yesterday and a balance greater than 0
+      const invoicesQuery = query(
+        this.invoicesCollection,
+        where('dueDate', '==', formattedYesterday),
+        where('invoiceBalance', '>', 0),
+        where('invoiceStatus', '!=', 'Past Due')
+      );
+
+      const querySnapshot = await getDocs(invoicesQuery);
+
+      if (!querySnapshot.empty) {
+        const batch = writeBatch(db); // Use batch operation for efficient updates
+
+        querySnapshot.forEach((doc) => {
+          const invoiceRef = doc.ref;
+          batch.update(invoiceRef, { invoiceStatus: 'Past Due' });
+        });
+
+        // Commit all updates
+        await batch.commit();
+        console.log(
+          'Invoices with a due date of yesterday have been updated to Past Due.'
+        );
+      } else {
+        console.log(
+          'No invoices found with a due date of yesterday and a balance greater than 0.'
+        );
+      }
+    } catch (error) {
+      console.error('Error checking and marking past due invoices:', error);
+      throw new Error('Failed to check and update past due invoices.');
+    }
+  }
 }

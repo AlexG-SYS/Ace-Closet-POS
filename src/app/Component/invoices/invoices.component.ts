@@ -208,7 +208,16 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.populateInvoiceTable(this.currentYear, this.currentMonth);
+    this.initializeComponent();
+  }
+
+  async initializeComponent(): Promise<void> {
+    try {
+      await this.checkPastDue(); // Ensure past due checks finish first
+      this.populateInvoiceTable(this.currentYear, this.currentMonth); // Populate invoice table after
+    } catch (error) {
+      console.error('Error initializing component:', error);
+    }
   }
 
   ngAfterViewInit() {
@@ -311,6 +320,10 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.showSnackBar(`Retrieving Invoices Failed`, 'error');
         console.error('Error rRtrieving Active Invoices:', error);
       });
+  }
+
+  async checkPastDue(): Promise<void> {
+    await this.invoiceService.checkAndMarkPastDueInvoices();
   }
 
   countInvoicesByStatus(): void {
