@@ -13,7 +13,7 @@ export interface Invoice {
   grandTotal: number; // Total amount after taxes and adjustments
   subTotal: number; // Total before taxes
   taxTotal: number; // Total tax amount
-  discount: number; // Total tax amount
+  discount: number; // Total discount amount
   invoiceStatus: 'Past Due' | 'Paid' | 'Partial' | 'Pending'; // Status of the invoice
   dueDate: string; // Due date for payment
   memo: string; // Additional notes or memo for the invoice

@@ -47,7 +47,11 @@ export class TransactionsService {
       let currentBalance = bankAccountData?.['balance'] || 0;
 
       // Update balance based on transaction type
-      if (data.type == 'Expense' || data.type == 'Withdraw') {
+      if (
+        data.type == 'Expense' ||
+        data.type == 'Withdraw' ||
+        data.type == 'Asset Purchase'
+      ) {
         currentBalance -= data.amount;
       } else if (data.type == 'Deposit') {
         currentBalance += data.amount;
@@ -216,6 +220,47 @@ export class TransactionsService {
       throw new Error(
         'Failed to retrieve transactions. Please try again later.'
       );
+    }
+  }
+
+  async getExpenseByDateRange(
+    startDate: string,
+    endDate: string
+  ): Promise<any[]> {
+    try {
+      // Parse start and end dates into timestamps
+      const [startYear, startMonth, startDay] = startDate
+        .split('-')
+        .map(Number);
+
+      const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+
+      // Create a query to fetch payments within the specified date range
+      const paymentsQuery = query(
+        this.transactionsCollection,
+        where('type', '==', 'Expense'),
+        where('year', '>=', startYear),
+        where('year', '<=', endYear),
+        where('month', '>=', startMonth),
+        where('month', '<=', endMonth),
+        where('day', '>=', startDay),
+        where('day', '<=', endDay),
+        orderBy('createdAt', 'desc')
+      );
+
+      // Execute the query and retrieve the documents
+      const querySnapshot = await getDocs(paymentsQuery);
+
+      // Map the query results to an array of payment objects
+      const payments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Partial<Transactions>),
+      }));
+
+      return payments; // Return the list of payments
+    } catch (error) {
+      console.error('Error retrieving payments by date range: ', error);
+      throw new Error('Failed to retrieve payments. Please try again later.');
     }
   }
 }

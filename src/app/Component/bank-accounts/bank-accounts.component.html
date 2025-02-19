@@ -45,6 +45,9 @@
                                 <a class="dropdown-item" type="button" data-bs-toggle="modal"
                                     data-bs-target="#bankTransferModal"
                                     (click)="setBankInfo('Transfer', bankAcc)">Transfer</a>
+                                <a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#assetPurchaseModal"
+                                    (click)="setBankInfo('Asset Purchase', bankAcc)">Asset Purchase</a>
                             </div>
                         </div>
                     </div>
@@ -592,6 +595,90 @@
                             }@else{
                             <button class="btn btn-primary" (click)="saveBankWithdraw()"
                                 [disabled]="bankWithdrawForm.invalid">Save</button>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Asset Purchase -->
+<div class="modal fade" id="assetPurchaseModal" data-bs-backdrop="static" tabindex="-1" #assetPurchaseModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="assetPurchaseForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearAssetPurchaseForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">New Asset Purchase</h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Bank Account Name -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary" placeholder="Bank Name"
+                                    formControlName="bankName" readonly />
+                            </div>
+                        </div>
+                        <!-- Bank Account Number -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="number" class="form-control bg-body-secondary"
+                                    placeholder="Bank Account Number" formControlName="accountNumber" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Date -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="date" class="form-control" formControlName="date" />
+                            </div>
+                        </div>
+                        <!-- Deposit Amount -->
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Amount"
+                                    formControlName="amount" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <textarea class="form-control" placeholder="Description"
+                                    formControlName="description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearAssetPurchaseForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
+                            <button class="btn btn-primary" (click)="saveAssetPurchase()"
+                                [disabled]="assetPurchaseForm.invalid">Save</button>
                             }
 
                         </div>

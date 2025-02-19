@@ -95,6 +95,20 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     type: new FormControl(''),
   });
 
+  assetPurchaseForm = new FormGroup({
+    id: new FormControl('', []),
+    bankAccountId: new FormControl(''),
+    bankName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-Z\s]+$/),
+    ]),
+    accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
+    amount: new FormControl('', [Validators.required]),
+    description: new FormControl('', [Validators.required]),
+    date: new FormControl(this.formattedDate),
+    type: new FormControl(''),
+  });
+
   bankTransferForm = new FormGroup({
     id: new FormControl('', []),
     oldBankAccountId: new FormControl(''),
@@ -350,6 +364,13 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         oldBankAccountId: bankAcc.id,
         type: type,
       });
+    } else if (type == 'Asset Purchase') {
+      this.assetPurchaseForm.patchValue({
+        bankName: bankAcc.bankName,
+        accountNumber: bankAcc.accountNumber,
+        bankAccountId: bankAcc.id,
+        type: type,
+      });
     }
   }
 
@@ -419,6 +440,14 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     );
   }
 
+  saveAssetPurchase() {
+    this.saveBankTransaction(
+      this.assetPurchaseForm,
+      'Asset Purchase Successfully!',
+      this.clearAssetPurchaseForm.bind(this)
+    );
+  }
+
   clearBankDepositForm() {
     this.bankDepositForm.reset();
     this.bankDepositForm.get('date')?.setValue(this.formattedDate);
@@ -427,6 +456,11 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
   clearBankExpenseForm() {
     this.bankExpenseForm.reset();
     this.bankExpenseForm.get('date')?.setValue(this.formattedDate);
+  }
+
+  clearAssetPurchaseForm() {
+    this.assetPurchaseForm.reset();
+    this.assetPurchaseForm.get('date')?.setValue(this.formattedDate);
   }
 
   clearBankWithdrawForm() {

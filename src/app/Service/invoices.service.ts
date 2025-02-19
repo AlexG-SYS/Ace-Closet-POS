@@ -159,6 +159,45 @@ export class InvoicesService {
     }
   }
 
+  async getInvoicesByDateRange(
+    startDate: string,
+    endDate: string
+  ): Promise<any[]> {
+    try {
+      const [startYear, startMonth, startDay] = startDate
+        .split('-')
+        .map(Number);
+
+      const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+
+      // Create a query to fetch invoices within the specified date range
+      const invoicesQuery = query(
+        this.invoicesCollection,
+        where('year', '>=', startYear),
+        where('year', '<=', endYear),
+        where('month', '>=', startMonth),
+        where('month', '<=', endMonth),
+        where('day', '>=', startDay),
+        where('day', '<=', endDay),
+        orderBy('invoiceNumber', 'desc')
+      );
+
+      // Execute the query and get the documents
+      const querySnapshot = await getDocs(invoicesQuery);
+
+      // Map the query snapshot to an array of invoice objects
+      const invoices = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as any), // Spread the invoice data
+      }));
+
+      return invoices; // Return the list of invoices if successful
+    } catch (error) {
+      console.error('Error retrieving invoices by date range: ', error);
+      throw new Error('Failed to retrieve invoices. Please try again later.');
+    }
+  }
+
   // Update an existing invoice in Firestore
   async updateInvoice(id: string, data: any): Promise<void> {
     try {
@@ -265,7 +304,7 @@ export class InvoicesService {
 
       // Calculate the date for yesterday
       const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      yesterday.setDate(yesterday.getDate() - 2);
       const formattedYesterday = yesterday.toISOString().split('T')[0];
 
       // Query invoices with a due date of yesterday and a balance greater than 0

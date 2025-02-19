@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
 import { InvoicesService } from '../../Service/invoices.service';
 import { Invoice } from '../../DataModels/invoiceData.model';
@@ -21,6 +20,7 @@ import { NgxPrintModule } from 'ngx-print';
 import { Payment } from '../../DataModels/paymentData.model';
 import { PaymentsService } from '../../Service/payments.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
+import { TransactionsService } from '../../Service/transactions.service';
 
 @Component({
   selector: 'app-reports',
@@ -29,7 +29,6 @@ import { BankAccountsService } from '../../Service/bank-accounts.service';
     ReactiveFormsModule,
     MatTableModule,
     MatSnackBarModule,
-    MatPaginatorModule,
     DecimalPipe,
     FormsModule,
     NgxPrintModule,
@@ -44,47 +43,386 @@ export class ReportsComponent {
   lastYear = new Date().getFullYear() - 1;
   currentMonth = new Date().getMonth() + 1;
 
+  showSalesReportBool = false;
+  showExpenseReportBool = false;
+  showProfitReportBool = false;
+  showInventoryReportBool = false;
+
+  subTotal = 0;
+  discount = 0;
+  gst = 0;
+  grandTotal = 0;
+  totalSales = 0;
+  grossProfit = 0;
+  totalExpense = 0;
+  netProfit = 0;
+  totalCost = 0;
+  netProfitPercentage = 0;
+
   reportDateRange = '';
 
   filterFormInputs = new FormGroup({
-    date: new FormControl(this.formattedDate),
-    year: new FormControl(new Date().getFullYear()),
-    month: new FormControl(this.today.getMonth() + 1),
+    startDate: new FormControl(this.formattedDate),
+    endDate: new FormControl(this.formattedDate),
   });
 
-  filterStatus() {
-    throw new Error('Method not implemented.');
-  }
+  constructor(
+    private invoiceService: InvoicesService,
+    private productService: ProductsService,
+    private transactionService: TransactionsService,
+    private snackBar: MatSnackBar,
+    private bankAccountsService: BankAccountsService
+  ) {}
 
-  modalData: any;
-  getCustomersAndItems() {
-    throw new Error('Method not implemented.');
-  }
   tableSpinner: any;
-  displaySmall: any;
-  dataSource: any;
-  convertDate(arg0: any, arg1: any, arg2: any) {
-    throw new Error('Method not implemented.');
-  }
-  formatDate(arg0: any) {
-    throw new Error('Method not implemented.');
-  }
-  receivePayment(_t147: any) {
-    throw new Error('Method not implemented.');
-  }
-  viewInvoice(_t147: any) {
-    throw new Error('Method not implemented.');
-  }
-  tableRow: any;
+  activeInvoice: Invoice[] = [];
+  activeExpense: Payment[] = [];
+  dataSource = new MatTableDataSource(this.activeInvoice);
+  dataSourceExpense = new MatTableDataSource(this.activeExpense);
 
-  displayedColumns: string[] = [
-    'invoiceStatus',
+  displayedColumnsInv: string[] = [
     'invoiceNum',
-    'customerName',
-    'total',
     'dateInvoiced',
-    'balance',
-    'dueDate',
-    'options',
+    'customerName',
+    'subTotal',
+    'discount',
+    'total',
+    'gst',
+    'invoiceStatus',
   ];
+
+  displayedColumnsExp: string[] = [
+    'bankName',
+    'type',
+    'amount',
+    'description',
+    'date',
+  ];
+
+  displayedColumnsInvProfit: string[] = [
+    'invoiceNum',
+    'dateInvoiced',
+    'customerName',
+    'subTotal',
+    'discount',
+    'total',
+  ];
+
+  displayedColumnsExpProfit: string[] = [
+    'bankName',
+    'date',
+    'type',
+    'amount',
+    'description',
+  ];
+
+  showSalesReport() {
+    this.filterFormInputs.patchValue({
+      startDate: this.formattedDate,
+      endDate: this.formattedDate,
+    });
+    this.filterFormInputs.value.endDate!;
+    this.showExpenseReportBool = false;
+    this.showProfitReportBool = false;
+    this.showInventoryReportBool = false;
+    this.showSalesReportBool = true;
+    this.reportDateRange = this.formatDate(this.formattedDate);
+    this.populateInvoiceTable();
+  }
+
+  showExpenseReport() {
+    this.filterFormInputs.patchValue({
+      startDate: this.formattedDate,
+      endDate: this.formattedDate,
+    });
+    this.showExpenseReportBool = false;
+    this.showProfitReportBool = false;
+    this.showSalesReportBool = false;
+    this.showExpenseReportBool = true;
+    this.reportDateRange = this.formatDate(this.formattedDate);
+    this.populateExpenseTable();
+  }
+
+  showProfitReport() {
+    this.filterFormInputs.patchValue({
+      startDate: this.formattedDate,
+      endDate: this.formattedDate,
+    });
+    this.showExpenseReportBool = false;
+    this.showInventoryReportBool = false;
+    this.showSalesReportBool = false;
+    this.showProfitReportBool = true;
+    this.reportDateRange = this.formatDate(this.formattedDate);
+    this.populateProfitTable();
+  }
+
+  showInventoryReport() {
+    this.filterFormInputs.patchValue({
+      startDate: this.formattedDate,
+      endDate: this.formattedDate,
+    });
+    this.showExpenseReportBool = false;
+    this.showProfitReportBool = false;
+    this.showSalesReportBool = false;
+    this.showInventoryReportBool = true;
+    this.reportDateRange = this.formatDate(this.formattedDate);
+    this.populateInventoryTable();
+  }
+
+  convertDate(day: number, month: number, year: number): string {
+    if (day != undefined && month != undefined && year != undefined) {
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+
+      // Ensure day and month are in the correct format (e.g., 01 instead of 1)
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+      const formattedMonth = months[month - 1]; // Use the month index directly
+
+      if (formattedMonth === undefined) {
+        console.log('Invalid month. Please provide a month between 0 and 11.');
+      }
+
+      return `${formattedMonth} ${formattedDay}, ${year}`;
+    } else {
+      return '';
+    }
+  }
+
+  formatDate(inputDate: string): string {
+    if (inputDate != undefined) {
+      const [year, month, day] = inputDate.split('-').map(Number);
+
+      // Adjust month to match 0-based index used in convertDate
+      return this.convertDate(day, month, year);
+    } else {
+      return '';
+    }
+  }
+
+  populateInvoiceTable() {
+    this.tableSpinner = true;
+    this.invoiceService
+      .getInvoicesByDateRange(
+        this.filterFormInputs.value.startDate!,
+        this.filterFormInputs.value.endDate!
+      )
+      .then(async (invoices) => {
+        this.activeInvoice = invoices;
+        this.calcualteSalesTotals(invoices);
+        this.dataSource.data = this.activeInvoice;
+        this.tableSpinner = false;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        console.error('Error Retrieving Active Invoices:', error);
+      });
+  }
+
+  searchInvoiceDateRange() {
+    this.tableSpinner = true;
+    this.invoiceService
+      .getInvoicesByDateRange(
+        this.filterFormInputs.value.startDate!,
+        this.filterFormInputs.value.endDate!
+      )
+      .then(async (invoices) => {
+        this.activeInvoice = invoices;
+        this.calcualteSalesTotals(invoices);
+        this.dataSource.data = this.activeInvoice;
+        this.tableSpinner = false;
+        this.reportDateRange =
+          this.formatDate(this.filterFormInputs.value.startDate!) +
+          ' to ' +
+          this.formatDate(this.filterFormInputs.value.endDate!);
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        console.error('Error Retrieving Active Invoices:', error);
+      });
+  }
+
+  calcualteSalesTotals(invoices: Invoice[]) {
+    // Reset totals before calculating
+    this.subTotal = 0;
+    this.discount = 0;
+    this.gst = 0;
+    this.grandTotal = 0;
+
+    invoices.forEach((invoice) => {
+      this.subTotal += invoice.subTotal || 0;
+      this.discount += invoice.discount || 0;
+      this.gst += invoice.taxTotal || 0;
+      this.grandTotal += invoice.grandTotal || 0;
+    });
+  }
+
+  calcualteExpenseTotals(payments: Payment[]) {
+    this.subTotal = 0;
+    this.discount = 0;
+    this.gst = 0;
+    this.grandTotal = 0;
+
+    payments.forEach((payment) => {
+      this.grandTotal += payment.amount || 0;
+    });
+  }
+
+  populateExpenseTable() {
+    this.tableSpinner = true;
+    this.transactionService
+      .getExpenseByDateRange(
+        this.filterFormInputs.value.startDate!,
+        this.filterFormInputs.value.endDate!
+      )
+      .then(async (expense) => {
+        this.activeExpense = expense;
+        this.calcualteExpenseTotals(expense);
+        this.dataSourceExpense.data = this.activeExpense;
+        this.tableSpinner = false;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Expenses Failed`, 'error');
+        console.error('Error Retrieving Expenses:', error);
+      });
+  }
+
+  searchExpenseDateRange() {
+    this.tableSpinner = true;
+    this.transactionService
+      .getExpenseByDateRange(
+        this.filterFormInputs.value.startDate!,
+        this.filterFormInputs.value.endDate!
+      )
+      .then(async (expense) => {
+        this.activeExpense = expense;
+        this.calcualteExpenseTotals(expense);
+        this.dataSourceExpense.data = this.activeExpense;
+        this.tableSpinner = false;
+        this.reportDateRange =
+          this.formatDate(this.filterFormInputs.value.startDate!) +
+          ' to ' +
+          this.formatDate(this.filterFormInputs.value.endDate!);
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Expense Failed`, 'error');
+        console.error('Error Retrieving Expense:', error);
+      });
+  }
+
+  calcualteProfitTotals(expense: Payment[], invoice: Invoice[]) {
+    this.totalSales = 0;
+    this.grossProfit = 0;
+    this.totalExpense = 0;
+    this.netProfit = 0;
+    this.totalCost = 0;
+
+    expense.forEach((expense) => {
+      this.totalExpense += expense.amount || 0;
+    });
+
+    invoice.forEach((invoice) => {
+      this.totalSales += invoice.grandTotal || 0;
+      invoice.products.forEach((product) => {
+        this.totalCost += product.cost * product.quantity;
+      });
+    });
+
+    this.grossProfit = this.totalSales - this.totalCost;
+    this.netProfit = this.grossProfit - this.totalExpense;
+    this.netProfitPercentage = (this.netProfit / this.totalCost) * 100;
+  }
+
+  populateProfitTable() {
+    this.tableSpinner = true;
+    this.invoiceService
+      .getInvoicesByDateRange(
+        this.filterFormInputs.value.startDate!,
+        this.filterFormInputs.value.endDate!
+      )
+      .then(async (invoices) => {
+        this.activeInvoice = invoices;
+        this.dataSource.data = this.activeInvoice;
+
+        this.transactionService
+          .getExpenseByDateRange(
+            this.filterFormInputs.value.startDate!,
+            this.filterFormInputs.value.endDate!
+          )
+          .then(async (expense) => {
+            this.activeExpense = expense;
+            this.dataSourceExpense.data = this.activeExpense;
+            this.calcualteProfitTotals(expense, invoices);
+          })
+          .catch((error) => {
+            this.showSnackBar(`Retrieving Expenses Failed`, 'error');
+            console.error('Error Retrieving Expenses:', error);
+          });
+
+        this.tableSpinner = false;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        console.error('Error Retrieving Active Invoices:', error);
+      });
+  }
+
+  searchProfitDateRange() {
+    this.tableSpinner = true;
+    this.invoiceService
+      .getInvoicesByDateRange(
+        this.filterFormInputs.value.startDate!,
+        this.filterFormInputs.value.endDate!
+      )
+      .then(async (invoices) => {
+        this.activeInvoice = invoices;
+        this.dataSource.data = this.activeInvoice;
+
+        this.transactionService
+          .getExpenseByDateRange(
+            this.filterFormInputs.value.startDate!,
+            this.filterFormInputs.value.endDate!
+          )
+          .then(async (expense) => {
+            this.activeExpense = expense;
+            this.dataSourceExpense.data = this.activeExpense;
+            this.calcualteProfitTotals(expense, invoices);
+          })
+          .catch((error) => {
+            this.showSnackBar(`Retrieving Expenses Failed`, 'error');
+            console.error('Error Retrieving Expenses:', error);
+          });
+        this.reportDateRange =
+          this.formatDate(this.filterFormInputs.value.startDate!) +
+          ' to ' +
+          this.formatDate(this.filterFormInputs.value.endDate!);
+        this.tableSpinner = false;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        console.error('Error Retrieving Active Invoices:', error);
+      });
+  }
+
+  populateInventoryTable() {}
+
+  showSnackBar(message: string, type: string) {
+    this.snackBar.open(message, '', {
+      duration: 5000,
+      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
+  }
 }
