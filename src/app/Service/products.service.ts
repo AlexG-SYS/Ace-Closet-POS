@@ -46,7 +46,7 @@ export class ProductsService {
       const productsQuery = query(
         this.productsCollection,
         where('status', '==', status),
-        orderBy('productName', 'asc') // Optionally order by product name or other field
+        orderBy('upc', 'asc') // Optionally order by product name or other field
       );
 
       // Await the Firestore operation to get the documents

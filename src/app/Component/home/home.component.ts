@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -24,12 +26,15 @@ export type ChartOptions = {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgApexchartsModule],
+  imports: [NgApexchartsModule, DecimalPipe, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
   public chartOptions: ChartOptions;
+  totalProfit = 0;
+  totalSales = 0;
+  totalExpense = 0;
 
   constructor() {
     this.chartOptions = {

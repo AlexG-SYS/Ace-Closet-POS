@@ -44,7 +44,7 @@
         </div>
         <div class="col-xl-3 col-md-6 col-sm-6 pb-4">
             <div class="card">
-                <div class="card-body reportOption" (click)="showInventoryReport()">
+                <div class="card-body reportOption" (click)="showAssetReport()">
                     <div class="d-flex justify-content-between p-1">
                         <div class="me-4">
                             <h2 class="mb-0 fw-medium fs-5">Asset Report</h2>
@@ -64,7 +64,7 @@
                 <div class="card-body pb-2" id="print-invoice-section">
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <div class="ps-2">
-                            <h2 class="fs-5 fw-medium pb-2">Sales Report - {{reportDateRange}}</h2>
+                            <h2 class="fs-5 fw-medium">Sales Report - {{reportDateRange}}</h2>
                         </div>
                         <div class="d-none d-md-block">
                             <form [formGroup]="filterFormInputs">
@@ -255,7 +255,7 @@
                 <div class="card-body pb-2" id="print-expense-section">
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <div class="ps-2">
-                            <h2 class="fs-5 fw-medium pb-2">Expense Report - {{reportDateRange}}</h2>
+                            <h2 class="fs-5 fw-medium">Expense Report - {{reportDateRange}}</h2>
                         </div>
                         <div class="d-none d-md-block">
                             <form [formGroup]="filterFormInputs">
@@ -403,7 +403,7 @@
                 <div class="card-body pb-2" id="print-profit-section">
                     <div class="d-flex align-items-center justify-content-between pt-2">
                         <div class="ps-2">
-                            <h2 class="fs-5 fw-medium pb-2">Profit Report - {{reportDateRange}}</h2>
+                            <h2 class="fs-5 fw-medium">Profit Report - {{reportDateRange}}</h2>
                         </div>
                         <div class="d-none d-md-block">
                             <form [formGroup]="filterFormInputs">
@@ -622,6 +622,147 @@
                             <div class="d-flex justify-content-between">
                                 <span class="fs-5 fw-medium me-3">Net Profit:</span>
                                 <span class="mb-0 fs-5 fw-medium">${{netProfit | number:'1.2-2'}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @if(showAssetReportBool){
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2" id="print-asset-section">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <div class="ps-2">
+                            <h2 class="fs-5 fw-medium">Asset Report - {{reportDateRange}}</h2>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <div class="row hide">
+                                <div class="col-auto p-0 pe-2 pt-auto mt-auto">
+                                    <button class="btn btn-primary mx-2" ngxPrint printSectionId="print-asset-section"
+                                        printTitle="Assets" [useExistingCss]="true"><i
+                                            class="bi bi-printer me-1"></i>Print</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row  d-block d-md-none ">
+                        <div class="row hide d-flex justify-content-end">
+                            <div class="col-auto ">
+                                <button class="btn btn-primary " ngxPrint printSectionId="print-asset-section"
+                                    printTitle="Assets" [useExistingCss]="true"><i
+                                        class="bi bi-printer me-1"></i>Print</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSourceProduct" class="mt-3 scrollable">
+
+                            <!-- UPC Column -->
+                            <ng-container matColumnDef="upc">
+                                <mat-header-cell *matHeaderCellDef class="colWidthMd"> UPC </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthMd">
+                                    {{element.upc}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Description Column  -->
+                            <ng-container matColumnDef="productName">
+                                <mat-header-cell *matHeaderCellDef class="colWidthLg"> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthLg">
+                                    {{element.description}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Category Column  -->
+                            <ng-container matColumnDef="category">
+                                <mat-header-cell *matHeaderCellDef class=""> Category
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="r">
+                                    {{element.category}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Price Column  -->
+                            <ng-container matColumnDef="price">
+                                <mat-header-cell *matHeaderCellDef class=""> Price
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    ${{element.price | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Qty Column  -->
+                            <ng-container matColumnDef="qty">
+                                <mat-header-cell *matHeaderCellDef class=""> Qty
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    {{element.quantity}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Size Column  -->
+                            <ng-container matColumnDef="size">
+                                <mat-header-cell *matHeaderCellDef class=""> Size
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    {{element.size}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Cost Column  -->
+                            <ng-container matColumnDef="cost">
+                                <mat-header-cell *matHeaderCellDef class=""> Cost
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    ${{element.cost | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsProduct"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsProduct;"></mat-row>
+
+                        </table>
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="col d-flex justify-content-end m-3">
+                        <div class="assets-calculations ">
+
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Grand Total Value:</span>
+                                <span class="mb-0 fw-normal">${{grandTotal | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Total Cost of Items:</span>
+                                <span class="mb-0 fw-normal">${{totalCost | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Gross Profit:</span>
+                                <span class="mb-0 fw-normal">${{grossProfit | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Gross Percentage:</span>
+                                <span class="mb-0 fw-normal">{{netProfitPercentage | number:'1.2-2'}}%</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="fs-5 fw-medium me-3">Grand Total:</span>
+                                <span class="mb-0 fs-5 fw-medium">${{grandTotal | number:'1.2-2'}}
                                 </span>
                             </div>
                         </div>

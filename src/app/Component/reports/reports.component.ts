@@ -46,7 +46,7 @@ export class ReportsComponent {
   showSalesReportBool = false;
   showExpenseReportBool = false;
   showProfitReportBool = false;
-  showInventoryReportBool = false;
+  showAssetReportBool = false;
 
   subTotal = 0;
   discount = 0;
@@ -77,8 +77,10 @@ export class ReportsComponent {
   tableSpinner: any;
   activeInvoice: Invoice[] = [];
   activeExpense: Payment[] = [];
+  activeProduct: Product[] = [];
   dataSource = new MatTableDataSource(this.activeInvoice);
   dataSourceExpense = new MatTableDataSource(this.activeExpense);
+  dataSourceProduct = new MatTableDataSource(this.activeProduct);
 
   displayedColumnsInv: string[] = [
     'invoiceNum',
@@ -116,6 +118,16 @@ export class ReportsComponent {
     'description',
   ];
 
+  displayedColumnsProduct: string[] = [
+    'upc',
+    'productName',
+    'category',
+    'price',
+    'qty',
+    'size',
+    'cost',
+  ];
+
   showSalesReport() {
     this.filterFormInputs.patchValue({
       startDate: this.formattedDate,
@@ -124,7 +136,7 @@ export class ReportsComponent {
     this.filterFormInputs.value.endDate!;
     this.showExpenseReportBool = false;
     this.showProfitReportBool = false;
-    this.showInventoryReportBool = false;
+    this.showAssetReportBool = false;
     this.showSalesReportBool = true;
     this.reportDateRange = this.formatDate(this.formattedDate);
     this.populateInvoiceTable();
@@ -149,24 +161,20 @@ export class ReportsComponent {
       endDate: this.formattedDate,
     });
     this.showExpenseReportBool = false;
-    this.showInventoryReportBool = false;
+    this.showAssetReportBool = false;
     this.showSalesReportBool = false;
     this.showProfitReportBool = true;
     this.reportDateRange = this.formatDate(this.formattedDate);
     this.populateProfitTable();
   }
 
-  showInventoryReport() {
-    this.filterFormInputs.patchValue({
-      startDate: this.formattedDate,
-      endDate: this.formattedDate,
-    });
+  showAssetReport() {
     this.showExpenseReportBool = false;
     this.showProfitReportBool = false;
     this.showSalesReportBool = false;
-    this.showInventoryReportBool = true;
+    this.showAssetReportBool = true;
     this.reportDateRange = this.formatDate(this.formattedDate);
-    this.populateInventoryTable();
+    this.populateAssetTable();
   }
 
   convertDate(day: number, month: number, year: number): string {
@@ -341,7 +349,24 @@ export class ReportsComponent {
 
     this.grossProfit = this.totalSales - this.totalCost;
     this.netProfit = this.grossProfit - this.totalExpense;
-    this.netProfitPercentage = (this.netProfit / this.totalCost) * 100;
+    this.netProfitPercentage = (this.netProfit / this.totalCost) * 100 || 0;
+  }
+
+  calcualteAssets(products: Product[]) {
+    this.grandTotal = 0;
+    this.totalCost = 0;
+    this.grossProfit = 0;
+
+    products.forEach((product) => {
+      this.totalCost += product.cost * product.quantity || 0;
+    });
+
+    products.forEach((product) => {
+      this.grandTotal += product.price * product.quantity || 0;
+    });
+
+    this.grossProfit = this.grandTotal - this.totalCost;
+    this.netProfitPercentage = (this.totalCost / this.grandTotal) * 100 || 0;
   }
 
   populateProfitTable() {
@@ -415,7 +440,21 @@ export class ReportsComponent {
       });
   }
 
-  populateInventoryTable() {}
+  populateAssetTable() {
+    this.tableSpinner = true;
+    this.productService
+      .getProducts('active')
+      .then(async (products) => {
+        this.activeProduct = products;
+        this.dataSourceProduct.data = this.activeProduct;
+        this.calcualteAssets(products);
+        this.tableSpinner = false;
+      })
+      .catch((error) => {
+        this.showSnackBar(`Retrieving Products Failed`, 'error');
+        console.error('Error Retrieving Active Products:', error);
+      });
+  }
 
   showSnackBar(message: string, type: string) {
     this.snackBar.open(message, '', {

@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "ace-closet-website"
-  }
+    "default": "ace-closet-website",
+    "Ace Pos": "ace-closet-website"
+  },
+  "targets": {},
+  "etags": {}
 }

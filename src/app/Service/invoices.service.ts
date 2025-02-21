@@ -304,8 +304,8 @@ export class InvoicesService {
 
       // Calculate the date for yesterday
       const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 2);
-      const formattedYesterday = yesterday.toISOString().split('T')[0];
+      yesterday.setDate(yesterday.getDate() - 1);
+      const formattedYesterday = yesterday.toLocaleDateString('en-CA');
 
       // Query invoices with a due date of yesterday and a balance greater than 0
       const invoicesQuery = query(
@@ -332,7 +332,8 @@ export class InvoicesService {
         );
       } else {
         console.log(
-          'No invoices found with a due date of yesterday and a balance greater than 0.'
+          'No invoices found with a due date of yesterday and a balance greater than 0.',
+          formattedYesterday
         );
       }
     } catch (error) {
