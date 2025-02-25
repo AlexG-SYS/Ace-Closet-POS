@@ -259,8 +259,35 @@ export class TransactionsService {
 
       return payments; // Return the list of payments
     } catch (error) {
-      console.error('Error retrieving payments by date range: ', error);
-      throw new Error('Failed to retrieve payments. Please try again later.');
+      console.error('Error retrieving expense by date range: ', error);
+      throw new Error('Failed to retrieve expense. Please try again later.');
+    }
+  }
+
+  async getExpenseByMonthYear(month: number, year: number): Promise<any[]> {
+    try {
+      // Create a query to fetch payments for the specified month and year
+      const paymentsQuery = query(
+        this.transactionsCollection,
+        where('type', '==', 'Expense'),
+        where('year', '==', year),
+        where('month', '==', month),
+        orderBy('createdAt', 'desc')
+      );
+
+      // Execute the query and retrieve the documents
+      const querySnapshot = await getDocs(paymentsQuery);
+
+      // Map the query results to an array of payment objects
+      const payments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Partial<Transactions>),
+      }));
+
+      return payments; // Return the list of payments
+    } catch (error) {
+      console.error('Error retrieving expense by month and year: ', error);
+      throw new Error('Failed to retrieve expense. Please try again later.');
     }
   }
 }
