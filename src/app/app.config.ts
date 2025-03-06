@@ -29,7 +29,6 @@ export const appConfig: ApplicationConfig = {
 
     // Initialize Firebase FIRST
     provideFirebaseApp(() => initializeApp({})),
-
     // Then provide other Firebase services
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
@@ -40,7 +39,6 @@ export const appConfig: ApplicationConfig = {
     provideAppCheck(() =>
       initializeAppCheck(undefined, {
         provider: new ReCaptchaV3Provider(), // Replace with your reCAPTCHA v3 site key
-
         isTokenAutoRefreshEnabled: true, // Optional: Enables auto-refresh of AppCheck tokens
       })
     ),

@@ -10,6 +10,7 @@ import {
   where,
   getDocs,
   orderBy,
+  getDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { User } from '../DataModels/userData.model';
@@ -69,6 +70,24 @@ export class UsersService {
     } catch (error) {
       console.error(`Error updating user with ID ${id}: `, error); // Log the error for debugging
       throw new Error('Failed to update user. Please try again later.'); // Throw a custom error message
+    }
+  }
+
+  // Get a user by ID
+  async getUserById(userId: string): Promise<User | null> {
+    try {
+      const userDocRef = doc(this.firestore, `users/${userId}`);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        return { ...(userDocSnap.data() as User) };
+      } else {
+        console.warn(`User with ID ${userId} not found.`);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error retrieving user:', error);
+      throw new Error('Failed to retrieve user. Please try again later.');
     }
   }
 }

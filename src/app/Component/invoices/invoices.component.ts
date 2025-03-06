@@ -208,6 +208,10 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const searchStr = filter.trim().toLowerCase();
+      return JSON.stringify(data).toLowerCase().includes(searchStr);
+    };
     this.initializeComponent();
   }
 

@@ -17,6 +17,7 @@ import { PaymentsService } from '../../Service/payments.service';
 import { Invoice } from '../../DataModels/invoiceData.model';
 import { InvoicesService } from '../../Service/invoices.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
+import { UsersService } from '../../Service/users.service';
 
 @Component({
   selector: 'app-payments',
@@ -77,6 +78,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
     private paymentService: PaymentsService,
     private invoiceService: InvoicesService,
     private bankAccountsService: BankAccountsService,
+    private userService: UsersService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -187,23 +189,49 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
 
   recPymtData: any = { customer: {} } as any;
   paymentInfoPopulate(data: Payment) {
-    this.invoiceService
-      .getInvoiceById(data.invoiceId)
-      .then((invoiceData) => {
-        // Merge invoiceData and data into recPymtData
-        this.recPymtData = { ...invoiceData, ...data };
+    if (data.invoiceId) {
+      // If invoiceId exists, fetch invoice data
+      this.invoiceService
+        .getInvoiceById(data.invoiceId)
+        .then((invoiceData) => {
+          // Merge invoiceData and payment data
+          this.recPymtData = { ...invoiceData, ...data };
 
-        // Show the payment modal
-        if (this.paymentModal) {
-          const paymentModal = new bootstrap.Modal(
-            this.paymentModal.nativeElement
-          );
-          paymentModal.show();
-        }
-      })
-      .catch((error) => {
-        console.error('Error loading payment info:', error);
-      });
+          // Show the payment modal
+          if (this.paymentModal) {
+            const paymentModal = new bootstrap.Modal(
+              this.paymentModal.nativeElement
+            );
+            paymentModal.show();
+          }
+        })
+        .catch((error) => {
+          console.error('Error loading payment info:', error);
+        });
+    } else {
+      // If no invoice, fetch user info using UsersService
+      this.userService
+        .getUserById(data.userId)
+        .then((userData) => {
+          if (userData) {
+            // Merge userData with payment data
+            this.recPymtData = { ...userData, ...data };
+          } else {
+            console.log(`User with ID ${data.userId} not found.`);
+            this.recPymtData = { ...data };
+          }
+          // Show the payment modal
+          if (this.paymentModal) {
+            const paymentModal = new bootstrap.Modal(
+              this.paymentModal.nativeElement
+            );
+            paymentModal.show();
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user info:', error);
+        });
+    }
   }
 
   formatDate(inputDate: string): string {

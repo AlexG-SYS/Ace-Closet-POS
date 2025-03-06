@@ -28,8 +28,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="card-subtitle mb-0 ms-1">Last Month Sales $0.00</p>
+                            <p class="card-subtitle mb-0 ms-1">Last Month Sales ${{lastMonthTotalSales |
+                                number:'1.2-2'}}</p>
                             <div class="px-2 pt-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="expense rounded p-2">
+                                        <i class="bi bi-credit-card fs-4"></i>
+                                    </div>
+                                    <div class="ms-3 d-flex flex-column">
+                                        <h2 class="mb-0 fs-6">${{totalExpense | number:'1.2-2'}}</h2>
+                                        <p class="mb-0">Total Expense</p>
+                                    </div>
+                                </div>
                                 <div class="d-flex align-items-center mb-4">
                                     <div class="profit rounded p-2">
                                         <i class="bi bi-graph-up fs-4"></i>
@@ -46,15 +56,6 @@
                                     <div class="ms-3 d-flex flex-column">
                                         <h2 class="mb-0 fs-6">${{totalSales | number:'1.2-2'}}</h2>
                                         <p class="mb-0">Total Sales</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mb-4">
-                                    <div class="expense rounded p-2">
-                                        <i class="bi bi-credit-card fs-4"></i>
-                                    </div>
-                                    <div class="ms-3 d-flex flex-column">
-                                        <h2 class="mb-0 fs-6">${{totalExpense | number:'1.2-2'}}</h2>
-                                        <p class="mb-0">Total Expense</p>
                                     </div>
                                 </div>
                                 <div>

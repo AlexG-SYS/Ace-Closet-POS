@@ -14,6 +14,9 @@ import { DecimalPipe } from '@angular/common';
 import * as bootstrap from 'bootstrap';
 import { Invoice } from '../../DataModels/invoiceData.model';
 import { InvoicesService } from '../../Service/invoices.service';
+import { BankAccountsService } from '../../Service/bank-accounts.service';
+import { PaymentsService } from '../../Service/payments.service';
+import { Payment } from '../../DataModels/paymentData.model';
 
 @Component({
   selector: 'app-customers',
@@ -41,7 +44,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       Validators.pattern(/^[a-zA-Z\s]+$/),
       Validators.maxLength(25),
     ]), // Only letters and spaces
-    customerEmail: new FormControl('', [Validators.required, Validators.email]), // Valid email format
+    customerEmail: new FormControl('', [Validators.email]), // Valid email format
     customerPhoneNum: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\d{3}-\d{4}$/), // Pattern for phone number
@@ -104,6 +107,10 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   customerDataLoaded = false;
   customerData: Partial<User> = {};
   userTableStatus = '';
+  today = new Date();
+  formattedDate = this.today.toLocaleDateString('en-CA');
+  bankAccounts: any[] = [];
+  @ViewChild('paymentModal') paymentModal: any;
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value
@@ -112,9 +119,18 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     this.dataSource.filter = filterValue;
   }
 
+  paymentFormInputs = new FormGroup({
+    amount: new FormControl('', [Validators.required, Validators.min(1)]),
+    paymentMethod: new FormControl(''),
+    bankAccountId: new FormControl('', [Validators.required]),
+    date: new FormControl(this.formattedDate),
+  });
+
   constructor(
     private userService: UsersService,
     private invoiceService: InvoicesService,
+    private paymentService: PaymentsService,
+    private bankAccountsService: BankAccountsService,
     private snackBar: MatSnackBar
   ) {
     this.displaySmall = window.innerWidth < 768;
@@ -329,5 +345,75 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     const firstInitial = nameParts[0]?.charAt(0).toUpperCase() || '';
     const lastInitial = nameParts[1]?.charAt(0).toUpperCase() || '';
     return firstInitial + lastInitial;
+  }
+
+  receivePayment(data: Invoice) {
+    this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
+    this.customerData = data;
+
+    // Query all bank accounts
+    this.bankAccountsService
+      .getAllBankAccounts()
+      .then((accounts) => {
+        this.bankAccounts = accounts;
+
+        // Show the payment modal after fetching bank accounts
+        if (this.paymentModal) {
+          const paymentModal = new bootstrap.Modal(
+            this.paymentModal.nativeElement
+          );
+          paymentModal.show();
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching bank accounts:', error);
+      });
+  }
+
+  getBankAccountName(id: string): string {
+    const account = this.bankAccounts.find((account) => account.id === id);
+    return account ? account.bankName : ''; // Return empty string if not found
+  }
+
+  paymentSubmit() {
+    if (this.paymentFormInputs.valid) {
+      this.isProcessing = true;
+      const formData = this.paymentFormInputs.value;
+      const [year, month, day] = formData.date!.split('-').map(Number);
+
+      // Convert form data to a partial Payment data model
+      const partialPayment: Partial<Payment> = {
+        userId: this.customerData.id || '',
+        amount: Number(formData.amount),
+        customerName: this.customerData.name,
+        day: day,
+        month: month,
+        year: year,
+        paymentMethod: this.getBankAccountName(formData.bankAccountId!) || '',
+        bankAccountId: formData.bankAccountId || '',
+      };
+
+      this.paymentService
+        .addCreditToCustomer(partialPayment)
+        .then(() => {
+          this.showSnackBar('Payment Applied Successfully!', 'success');
+          this.populateUsersTable('active');
+          this.customerData = {} as User;
+          this.paymentFormInputs.reset();
+          this.isProcessing = false;
+        })
+        .catch((error) => {
+          this.showSnackBar(error.message, 'error');
+          console.log(error.message);
+        });
+    } else {
+      this.showSnackBar('Invalid Action', 'error');
+      console.log('Form is invalid');
+    }
+  }
+
+  clearPaymentForm() {
+    this.paymentFormInputs.reset();
+    this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
   }
 }

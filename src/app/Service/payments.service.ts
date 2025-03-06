@@ -165,4 +165,65 @@ export class PaymentsService {
       throw new Error('Failed to update payment. Please try again later.');
     }
   }
+
+  async addCreditToCustomer(data: Partial<Payment>): Promise<any> {
+    try {
+      data.createdAt = Timestamp.now();
+      const batch = writeBatch(this.firestore);
+
+      // Add payment to the payments collection
+      const docRef = doc(this.paymentsCollection);
+      batch.set(docRef, data);
+
+      // Update user balance
+      if (data.userId && data.amount) {
+        const userDocRef = doc(this.firestore, `users/${data.userId}`);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          let userBalance = userData['accountBalance'] || 0;
+          userBalance -= data.amount; // Add the amount to user balance
+
+          batch.update(userDocRef, {
+            accountBalance: userBalance,
+            updatedAt: Timestamp.now(),
+          });
+        } else {
+          throw new Error(`User with ID ${data.userId} not found.`);
+        }
+      }
+
+      // Update bank account balance
+      if (data.bankAccountId) {
+        const bankAccountRef = doc(
+          this.firestore,
+          `bankAccounts/${data.bankAccountId}`
+        );
+        const bankAccountSnap = await getDoc(bankAccountRef);
+
+        if (bankAccountSnap.exists()) {
+          const bankAccountData = bankAccountSnap.data();
+          let bankBalance = bankAccountData['balance'] || 0;
+          bankBalance += data.amount; // Add the amount to bank balance
+
+          batch.update(bankAccountRef, {
+            balance: bankBalance,
+            updatedAt: Timestamp.now(),
+          });
+        } else {
+          throw new Error(
+            `Bank Account with ID ${data.bankAccountId} not found.`
+          );
+        }
+      }
+
+      // Commit batch updates
+      await batch.commit();
+      return docRef; // Return the payment document reference
+    } catch (error) {
+      console.error('Error recording balance-only payment: ', error);
+      throw new Error('Failed to process the payment.');
+    }
+  }
 }
