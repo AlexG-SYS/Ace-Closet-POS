@@ -419,13 +419,14 @@
 
                 <div class="row py-2">
                     <div class="col d-flex justify-content-center">
-                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
-                            aria-label="Close">Close</button>
+
                         @if(recPymtData.amount != 0){
                         <button type="button" class="btn btn-danger mx-2" (click)="voidPayment()"
                             data-bs-target="#voidIPaymentModal" data-bs-toggle="modal"><i
                                 class="bi bi-exclamation-triangle me-1"></i>Void</button>
                         }
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
                     </div>
                 </div>
             </div>
