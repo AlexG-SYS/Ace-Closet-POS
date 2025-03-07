@@ -12,12 +12,9 @@ import {
   ApexFill,
 } from 'ng-apexcharts';
 import { InvoicesService } from '../../Service/invoices.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Invoice } from '../../DataModels/invoiceData.model';
-import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { TransactionsService } from '../../Service/transactions.service';
-import { Payment } from '../../DataModels/paymentData.model';
 import { ReportsService } from '../../Service/reports.service';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -38,52 +35,39 @@ export type ChartOptions = {
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
-  public chartOptions: ChartOptions;
+  public chartOptions!: ChartOptions;
   totalProfit = 0;
   totalSales = 0;
   totalCost = 0;
   totalExpense = 0;
-  activeInvoice: Invoice[] = [];
-  activeExpense: Payment[] = [];
-  today = new Date();
-
-  currentYear = new Date().getFullYear();
-  currentMonth = new Date().getMonth() + 1;
   lastMonthTotalSales = 0;
+  today = new Date();
+  currentYear = this.today.getFullYear();
+  currentMonth = this.today.getMonth() + 1;
 
   constructor(
     private invoiceService: InvoicesService,
     private reportsService: ReportsService,
     private transactionService: TransactionsService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {
+    this.initializeChart();
+  }
+
+  ngOnInit(): void {
+    this.getData();
+  }
+
+  private initializeChart() {
     this.chartOptions = {
       series: [
-        {
-          name: 'Item Cost',
-          data: [0], // Example values
-        },
-        {
-          name: 'Net Profit',
-          data: [0], // Example values
-        },
-        {
-          name: 'Expense',
-          data: [0], // Example values
-        },
+        { name: 'Item Cost', data: [0] },
+        { name: 'Net Profit', data: [0] },
+        { name: 'Expense', data: [0] },
       ],
-      chart: {
-        type: 'bar',
-        height: 300,
-        stacked: true,
-      },
+      chart: { type: 'bar', height: 300, stacked: true },
       plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '45%',
-          borderRadius: 5,
-          borderRadiusApplication: 'end',
-        },
+        bar: { horizontal: false, columnWidth: '45%', borderRadius: 5 },
       },
       xaxis: {
         categories: [
@@ -101,179 +85,130 @@ export class HomeComponent implements OnInit {
           'Dec',
         ],
       },
-      dataLabels: {
-        enabled: false,
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
-      },
+      dataLabels: { enabled: false },
+      legend: { position: 'top', horizontalAlign: 'center' },
       colors: ['#497ffc', '#56ca00', '#8a8d93'],
-      fill: {
-        type: 'solid',
-      },
+      fill: { type: 'solid' },
     };
   }
 
-  ngOnInit(): void {
-    this.getData();
-  }
-
-  async getData() {
+  private async getData() {
     try {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth() + 1; // JavaScript months are 0-indexed
-      const firstDayOfMonth = today.getDate() === 1;
+      if (this.today.getDate() === 1) await this.generateLastMonthReport();
 
-      // Generate last month's report on the 1st day of the month
-      if (firstDayOfMonth) {
-        await this.generateLastMonthReport();
-      }
-
-      // Retrieve all reports for the current year (up to the current month)
       const pastReports = await this.reportsService.getReportsUpToMonth(
-        currentYear,
-        currentMonth
+        this.currentYear,
+        this.currentMonth
       );
+      if (!pastReports || pastReports.length === 0) return;
 
-      if (!pastReports || pastReports.length === 0) {
-        console.log('No past reports found.');
-        return;
-      }
-
-      // Find last month's report
-      const lastMonthReport = pastReports.find(
-        (report) =>
-          report.year === currentYear && report.month === currentMonth - 1
-      );
-      if (lastMonthReport) {
-        this.lastMonthTotalSales = lastMonthReport.totalSales;
-      }
-
-      // Find current month's report
-      let currentMonthReport = pastReports.find(
-        (report) => report.year === currentYear && report.month === currentMonth
-      );
-
-      if (currentMonthReport) {
-        // Use existing report data
-        this.totalSales = currentMonthReport.totalSales;
-        this.totalCost = currentMonthReport.totalCost;
-        this.totalProfit = currentMonthReport.totalProfit;
-        this.totalExpense = currentMonthReport.totalExpense;
-      } else {
-        console.log(
-          `No report found for ${currentMonth}/${currentYear}. Querying live data...`
-        );
-
-        // Query live data for invoices and expenses
-        const [invoices, expenses] = await Promise.all([
-          this.invoiceService.getInvoicesFilterYearMonth(
-            currentYear,
-            currentMonth
-          ),
-          this.transactionService.getExpenseByMonthYear(
-            currentMonth,
-            currentYear
-          ),
-        ]);
-
-        this.totalSales = invoices.reduce(
-          (sum, invoice) => sum + invoice.grandTotal,
-          0
-        );
-        this.totalCost = invoices.reduce((sum, invoice) => {
-          return (
-            sum +
-            invoice.products.reduce(
-              (pSum: number, product: { cost: number; quantity: number }) =>
-                pSum + product.cost * product.quantity,
-              0
-            )
-          );
-        }, 0);
-        this.totalProfit = this.totalSales - this.totalCost;
-        this.totalExpense = expenses.reduce(
-          (sum, expense) => sum + expense.amount,
-          0
-        );
-      }
-
-      // Update the charts with all past reports
-      this.updateChart(pastReports);
+      this.extractReportData(pastReports);
     } catch (error) {
-      this.showSnackBar(`Retrieving Data Failed`, 'error');
+      this.snackbarService.show('Retrieving Data Failed', 'error');
       console.error('Error retrieving reports:', error);
     }
   }
 
-  async generateLastMonthReport() {
-    const today = new Date();
-    const lastMonth = today.getMonth() === 0 ? 12 : today.getMonth();
-    const year =
-      today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
+  private extractReportData(pastReports: any[]) {
+    const lastMonthReport = pastReports.find(
+      (report) =>
+        report.year === this.currentYear &&
+        report.month === this.currentMonth - 1
+    );
+    if (lastMonthReport) this.lastMonthTotalSales = lastMonthReport.totalSales;
 
-    // Check if the report already exists
+    const currentMonthReport = pastReports.find(
+      (report) =>
+        report.year === this.currentYear && report.month === this.currentMonth
+    );
+    if (currentMonthReport) {
+      this.totalSales = currentMonthReport.totalSales;
+      this.totalCost = currentMonthReport.totalCost;
+      this.totalProfit = currentMonthReport.totalProfit;
+      this.totalExpense = currentMonthReport.totalExpense;
+      this.updateChart(pastReports);
+    } else {
+      this.fetchLiveData(pastReports);
+    }
+  }
+
+  private async fetchLiveData(pastReports: any[]) {
+    const [invoices, expenses] = await Promise.all([
+      this.invoiceService.getInvoicesFilterYearMonth(
+        this.currentYear,
+        this.currentMonth
+      ),
+      this.transactionService.getExpenseByMonthYear(
+        this.currentMonth,
+        this.currentYear
+      ),
+    ]);
+
+    this.totalSales = invoices.reduce(
+      (sum, invoice) => sum + invoice.grandTotal,
+      0
+    );
+    this.totalCost = invoices.reduce(
+      (sum, invoice) =>
+        sum +
+        invoice.products.reduce(
+          (pSum: number, product: { cost: number; quantity: number }) =>
+            pSum + product.cost * product.quantity,
+          0
+        ),
+      0
+    );
+    this.totalProfit = this.totalSales - this.totalCost;
+    this.totalExpense = expenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0
+    );
+
+    this.updateChart(pastReports);
+  }
+
+  private async generateLastMonthReport() {
+    const lastMonth = this.currentMonth === 1 ? 12 : this.currentMonth - 1;
+    const year =
+      this.currentMonth === 1 ? this.currentYear - 1 : this.currentYear;
+
     const existingReport = await this.reportsService.getMonthlyReports(
       year,
       lastMonth
     );
-
-    if (existingReport && existingReport.length > 0) {
-      console.log(
-        `Report for ${lastMonth}/${year} already exists. Using existing data.`
-      );
-
-      // Set lastMonthTotalSales from the existing report
-      const report = existingReport[0]; // Assuming the report array contains one report per month
-      this.lastMonthTotalSales = report.totalSales;
-
-      return; // If the report exists, stop execution.
+    if (existingReport?.length) {
+      this.lastMonthTotalSales = existingReport[0].totalSales;
+      return;
     }
 
-    console.log(
-      `No existing report found for ${lastMonth}/${year}. Generating new report...`
-    );
-
-    // Fetch invoices and expenses if no report exists
     const [invoices, expenses] = await Promise.all([
       this.invoiceService.getInvoicesFilterYearMonth(year, lastMonth),
       this.transactionService.getExpenseByMonthYear(lastMonth, year),
     ]);
 
-    let totalSales = 0;
-    let totalCost = 0;
-    let totalProfit = 0;
-    let totalExpense = 0;
-
-    invoices.forEach((invoice) => {
-      totalSales += invoice.grandTotal;
-      invoice.products.forEach(
-        (product: { cost: number; quantity: number }) => {
-          totalCost += product.cost * product.quantity;
-        }
-      );
-    });
-
-    totalProfit = totalSales - totalCost;
-
-    expenses.forEach((expense) => {
-      totalExpense += expense.amount;
-    });
-
     const reportData = {
-      year: year,
+      year,
       month: lastMonth,
-      totalCost,
-      totalSales,
-      totalProfit,
-      totalExpense,
-      totalNetProfit: totalProfit - totalExpense,
+      totalSales: invoices.reduce((sum, inv) => sum + inv.grandTotal, 0),
+      totalCost: invoices.reduce(
+        (sum, inv) =>
+          sum +
+          inv.products.reduce(
+            (pSum: number, p: { cost: number; quantity: number }) =>
+              pSum + p.cost * p.quantity,
+            0
+          ),
+        0
+      ),
+      totalExpense: expenses.reduce((sum, exp) => sum + exp.amount, 0),
+      totalProfit: 0,
+      totalNetProfit: 0,
       createdAt: new Date(),
     };
+    reportData.totalProfit = reportData.totalSales - reportData.totalCost;
+    reportData.totalNetProfit =
+      reportData.totalProfit - reportData.totalExpense;
 
-    // Save the new report to Firestore
     await this.reportsService.saveMonthlyReport(reportData);
   }
 
@@ -307,14 +242,5 @@ export class HomeComponent implements OnInit {
         { name: 'Expense', data: expenseData },
       ];
     }
-  }
-
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
   }
 }

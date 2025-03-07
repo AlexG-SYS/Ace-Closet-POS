@@ -174,7 +174,8 @@
                                         [class.pending]="element.invoiceStatus == 'Pending'"
                                         [class.pastdue]="element.invoiceStatus == 'Past Due'"
                                         [class.partial]="element.invoiceStatus == 'Partial'"
-                                        class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
+                                        [class.voided]="element.invoiceStatus == 'Voided'"
+                                        class="badge rounded-pill text-capitalize ">{{element.invoiceStatus}}</span>
                                 </mat-cell>
                             </ng-container>
 
@@ -867,13 +868,55 @@
 
                 <div class="row py-2">
                     <div class="col d-flex justify-content-center">
-                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
-                            aria-label="Close">Cancel</button>
-                        <button class="btn btn-primary" ngxPrint printSectionId="print-invoice-section"
+                        @if(printInvoiceData.subTotal != 0){
+                        <button type="button" class="btn btn-danger mx-2" (click)="voidInvoice(printInvoiceData)"
+                            data-bs-target="#voidInvoiceModal" data-bs-toggle="modal"><i
+                                class="bi bi-exclamation-triangle me-1"></i>Void</button>
+                        }
+                        <button type="button" class="btn btn-light " data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
+                        <button class="btn btn-primary mx-2" ngxPrint printSectionId="print-invoice-section"
                             printTitle="Invoice" [useExistingCss]="true"><i
                                 class="bi bi-printer me-1"></i>Print</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Void Invoice  -->
+<div class="modal fade" id="voidInvoiceModal" data-bs-backdrop="static" tabindex="-1" #voidInvoiceModal>
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        @if(isProcessing3){
+                        <span class="fs-5 fw-medium">Voiding Invoice #{{printInvoiceData.invoiceNumber}}</span>
+                        }
+                        @else {
+                        <span class="fs-5 fw-medium">Voided Invoice #{{printInvoiceData.invoiceNumber}}</span>
+                        }
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        @if(isProcessing3){
+                        <span class="spinner-border spinner-border-lg" aria-hidden="true"></span>
+                        <span class="visually-hidden" role="status">Loading...</span>
+                        }
+                        @else {
+                        <i class="bi bi-check2-square fs-1 text-success"></i>
+                        }
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -898,7 +941,7 @@
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto col-lg mb-4">
                             <div>
-                                <p class="fs-6 fw-medium">Invoice To:</p>
+                                <p class="fs-6 fw-medium">Customer:</p>
                                 <div class="ps-2">
                                     <p class="mb-1">{{recPymtInvoiceData.customer.name}}</p>
                                     <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.street}}</p>

@@ -6,19 +6,18 @@ import {
   FormControl,
 } from '@angular/forms';
 import { Product } from '../../DataModels/productData.model';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
 import { ProductsService } from '../../Service/products.service';
 import * as bootstrap from 'bootstrap';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
   selector: 'app-products',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatSnackBarModule,
     MatTableModule,
     DecimalPipe,
     MatPaginatorModule,
@@ -151,7 +150,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
 
   constructor(
     private productService: ProductsService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {
     this.displaySmall = window.innerWidth <= 1223;
   }
@@ -223,12 +222,12 @@ export class ProductsComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewProductForm();
           this.modalData = false;
-          this.showSnackBar('Product added successfully!', 'success');
+          this.snackbarService.show('Product added successfully!', 'success');
           this.populateProductTable('active');
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(`Failed to Add Product`, 'error');
+          this.snackbarService.show(`Failed to Add Product`, 'error');
           console.log(error.message);
         });
     } else {
@@ -259,7 +258,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
         this.dataSource.data = this.activeProducts;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Products Failed`, 'error');
+        this.snackbarService.show(`Retrieving Products Failed`, 'error');
         console.error('Error Retrieving Active Products:', error);
       });
 
@@ -346,7 +345,7 @@ export class ProductsComponent implements AfterViewInit, OnInit {
 
       if (!this.productForm.value.id) {
         console.error('Product ID is missing');
-        this.showSnackBar(
+        this.snackbarService.show(
           'Failed to Update Product: Missing Product ID',
           'error'
         );
@@ -357,12 +356,12 @@ export class ProductsComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewProductForm();
           this.modalData = false;
-          this.showSnackBar('Product Updated Successfully!', 'success');
+          this.snackbarService.show('Product Updated Successfully!', 'success');
           this.populateProductTable('active');
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar('Failed to Update Product', 'error');
+          this.snackbarService.show('Failed to Update Product', 'error');
           console.error('Error Updating Product:', error.message);
         });
     } else {
@@ -373,15 +372,6 @@ export class ProductsComponent implements AfterViewInit, OnInit {
   updateColorInput(event: Event): void {
     const color = (event.target as HTMLInputElement).value;
     this.productForm.get('productColor')?.setValue(color);
-  }
-
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
   }
 
   getTextColor(hexColor: string): string {

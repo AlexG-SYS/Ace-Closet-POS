@@ -1,7 +1,6 @@
 import { AfterViewInit, OnInit, Component, ViewChild } from '@angular/core';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { BankAccount } from '../../DataModels/bankAccountData.model';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
@@ -14,6 +13,7 @@ import {
 } from '@angular/forms';
 import { Transactions } from '../../DataModels/transactionsData.model';
 import { TransactionsService } from '../../Service/transactions.service';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
   selector: 'app-bank-accounts',
@@ -21,7 +21,6 @@ import { TransactionsService } from '../../Service/transactions.service';
   imports: [
     DecimalPipe,
     ReactiveFormsModule,
-    MatSnackBarModule,
     MatTableModule,
     MatPaginatorModule,
   ],
@@ -168,7 +167,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
   constructor(
     private bankAccountsService: BankAccountsService,
     private transactionService: TransactionsService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -230,7 +229,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         this.dataSource.data = this.activeTransactions;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Transactions Failed`, 'error');
+        this.snackbarService.show(`Retrieving Transactions Failed`, 'error');
         console.error('Error Retrieving Transactions:', error);
       });
   }
@@ -258,12 +257,15 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewBankForm();
           this.modalData = false;
-          this.showSnackBar('Bank Account Added Successfully!', 'success');
+          this.snackbarService.show(
+            'Bank Account Added Successfully!',
+            'success'
+          );
           this.populateBankAccount();
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(`Failed to Add Bank Account`, 'error');
+          this.snackbarService.show(`Failed to Add Bank Account`, 'error');
           console.log(error.message);
         });
     } else {
@@ -322,7 +324,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
           this.dataSource.data = this.activeTransactions;
         })
         .catch((error) => {
-          this.showSnackBar(`Retrieving Transactions Failed`, 'error');
+          this.snackbarService.show(`Retrieving Transactions Failed`, 'error');
           console.error('Error Retrieving Transactions:', error);
         });
     }
@@ -400,14 +402,14 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
       this.transactionService
         .addTransactionDepositExpenseWithdraw(transactionData)
         .then(() => {
-          this.showSnackBar(successMessage, 'success');
+          this.snackbarService.show(successMessage, 'success');
           this.populateBankAccount();
           this.populateTransactionTable(this.currentYear, this.currentMonth);
           clearFormCallback();
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(error.message, 'error');
+          this.snackbarService.show(error.message, 'error');
           console.error(error.message);
         });
     } else {
@@ -468,15 +470,6 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     this.bankWithdrawForm.get('date')?.setValue(this.formattedDate);
   }
 
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
-  }
-
   filterTransferBankAcc(event: Event): void {
     const term = (event.target as HTMLInputElement).value.toLowerCase(); // Extract the input value
     this.searchTerm = term;
@@ -521,14 +514,14 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
       this.transactionService
         .addBankTransfer(transferData)
         .then(() => {
-          this.showSnackBar('Bank Transfer Successful!', 'success');
+          this.snackbarService.show('Bank Transfer Successful!', 'success');
           this.populateBankAccount();
           this.populateTransactionTable(this.currentYear, this.currentMonth);
           this.clearBankTransferForm();
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(error.message, 'error');
+          this.snackbarService.show(error.message, 'error');
           console.log(error.message);
         });
     } else {

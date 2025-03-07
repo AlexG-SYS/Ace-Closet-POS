@@ -6,7 +6,6 @@ import {
   FormControl,
   FormsModule,
 } from '@angular/forms';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
@@ -18,6 +17,7 @@ import { Invoice } from '../../DataModels/invoiceData.model';
 import { InvoicesService } from '../../Service/invoices.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { UsersService } from '../../Service/users.service';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
   selector: 'app-payments',
@@ -25,7 +25,6 @@ import { UsersService } from '../../Service/users.service';
   imports: [
     ReactiveFormsModule,
     MatTableModule,
-    MatSnackBarModule,
     MatPaginatorModule,
     DecimalPipe,
     FormsModule,
@@ -79,7 +78,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
     private invoiceService: InvoicesService,
     private bankAccountsService: BankAccountsService,
     private userService: UsersService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -135,7 +134,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
         this.dataSource.data = this.activePayment;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Payment Failed`, 'error');
+        this.snackbarService.show(`Retrieving Payment Failed`, 'error');
         console.error('Error Retrieving Payments:', error);
       });
   }
@@ -176,15 +175,6 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
     } else {
       return '';
     }
-  }
-
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
   }
 
   recPymtData: any = { customer: {} } as any;
@@ -282,7 +272,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         console.error('Error finding invoice:', error);
-        this.showSnackBar('Failed to Retrieve Invoice', 'error');
+        this.snackbarService.show('Failed to Retrieve Invoice', 'error');
       });
   }
 
@@ -311,17 +301,17 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       this.paymentService
         .addPayment(partialPayment)
         .then(() => {
-          this.showSnackBar('Payment Applied Successfully!', 'success');
+          this.snackbarService.show('Payment Applied Successfully!', 'success');
           this.populatePaymentTable(this.currentYear, this.currentMonth);
           this.clearPaymentForm();
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(error.message, 'error');
+          this.snackbarService.show(error.message, 'error');
           console.log(error.message);
         });
     } else {
-      this.showSnackBar('Invalid Action', 'error');
+      this.snackbarService.show('Invalid Action', 'error');
       console.log('Form is invalid');
     }
   }
@@ -331,5 +321,20 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
     this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
     this.recPymtInvoiceData = { customer: {} } as Invoice;
     this.searchInvoiceForPaymentInput.reset();
+  }
+
+  isProcessing2 = false;
+  voidPayment() {
+    this.isProcessing2 = true;
+    this.paymentService
+      .voidPayment(this.recPymtData.id)
+      .then(() => {
+        this.isProcessing2 = false;
+        this.snackbarService.show('Payment Voided Successfully', 'success');
+        this.populatePaymentTable(this.currentYear, this.currentMonth);
+      })
+      .catch(() => {
+        this.snackbarService.show('Error Voiding Payment', 'error');
+      });
   }
 }

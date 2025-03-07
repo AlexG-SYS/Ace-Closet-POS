@@ -50,6 +50,7 @@
                                 <i class="bi bi-eye-fill hoverColor pe-2" (click)="showUserData(element)"
                                     data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
                                 }
+
                                 <i class="bi bi-cash-coin hoverColor pe-2" (click)="receivePayment(element)"></i>
                                 <i class="bi bi-pencil-square hoverColor " (click)="modalUserData(element)"></i>
                             </mat-cell>
@@ -196,7 +197,8 @@
                                     [class.pending]="element.invoiceStatus == 'Pending'"
                                     [class.pastdue]="element.invoiceStatus == 'Past Due'"
                                     [class.partial]="element.invoiceStatus == 'Partial'"
-                                    class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
+                                    [class.voided]="element.invoiceStatus == 'Voided'"
+                                    class="badge rounded-pill text-capitalize ">{{element.invoiceStatus}}</span>
                             </mat-cell>
                         </ng-container>
 

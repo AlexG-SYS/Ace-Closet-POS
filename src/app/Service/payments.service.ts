@@ -226,4 +226,86 @@ export class PaymentsService {
       throw new Error('Failed to process the payment.');
     }
   }
+
+  async voidPayment(paymentId: string): Promise<void> {
+    try {
+      const paymentRef = doc(this.firestore, `payments/${paymentId}`);
+      const paymentSnap = await getDoc(paymentRef);
+
+      if (!paymentSnap.exists()) {
+        throw new Error(`Payment with ID ${paymentId} not found.`);
+      }
+
+      const paymentData = paymentSnap.data() as Payment;
+      if (paymentData.paymentStatus === 'Voided') {
+        throw new Error('This payment has already been voided.');
+      }
+
+      const batch = writeBatch(this.firestore);
+
+      // Reverse user and invoice balances if applicable
+      if (paymentData.userId && paymentData.amount) {
+        const userRef = doc(this.firestore, `users/${paymentData.userId}`);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          batch.update(userRef, {
+            accountBalance: userData['accountBalance'] + paymentData.amount,
+            updatedAt: Timestamp.now(),
+          });
+        }
+      }
+
+      if (paymentData.invoiceId) {
+        const invoiceRef = doc(
+          this.firestore,
+          `invoices/${paymentData.invoiceId}`
+        );
+        const invoiceSnap = await getDoc(invoiceRef);
+
+        if (invoiceSnap.exists()) {
+          const invoiceData = invoiceSnap.data();
+          if (invoiceData['grandTotal'] != 0) {
+            batch.update(invoiceRef, {
+              invoiceBalance:
+                invoiceData['invoiceBalance'] + paymentData.amount,
+              invoiceStatus: 'Pending', // Adjust as needed
+              updatedAt: Timestamp.now(),
+            });
+          }
+        }
+      }
+
+      // Reverse bank account balance if applicable
+      if (paymentData.bankAccountId) {
+        const bankAccountRef = doc(
+          this.firestore,
+          `bankAccounts/${paymentData.bankAccountId}`
+        );
+        const bankAccountSnap = await getDoc(bankAccountRef);
+
+        if (bankAccountSnap.exists()) {
+          const bankAccountData = bankAccountSnap.data();
+          batch.update(bankAccountRef, {
+            balance: bankAccountData['balance'] - paymentData.amount,
+            updatedAt: Timestamp.now(),
+          });
+        }
+      }
+
+      // Mark the payment as voided
+      batch.update(paymentRef, {
+        amount: 0,
+        status: 'voided',
+        updatedAt: Timestamp.now(),
+      });
+
+      // Commit the batch operation
+      await batch.commit();
+    } catch (error) {
+      console.error('Error voiding payment:', error);
+      throw new Error('Failed to void the payment.');
+    }
+  }
 }

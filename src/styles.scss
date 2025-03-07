@@ -96,3 +96,36 @@ body {
     z-index: 950 !important;
     /* Lower than the snackbar */
 }
+
+.paid {
+    background-color: #e4f7d6;
+    color: #56ca00;
+    font-size: smaller;
+    font-weight: 500;
+}
+
+.pastdue,
+.voided {
+    color: #ff4c51;
+    background-color: #ffe2e3;
+    font-size: smaller;
+    font-weight: 500;
+}
+
+.pending {
+    color: #8a8d93;
+    background-color: #ecedee;
+    font-size: smaller;
+    font-weight: 500;
+}
+
+.partial {
+    color: #ffb400;
+    background-color: #fff3d6;
+    font-size: smaller;
+    font-weight: 500;
+}
+
+.badge {
+    line-height: 1.375;
+}

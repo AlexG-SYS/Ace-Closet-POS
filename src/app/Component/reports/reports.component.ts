@@ -21,6 +21,7 @@ import { Payment } from '../../DataModels/paymentData.model';
 import { PaymentsService } from '../../Service/payments.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { TransactionsService } from '../../Service/transactions.service';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
   selector: 'app-reports',
@@ -70,7 +71,7 @@ export class ReportsComponent {
     private invoiceService: InvoicesService,
     private productService: ProductsService,
     private transactionService: TransactionsService,
-    private snackBar: MatSnackBar,
+    private snackbarService: SnackbarService,
     private bankAccountsService: BankAccountsService
   ) {}
 
@@ -233,7 +234,7 @@ export class ReportsComponent {
         this.tableSpinner = false;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
         console.error('Error Retrieving Active Invoices:', error);
       });
   }
@@ -256,7 +257,7 @@ export class ReportsComponent {
           this.formatDate(this.filterFormInputs.value.endDate!);
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
         console.error('Error Retrieving Active Invoices:', error);
       });
   }
@@ -301,7 +302,7 @@ export class ReportsComponent {
         this.tableSpinner = false;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Expenses Failed`, 'error');
+        this.snackbarService.show(`Retrieving Expenses Failed`, 'error');
         console.error('Error Retrieving Expenses:', error);
       });
   }
@@ -324,7 +325,7 @@ export class ReportsComponent {
           this.formatDate(this.filterFormInputs.value.endDate!);
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Expense Failed`, 'error');
+        this.snackbarService.show(`Retrieving Expense Failed`, 'error');
         console.error('Error Retrieving Expense:', error);
       });
   }
@@ -391,14 +392,14 @@ export class ReportsComponent {
             this.calcualteProfitTotals(expense, invoices);
           })
           .catch((error) => {
-            this.showSnackBar(`Retrieving Expenses Failed`, 'error');
+            this.snackbarService.show(`Retrieving Expenses Failed`, 'error');
             console.error('Error Retrieving Expenses:', error);
           });
 
         this.tableSpinner = false;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
         console.error('Error Retrieving Active Invoices:', error);
       });
   }
@@ -425,7 +426,7 @@ export class ReportsComponent {
             this.calcualteProfitTotals(expense, invoices);
           })
           .catch((error) => {
-            this.showSnackBar(`Retrieving Expenses Failed`, 'error');
+            this.snackbarService.show(`Retrieving Expenses Failed`, 'error');
             console.error('Error Retrieving Expenses:', error);
           });
         this.reportDateRange =
@@ -435,7 +436,7 @@ export class ReportsComponent {
         this.tableSpinner = false;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
         console.error('Error Retrieving Active Invoices:', error);
       });
   }
@@ -451,17 +452,8 @@ export class ReportsComponent {
         this.tableSpinner = false;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Products Failed`, 'error');
+        this.snackbarService.show(`Retrieving Products Failed`, 'error');
         console.error('Error Retrieving Active Products:', error);
       });
-  }
-
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
   }
 }

@@ -6,7 +6,6 @@ import {
   FormControl,
   FormsModule,
 } from '@angular/forms';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
@@ -21,6 +20,7 @@ import { NgxPrintModule } from 'ngx-print';
 import { Payment } from '../../DataModels/paymentData.model';
 import { PaymentsService } from '../../Service/payments.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
   selector: 'app-invoices',
@@ -28,7 +28,6 @@ import { BankAccountsService } from '../../Service/bank-accounts.service';
   imports: [
     ReactiveFormsModule,
     MatTableModule,
-    MatSnackBarModule,
     MatPaginatorModule,
     DecimalPipe,
     FormsModule,
@@ -203,7 +202,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     private userService: UsersService,
     private productService: ProductsService,
     private paymentService: PaymentsService,
-    private snackBar: MatSnackBar,
+    private snackbarService: SnackbarService,
     private bankAccountsService: BankAccountsService
   ) {}
 
@@ -321,7 +320,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         }
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
         console.error('Error rRtrieving Active Invoices:', error);
       });
   }
@@ -353,15 +352,6 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     });
   }
 
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
-  }
-
   filterStatus(): void {
     const year = Number(this.filterFormInputs.value.year);
     const month = Number(this.filterFormInputs.value.month);
@@ -380,7 +370,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
           this.countInvoicesByStatus();
         })
         .catch((error) => {
-          this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+          this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
           console.error('Error Retrieving Active Invoices:', error);
         });
     }
@@ -435,7 +425,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.activeUsers = users;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Users Failed`, 'error');
+        this.snackbarService.show(`Retrieving Users Failed`, 'error');
         console.error('Error retrieving Active Users:', error);
       });
 
@@ -445,7 +435,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.activeProduct = product;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Product Failed`, 'error');
+        this.snackbarService.show(`Retrieving Product Failed`, 'error');
         console.error('Error Retrieving Active Product:', error);
       });
   }
@@ -696,17 +686,17 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         .addInvoice(partialInvoice)
         .then(() => {
           this.modalData = false;
-          this.showSnackBar('Invoice Added Successfully!', 'success');
+          this.snackbarService.show('Invoice Added Successfully!', 'success');
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
           this.clearNewInvoiceForm();
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(error.message, 'error');
+          this.snackbarService.show(error.message, 'error');
           console.log(error.message);
         });
     } else {
-      this.showSnackBar('Invalid Action', 'error');
+      this.snackbarService.show('Invalid Action', 'error');
       console.log('Form is invalid');
       this.invoiceForm.markAllAsTouched(); // Highlight invalid fields
     }
@@ -782,19 +772,34 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       this.paymentService
         .addPayment(partialPayment)
         .then(() => {
-          this.showSnackBar('Payment Applied Successfully!', 'success');
+          this.snackbarService.show('Payment Applied Successfully!', 'success');
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
           this.recPymtInvoiceData = { customer: {} } as Invoice;
           this.paymentFormInputs.reset();
           this.isProcessing2 = false;
         })
         .catch((error) => {
-          this.showSnackBar(error.message, 'error');
+          this.snackbarService.show(error.message, 'error');
           console.log(error.message);
         });
     } else {
-      this.showSnackBar('Invalid Action', 'error');
+      this.snackbarService.show('Invalid Action', 'error');
       console.log('Form is invalid');
     }
+  }
+
+  isProcessing3 = false;
+  voidInvoice(invoiceData: Invoice) {
+    this.isProcessing3 = true;
+    this.invoiceService
+      .voidInvoice(invoiceData.id)
+      .then(() => {
+        this.isProcessing3 = false;
+        this.snackbarService.show('Invoice Voided Successfully', 'success');
+        this.populateInvoiceTable(this.currentYear, this.currentMonth);
+      })
+      .catch(() => {
+        this.snackbarService.show('Error Voiding Invoice', 'error');
+      });
   }
 }

@@ -341,4 +341,67 @@ export class InvoicesService {
       throw new Error('Failed to check and update past due invoices.');
     }
   }
+
+  async voidInvoice(invoiceId: string): Promise<void> {
+    const db = this.firestore; // Firestore instance
+    const batch = writeBatch(db); // Firestore batch operation
+    const invoiceRef = doc(db, `invoices/${invoiceId}`);
+
+    try {
+      const invoiceSnap = await getDoc(invoiceRef);
+      if (!invoiceSnap.exists()) {
+        throw new Error(`Invoice ${invoiceId} does not exist.`);
+      }
+
+      const invoiceData = invoiceSnap.data();
+      const productsCollection = collection(db, 'products');
+      const userRef = doc(db, `users/${invoiceData['customer'].id}`);
+
+      // Restore product quantities & update invoice items to zero
+      const updatedProducts = invoiceData['products'].map(async (item: any) => {
+        const productRef = doc(productsCollection, item.id);
+        const productSnap = await getDoc(productRef);
+
+        if (!productSnap.exists()) {
+          throw new Error(`Product ${item.id} does not exist.`);
+        }
+
+        const productData = productSnap.data();
+        const restoredQuantity = productData?.['quantity'] + item.quantity;
+
+        batch.update(productRef, { quantity: restoredQuantity });
+
+        // Update invoice item quantities to 0
+        return { ...item, quantity: 0, price: 0, total: 0 };
+      });
+
+      // Revert user balance
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        throw new Error(`User ${invoiceData['customer'].id} does not exist.`);
+      }
+
+      const userData = userSnap.data();
+      const newBalance = userData['accountBalance'] - invoiceData['grandTotal'];
+      batch.update(userRef, { accountBalance: newBalance });
+
+      // Mark invoice as voided
+      batch.update(invoiceRef, {
+        invoiceStatus: 'Voided',
+        products: await Promise.all(updatedProducts),
+        discount: 0,
+        invoiceBalance: 0,
+        subTotal: 0,
+        taxTotal: 0,
+        grandTotal: 0,
+      });
+
+      // Commit the batch
+      await batch.commit();
+      console.log(`Invoice ${invoiceId} has been voided successfully.`);
+    } catch (error: any) {
+      console.error('Error voiding invoice:', error.message);
+      throw new Error(error.message);
+    }
+  }
 }

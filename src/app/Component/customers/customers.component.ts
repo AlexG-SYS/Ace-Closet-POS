@@ -7,7 +7,6 @@ import {
 } from '@angular/forms';
 import { UsersService } from '../../Service/users.service';
 import { User } from '../../DataModels/userData.model';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DecimalPipe } from '@angular/common';
@@ -17,13 +16,13 @@ import { InvoicesService } from '../../Service/invoices.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { PaymentsService } from '../../Service/payments.service';
 import { Payment } from '../../DataModels/paymentData.model';
+import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
   selector: 'app-customers',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatSnackBarModule,
     MatTableModule,
     DecimalPipe,
     MatPaginatorModule,
@@ -131,7 +130,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     private invoiceService: InvoicesService,
     private paymentService: PaymentsService,
     private bankAccountsService: BankAccountsService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {
     this.displaySmall = window.innerWidth < 768;
   }
@@ -194,12 +193,12 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewCustomerForm();
           this.modalData = false;
-          this.showSnackBar('User Added Successfully!', 'success');
+          this.snackbarService.show('User Added Successfully!', 'success');
           this.populateUsersTable('active');
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(`Failed to Add User`, 'error');
+          this.snackbarService.show(`Failed to Add User`, 'error');
           console.log(error.message);
         });
     } else {
@@ -223,7 +222,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         this.dataSource.data = this.activeUsers;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Users Failed`, 'error');
+        this.snackbarService.show(`Retrieving Users Failed`, 'error');
         console.error('Error Retrieving Active Users:', error);
       });
 
@@ -232,15 +231,6 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     } else {
       this.userTableStatus = 'inactive';
     }
-  }
-
-  showSnackBar(message: string, type: string) {
-    this.snackBar.open(message, '', {
-      duration: 5000,
-      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar',
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-    });
   }
 
   showUserData(data: User) {
@@ -257,7 +247,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         this.dataSourceInvoice.paginator = this.paginatorInvoice;
       })
       .catch((error) => {
-        this.showSnackBar(`Retrieving Invoices Failed`, 'error');
+        this.snackbarService.show(`Retrieving Invoices Failed`, 'error');
         console.error('Error Retrieving Active Invoices:', error);
       });
   }
@@ -318,7 +308,10 @@ export class CustomersComponent implements AfterViewInit, OnInit {
 
       if (!this.customerForm.value.id) {
         console.error('User ID is missing');
-        this.showSnackBar('Failed to Update User: Missing User ID', 'error');
+        this.snackbarService.show(
+          'Failed to Update User: Missing User ID',
+          'error'
+        );
         return;
       }
       this.userService
@@ -326,12 +319,12 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.clearNewCustomerForm();
           this.modalData = false;
-          this.showSnackBar('User Updated Successfully!', 'success');
+          this.snackbarService.show('User Updated Successfully!', 'success');
           this.populateUsersTable('active');
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar('Failed to Update User', 'error');
+          this.snackbarService.show('Failed to Update User', 'error');
           console.error('Error Updating User:', error.message);
         });
     } else {
@@ -396,18 +389,18 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       this.paymentService
         .addCreditToCustomer(partialPayment)
         .then(() => {
-          this.showSnackBar('Payment Applied Successfully!', 'success');
+          this.snackbarService.show('Payment Applied Successfully!', 'success');
           this.populateUsersTable('active');
           this.customerData = {} as User;
           this.paymentFormInputs.reset();
           this.isProcessing = false;
         })
         .catch((error) => {
-          this.showSnackBar(error.message, 'error');
+          this.snackbarService.show(error.message, 'error');
           console.log(error.message);
         });
     } else {
-      this.showSnackBar('Invalid Action', 'error');
+      this.snackbarService.show('Invalid Action', 'error');
       console.log('Form is invalid');
     }
   }
