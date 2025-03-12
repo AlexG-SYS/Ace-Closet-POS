@@ -40,7 +40,7 @@ export class TransactionsService {
       // Fetch bank account details
       const bankAccountSnap = await getDoc(bankAccountRef);
       if (!bankAccountSnap.exists()) {
-        throw new Error(`Bank account ${data.bankName} does not exist.`);
+        throw new Error(`Bank Account ${data.bankName} Does not Exist.`);
       }
 
       const bankAccountData = bankAccountSnap.data();
@@ -59,7 +59,7 @@ export class TransactionsService {
 
       // Ensure balance does not go negative
       if (currentBalance < 0) {
-        throw new Error('Insufficient funds in the account.');
+        throw new Error('Insufficient Funds in the Account.');
       }
 
       // Update the bank account balance
@@ -74,7 +74,7 @@ export class TransactionsService {
 
       return transactionRef;
     } catch (error: any) {
-      console.error('Error adding transaction:', error.message);
+      console.error('Error Adding Transaction:', error.message);
       throw new Error(error.message);
     }
   }
@@ -90,13 +90,13 @@ export class TransactionsService {
       // Fetch old bank account details
       const oldBankSnap = await getDoc(oldBankAccountRef);
       if (!oldBankSnap.exists()) {
-        throw new Error(`Old bank account ${data.oldBankName} does not exist.`);
+        throw new Error(`Old Bank Account ${data.oldBankName} Does not Exist.`);
       }
 
       // Fetch new bank account details
       const newBankSnap = await getDoc(newBankAccountRef);
       if (!newBankSnap.exists()) {
-        throw new Error(`New bank account ${data.newBankName} does not exist.`);
+        throw new Error(`New Bank Account ${data.newBankName} Does not Exist.`);
       }
 
       let oldBalance = oldBankSnap.data()?.['balance'] || 0;
@@ -104,7 +104,7 @@ export class TransactionsService {
 
       // Ensure the old account has enough funds to transfer
       if (oldBalance < data.amount) {
-        throw new Error(`Insufficient funds in account: ${data.oldBankName}`);
+        throw new Error(`Insufficient Funds in Account: ${data.oldBankName}`);
       }
 
       // Deduct from old account
@@ -159,7 +159,7 @@ export class TransactionsService {
 
       return { withdrawTransactionRef, depositTransactionRef };
     } catch (error: any) {
-      console.error('Error processing bank transfer:', error.message);
+      console.error('Error Processing Bank Transfer:', error.message);
       throw new Error(error.message);
     }
   }
@@ -184,9 +184,9 @@ export class TransactionsService {
 
       return transactions; // Return the list of transactions if successful
     } catch (error) {
-      console.error('Error retrieving transactions: ', error);
+      console.error('Error Retrieving Transactions: ', error);
       throw new Error(
-        'Failed to retrieve transactions. Please try again later.'
+        'Failed to Retrieve Transactions. Please try Again Later.'
       );
     }
   }
@@ -216,9 +216,9 @@ export class TransactionsService {
 
       return transactions;
     } catch (error) {
-      console.error('Error retrieving transactions: ', error);
+      console.error('Error Retrieving Transactions: ', error);
       throw new Error(
-        'Failed to retrieve transactions. Please try again later.'
+        'Failed to Retrieve Transactions. Please try Again Later.'
       );
     }
   }
@@ -228,24 +228,26 @@ export class TransactionsService {
     endDate: string
   ): Promise<any[]> {
     try {
-      // Parse start and end dates into timestamps
       const [startYear, startMonth, startDay] = startDate
         .split('-')
         .map(Number);
-
       const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+
+      const startTimestamp = Timestamp.fromDate(
+        new Date(startYear, startMonth - 1, startDay)
+      );
+
+      const endTimestamp = Timestamp.fromDate(
+        new Date(endYear, endMonth - 1, endDay)
+      );
 
       // Create a query to fetch payments within the specified date range
       const paymentsQuery = query(
         this.transactionsCollection,
         where('type', '==', 'Expense'),
-        where('year', '>=', startYear),
-        where('year', '<=', endYear),
-        where('month', '>=', startMonth),
-        where('month', '<=', endMonth),
-        where('day', '>=', startDay),
-        where('day', '<=', endDay),
-        orderBy('createdAt', 'desc')
+        where('timestamp', '>=', startTimestamp),
+        where('timestamp', '<=', endTimestamp),
+        orderBy('timestamp', 'desc')
       );
 
       // Execute the query and retrieve the documents
@@ -259,8 +261,8 @@ export class TransactionsService {
 
       return payments; // Return the list of payments
     } catch (error) {
-      console.error('Error retrieving expense by date range: ', error);
-      throw new Error('Failed to retrieve expense. Please try again later.');
+      console.error('Error Retrieving Expense by Date Range: ', error);
+      throw new Error('Failed to Retrieve Expense. Please try Again Later.');
     }
   }
 
@@ -286,8 +288,77 @@ export class TransactionsService {
 
       return payments; // Return the list of payments
     } catch (error) {
-      console.error('Error retrieving expense by month and year: ', error);
-      throw new Error('Failed to retrieve expense. Please try again later.');
+      console.error('Error Retrieving Expense by Month and Year: ', error);
+      throw new Error('Failed to Retrieve Expense. Please try Again Later.');
+    }
+  }
+
+  async voidTransaction(transactionId: string): Promise<void> {
+    const db = this.firestore;
+    const transactionRef = doc(db, `transactions/${transactionId}`);
+
+    try {
+      const transactionSnap = await getDoc(transactionRef);
+      if (!transactionSnap.exists()) {
+        throw new Error(`Transaction ${transactionId} does not exist.`);
+      }
+
+      const transactionData = transactionSnap.data();
+      if (!transactionData) {
+        throw new Error(`Invalid transaction data for ${transactionId}.`);
+      }
+
+      const bankAccountRef = doc(
+        db,
+        `bankAccounts/${transactionData['bankAccountId']}`
+      );
+      const bankAccountSnap = await getDoc(bankAccountRef);
+      if (!bankAccountSnap.exists()) {
+        throw new Error(
+          `Bank Account ${transactionData['bankAccountId']} does not exist.`
+        );
+      }
+
+      const bankAccountData = bankAccountSnap.data();
+      let currentBalance = bankAccountData?.['balance'] || 0;
+
+      const batch = writeBatch(db);
+
+      switch (transactionData['type']) {
+        case 'Deposit':
+          currentBalance -= transactionData['amount'];
+          break;
+        case 'Expense':
+        case 'Withdraw':
+        case 'Asset Purchase':
+          currentBalance += transactionData['amount'];
+          break;
+        default:
+          throw new Error(
+            `Unknown transaction type: ${transactionData['type']}`
+          );
+      }
+
+      // Ensure balance is not negative
+      if (currentBalance < 0) {
+        throw new Error(
+          'Voiding this transaction would result in negative balance.'
+        );
+      }
+
+      // Update bank account balance
+      batch.update(bankAccountRef, { balance: currentBalance });
+
+      // Mark the transaction as voided instead of deleting it
+      batch.update(transactionRef, {
+        status: 'Voided',
+        voidedAt: Timestamp.now(),
+      });
+
+      await batch.commit();
+    } catch (error: any) {
+      console.error('Error voiding transaction:', error.message);
+      throw new Error(error.message);
     }
   }
 }

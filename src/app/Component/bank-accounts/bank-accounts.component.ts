@@ -14,6 +14,7 @@ import {
 import { Transactions } from '../../DataModels/transactionsData.model';
 import { TransactionsService } from '../../Service/transactions.service';
 import { SnackbarService } from '../../Service/snackbar.service';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-bank-accounts',
@@ -266,6 +267,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         })
         .catch((error) => {
           this.snackbarService.show(`Failed to Add Bank Account`, 'error');
+          this.isProcessing = false;
           console.log(error.message);
         });
     } else {
@@ -397,6 +399,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         day,
         month,
         year,
+        timestamp: Timestamp.fromDate(new Date(year, month - 1, day)),
       };
 
       this.transactionService
@@ -410,6 +413,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         })
         .catch((error) => {
           this.snackbarService.show(error.message, 'error');
+          this.isProcessing = false;
           console.error(error.message);
         });
     } else {
@@ -509,6 +513,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         day: day,
         month: month,
         year: year,
+        timestamp: Timestamp.fromDate(new Date(year, month - 1, day)),
       };
 
       this.transactionService
@@ -522,6 +527,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         })
         .catch((error) => {
           this.snackbarService.show(error.message, 'error');
+          this.isProcessing = false;
           console.log(error.message);
         });
     } else {
@@ -545,5 +551,21 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
       );
       bankTransactionViewModal.show();
     }
+  }
+
+  isProcessing2 = false;
+  voidTransaction() {
+    this.isProcessing2 = true;
+    this.transactionService
+      .voidTransaction(this.showTransactionData.id)
+      .then(() => {
+        this.isProcessing2 = false;
+        this.snackbarService.show('Transaction Voided Successfully', 'success');
+        this.populateTransactionTable(this.currentYear, this.currentMonth);
+        this.populateBankAccount();
+      })
+      .catch(() => {
+        this.snackbarService.show('Error Voiding Transaction', 'error');
+      });
   }
 }

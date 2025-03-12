@@ -19,6 +19,7 @@ import { tap } from 'rxjs';
   styleUrl: './login-page.component.scss',
 })
 export class LoginPageComponent {
+  logoPath = '../../../assets/aceClosetLogoFull.png'; // Default image
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
@@ -43,6 +44,13 @@ export class LoginPageComponent {
           console.error('Logout Error:', error);
         },
       });
+
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+
+    this.logoPath =
+      savedTheme === 'dark-mode'
+        ? '../../../assets/aceClosetLogoFullLight.png'
+        : '../../../assets/aceClosetLogoFull.png';
   }
 
   loginError: string | null = null;

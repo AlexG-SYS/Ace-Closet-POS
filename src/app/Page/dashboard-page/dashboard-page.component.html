@@ -9,7 +9,7 @@
                 </div>
             </div>
             <div class="px-2 py-3 d-flex justify-content-center">
-                <img src="../../../assets/aceClosetLogoFull.png" alt="Logo" width="35%">
+                <img [src]="logoPath" alt="Logo" class="logo" width="35%">
             </div>
             <li class="nav-item pb-1">
                 <a class="nav-link" routerLink="/dashboard/home" routerLinkActive="active" (click)="toggleSidebar()">
@@ -97,14 +97,16 @@
                             <i class="bi bi-sun fs-4"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" type="button"> <i class="bi bi-sun pe-2"></i>Light</a></li>
-                            <li><a class="dropdown-item" type="button"> <i class="bi bi-moon-stars pe-2"></i>Dark</a>
+                            <li><a class="dropdown-item" type="button" (click)="toggleTheme('light-mode')"> <i
+                                        class="bi bi-sun pe-2"></i>Light</a></li>
+                            <li><a class="dropdown-item" type="button" (click)="toggleTheme('dark-mode')"> <i
+                                        class="bi bi-moon-stars pe-2"></i>Dark</a>
                             </li>
                         </ul>
                     </div>
 
                     <!-- Bell Icon Dropdown -->
-                    <div class="dropdown me-3">
+                    <!-- <div class="dropdown me-3">
                         <a class="dashTopIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-bell fs-4"></i>
                         </a>
@@ -112,7 +114,7 @@
                             <li><a class="dropdown-item" type="button">All Notifications</a></li>
                             <li><a class="dropdown-item" type="button">Unread Notifications</a></li>
                         </ul>
-                    </div>
+                    </div> -->
 
                     <!-- Person Icon Dropdown -->
                     <div class="dropdown me-1">
@@ -120,9 +122,11 @@
                             <i class="bi bi-person-circle fs-4"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" type="button"><i class="bi bi-person pe-2"></i>My Profile</a>
+                            <li><a class="dropdown-item" type="button" data-bs-target="#viewUserProfile"
+                                    data-bs-toggle="modal"><i class="bi bi-person pe-2"></i>My Profile</a>
                             </li>
-                            <li><a class="dropdown-item" type="button"><i class="bi bi-gear pe-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" type="button" routerLink="/dashboard/settings"><i
+                                        class="bi bi-gear pe-2"></i>Settings</a></li>
                             <li class="logout text-center"><a class="dropdown-item" type="button"
                                     (click)="logout()">Logout<i class="bi bi-box-arrow-in-right ps-2"></i></a></li>
                         </ul>
@@ -134,6 +138,36 @@
         <div class="row">
             <div class="col pt-2">
                 <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To User Profile  -->
+<div class="modal fade" id="viewUserProfile" data-bs-backdrop="static" tabindex="-1" #viewUserProfile>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">My Profile</span>
+                    </div>
+                </div>
+                <div class="container-fluid">
+
+                </div>
+                <hr class="my-4">
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

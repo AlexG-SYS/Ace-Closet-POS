@@ -1,18 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
+/* Define Light and Dark Mode Variables */
+:root {
+    --bg-color: #f4f5fa;
+    --text-color: #000;
+    --primary-color: #497ffc;
+    --secondary-color: #ffffff;
+    --third-color: #f9f9f9;
+    --snackbar-success: rgba(54, 106, 226, 0.9);
+    --snackbar-error: rgba(240, 26, 40, 0.9);
+    --hover-color: rgba(46, 38, 61, 0.08);
+    --icon-color: invert(0%);
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #fff;
+    --primary-color: #497ffc;
+    --secondary-color: #303030;
+    --third-color: #484848;
+    --snackbar-success: rgba(54, 106, 226, 0.9);
+    --snackbar-error: rgba(240, 26, 40, 0.9);
+    --hover-color: rgba(255, 255, 255, 0.1);
+    --icon-color: invert(100%);
+}
 
 html,
 body {
     height: 100%;
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
-    background-color: #f4f5fa;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     scrollbar-width: thin;
-    scrollbar-color: #a3a3a3 #f1f1f1;
+    scrollbar-color: #a3a3a3 var(--bg-color);
 }
 
 .btn-primary {
-    border: solid 1px #497ffc;
-    background-color: #497ffc;
+    border: solid 1px var(--primary-color);
+    background-color: var(--primary-color);
     border-radius: 1rem;
 }
 
@@ -22,32 +47,37 @@ body {
 
 .dropdown-item {
     padding: 8px 16px;
+    color: var(--text-color);
 }
 
 .dropdown-item:hover {
-    background: rgba(46, 38, 61, .08);
+    color: var(--text-color);
+    background: var(--hover-color);
 }
 
 .dropdown-item:active {
-    color: #497ffc;
+    color: var(--primary-color);
 }
 
 .dropdown-menu {
+    background-color: var(--secondary-color);
     border-radius: 1rem;
 }
+
 
 .card {
     border-radius: 1rem;
     box-shadow: 0 .25rem .625rem rgba(46, 38, 61, .2);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
 }
 
 /* Success Snackbar Style */
 .success-snackbar {
     z-index: 1100 !important;
 
-    /* Higher than Bootstrap modal z-index */
     .mat-mdc-snackbar-surface {
-        background-color: rgba(54, 106, 226, 0.9) !important;
+        background-color: var(--snackbar-success) !important;
         border-radius: 1rem !important;
         color: white !important;
     }
@@ -67,7 +97,7 @@ body {
 
     .mat-mdc-snackbar-surface {
         text-align: center !important;
-        background-color: rgba(240, 26, 40, 0.9) !important;
+        background-color: var(--snackbar-error) !important;
         border-radius: 1rem !important;
         color: white !important;
     }
@@ -79,22 +109,32 @@ body {
     .mdc-button__label {
         color: white !important;
     }
-
 }
 
 .text-danger {
     color: #ff4c51 !important;
 }
 
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    color: var(--text-color);
+    pointer-events: auto;
+    background-color: var(--secondary-color);
+    background-clip: padding-box;
+    border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+    border-radius: var(--bs-modal-border-radius);
+    outline: 0px;
+}
 
 .modal-backdrop {
     z-index: 900 !important;
-    /* Lower than the snackbar */
 }
 
 .modal {
     z-index: 950 !important;
-    /* Lower than the snackbar */
 }
 
 .paid {
@@ -115,6 +155,7 @@ body {
 .pending {
     color: #8a8d93;
     background-color: #ecedee;
+
     font-size: smaller;
     font-weight: 500;
 }
@@ -128,4 +169,88 @@ body {
 
 .badge {
     line-height: 1.375;
+}
+
+
+mat-cell {
+    color: var(--text-color);
+}
+
+mat-header-cell {
+    color: var(--text-color);
+}
+
+.form-select {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+    cursor: pointer;
+    width: 100% !important;
+    background-color: var(--bg-color);
+    font-weight: 500;
+}
+
+.mat-mdc-table {
+    background-color: (var(--secondary-color)) !important;
+    overflow: auto;
+}
+
+.mat-mdc-paginator {
+    background-color: (var(--secondary-color)) !important;
+    color: var(--text-color) !important;
+}
+
+input[type="date"] {
+
+    background-color: var(--secondary-color);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: var(--icon-color);
+}
+
+.form-control {
+    background-color: var(--secondary-color);
+}
+
+.form-control::placeholder {
+    color: var(--text-color);
+    /* Change to your desired color */
+    opacity: .6;
+    /* Ensures visibility in some browsers */
+}
+
+.form-control:focus {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    /* Change to your desired color */
+    opacity: 1;
+    /* Ensures visibility in some browsers */
+}
+
+.form-control:not(:placeholder-shown) {
+    color: var(--text-color);
+    /* Change to desired color */
+}
+
+.mat-mdc-paginator-icon {
+    fill: var(--text-color) !important;
+}
+
+.input-group-text {
+    background-color: var(--third-color);
+    color: var(--text-color);
+}
+
+input[readonly],
+textarea[readonly] {
+    background-color: var(--third-color) !important;
+    color: var(--text-color) !important;
+    cursor: not-allowed;
+}
+
+.btn-close {
+    filter: var(--icon-color);
 }

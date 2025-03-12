@@ -17,6 +17,7 @@ import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { PaymentsService } from '../../Service/payments.service';
 import { Payment } from '../../DataModels/paymentData.model';
 import { SnackbarService } from '../../Service/snackbar.service';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-customers',
@@ -95,6 +96,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     'name',
     'total',
     'balance',
+    'dueDate',
   ];
   dataSource = new MatTableDataSource(this.activeUsers);
   dataSourceInvoice = new MatTableDataSource(this.activeUsersInvoice);
@@ -382,6 +384,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         day: day,
         month: month,
         year: year,
+        timestamp: Timestamp.fromDate(new Date(year, month - 1, day)),
         paymentMethod: this.getBankAccountName(formData.bankAccountId!) || '',
         bankAccountId: formData.bankAccountId || '',
       };
@@ -408,5 +411,47 @@ export class CustomersComponent implements AfterViewInit, OnInit {
   clearPaymentForm() {
     this.paymentFormInputs.reset();
     this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
+  }
+
+  convertDate(day: number, month: number, year: number): string {
+    if (day != undefined && month != undefined && year != undefined) {
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+
+      // Ensure day and month are in the correct format (e.g., 01 instead of 1)
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+      const formattedMonth = months[month - 1]; // Use the month index directly
+
+      if (formattedMonth === undefined) {
+        console.log('Invalid month. Please provide a month between 0 and 11.');
+      }
+
+      return `${formattedMonth} ${formattedDay}, ${year}`;
+    } else {
+      return '';
+    }
+  }
+
+  formatDate(inputDate: string): string {
+    if (inputDate != undefined) {
+      const [year, month, day] = inputDate.split('-').map(Number);
+
+      // Adjust month to match 0-based index used in convertDate
+      return this.convertDate(day, month, year);
+    } else {
+      return '';
+    }
   }
 }

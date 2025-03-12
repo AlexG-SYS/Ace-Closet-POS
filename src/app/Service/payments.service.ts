@@ -296,9 +296,8 @@ export class PaymentsService {
 
       // Mark the payment as voided
       batch.update(paymentRef, {
-        amount: 0,
-        status: 'voided',
-        updatedAt: Timestamp.now(),
+        status: 'Voided',
+        voidedAt: Timestamp.now(),
       });
 
       // Commit the batch operation

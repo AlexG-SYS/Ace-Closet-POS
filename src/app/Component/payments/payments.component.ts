@@ -18,6 +18,7 @@ import { InvoicesService } from '../../Service/invoices.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { UsersService } from '../../Service/users.service';
 import { SnackbarService } from '../../Service/snackbar.service';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-payments',
@@ -294,6 +295,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
         day: day,
         month: month,
         year: year,
+        timestamp: Timestamp.fromDate(new Date(year, month - 1, day)),
         paymentMethod: this.getBankAccountName(formData.bankAccountId!) || '',
         bankAccountId: formData.bankAccountId || '',
       };

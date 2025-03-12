@@ -20,6 +20,7 @@ export interface Invoice {
   year: number;
   month: number;
   day: number;
+  timestamp: Timestamp;
   createdAt: Timestamp; // Timestamp when the invoice was issued
   updatedAt: Timestamp; // Timestamp for the last update
 }

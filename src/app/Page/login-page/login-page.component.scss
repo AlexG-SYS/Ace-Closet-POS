@@ -1,9 +1,9 @@
 .backgroundColor {
-    background-color: #fff;
+    background-color: var(--secondary-color);
 }
 
 .input-group-text {
-    background-color: inherit;
+    background-color: none;
 }
 
 .forgotPwdLink {

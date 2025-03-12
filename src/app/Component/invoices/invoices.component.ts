@@ -21,6 +21,7 @@ import { Payment } from '../../DataModels/paymentData.model';
 import { PaymentsService } from '../../Service/payments.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { SnackbarService } from '../../Service/snackbar.service';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-invoices',
@@ -37,6 +38,7 @@ import { SnackbarService } from '../../Service/snackbar.service';
   styleUrl: './invoices.component.scss',
 })
 export class InvoicesComponent implements AfterViewInit, OnInit {
+  logoPath = '../../../assets/aceClosetLogoFull.png'; // Default image
   today = new Date();
   formattedDate = this.today.toLocaleDateString('en-CA');
   tableRow = 6;
@@ -204,7 +206,14 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     private paymentService: PaymentsService,
     private snackbarService: SnackbarService,
     private bankAccountsService: BankAccountsService
-  ) {}
+  ) {
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+
+    this.logoPath =
+      savedTheme === 'dark-mode'
+        ? '../../../assets/aceClosetLogoFullLight.png'
+        : '../../../assets/aceClosetLogoFull.png';
+  }
 
   ngOnInit(): void {
     this.dataSource.filterPredicate = (data: any, filter: string) => {
@@ -342,11 +351,13 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         this.paidQty++;
         this.paidTotal += invoice.grandTotal;
       } else if (
-        invoice.invoiceStatus == 'Partial' ||
         invoice.invoiceStatus == 'Past Due' ||
         invoice.invoiceStatus == 'Pending'
       ) {
         this.unpaidQty++;
+        this.unpaidTotal += invoice.invoiceBalance;
+      } else if (invoice.invoiceStatus == 'Partial') {
+        this.paidTotal += invoice.grandTotal - invoice.invoiceBalance;
         this.unpaidTotal += invoice.invoiceBalance;
       }
     });
@@ -679,6 +690,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         year: year,
         month: month,
         day: day,
+        timestamp: Timestamp.fromDate(new Date(year, month - 1, day)),
       };
 
       // Add Invoice and handle success or error
@@ -765,6 +777,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         day: day,
         month: month,
         year: year,
+        timestamp: Timestamp.fromDate(new Date(year, month - 1, day)),
         paymentMethod: this.getBankAccountName(formData.bankAccountId!) || '',
         bankAccountId: formData.bankAccountId || '',
       };

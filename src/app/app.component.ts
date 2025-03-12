@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthenticateService } from './Service/authenticate.service';
@@ -15,8 +15,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthenticateService, // Inject your service
-    private router: Router // Inject the router
-  ) {}
+    private router: Router, // Inject the router
+    private renderer: Renderer2
+  ) {
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+    this.setTheme(savedTheme);
+  }
 
   ngOnInit() {
     this.router.events
@@ -71,5 +75,20 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('User logged out due to inactivity.');
       this.router.navigate(['/login']); // Redirect after logout
     });
+  }
+
+  toggleTheme(theme: string) {
+    // Remove any existing theme class
+    document.body.classList.remove('light-mode', 'dark-mode');
+
+    // Apply new theme
+    this.renderer.addClass(document.body, theme);
+
+    // Save the preference
+    localStorage.setItem('theme', theme);
+  }
+
+  setTheme(theme: string) {
+    document.body.classList.add(theme);
   }
 }

@@ -238,6 +238,15 @@
                             </mat-cell>
                         </ng-container>
 
+                        <!-- Due Date Column -->
+                        <ng-container matColumnDef="dueDate">
+                            <mat-header-cell *matHeaderCellDef> Due Date
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{formatDate(element.dueDate)}}
+                            </mat-cell>
+                        </ng-container>
+
                         <mat-header-row *matHeaderRowDef="displayedColumnsInvoice"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: displayedColumnsInvoice;"></mat-row>
 

@@ -1,5 +1,5 @@
 .sidebar {
-    background-color: #f4f5fa;
+    background-color: inherit;
     position: sticky;
     top: 0;
     z-index: 800;
@@ -9,18 +9,18 @@
     position: sticky;
     top: 0;
     z-index: 800;
-    background-color: #f4f5fa;
+    background-color: inherit;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
 }
 
 .topNav.scrolled {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--hover-color);
 }
 
 .nav-link {
     cursor: pointer;
-    color: #433c50;
+    color: var(--text-color);
     border-radius: 0 50rem 50rem 0;
     padding: .6rem 1.45rem;
     font-size: 1.1rem;
@@ -33,20 +33,22 @@
 }
 
 .nav-link:hover {
-    background: #e5e6e9;
+    background: var(--hover-color);
 }
 
 .nav-link.active {
-    color: #fff;
-    box-shadow: 0 .1875rem .375rem rgb(184, 184, 186);
-    background: linear-gradient(270deg, #0d6efd 0%, #66bfff 100%);
+    color: var(--bg-color);
+    box-shadow: 0 .1875rem .375rem rgba(184, 184, 186, 0.5);
+    background: linear-gradient(270deg, var(--primary-color) 0%, #66bfff 100%);
 }
+
+
 
 .scrollable {
     overflow-y: auto;
     height: 100%;
     scrollbar-width: thin;
-    scrollbar-color: #a3a3a3 #f1f1f1;
+    scrollbar-color: var(--text-color) var(--bg-color);
 }
 
 .dashTopIcon {
@@ -55,17 +57,15 @@
 }
 
 .dashTopIcon:hover {
-    color: #497ffc;
+    color: var(--primary-color);
 }
 
 .logout {
     border-radius: 1rem;
     margin: 8px 16px;
-    background-color: #ff4c51;
-    border-color: #ff4c51;
-}
+    background-color: var(--snackbar-error);
+    border-color: var(--snackbar-error);
 
-.logout {
     .dropdown-item {
         color: #fff;
         background-color: inherit;
@@ -73,12 +73,18 @@
     }
 
     .dropdown-item:hover {
-        background-color: #ea3339;
-
+        background-color: var(--snackbar-error);
     }
 }
 
-
+.topNav {
+    position: sticky;
+    top: 0;
+    z-index: 800;
+    background-color: var(--bg-color);
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
 
 @media (max-width: 992px) {
     .vh-100 {
@@ -93,7 +99,7 @@
     }
 
     .sidebar {
-        background-color: #f4f5fa;
+        background-color: var(--bg-color);
         box-shadow: 0 .3875rem .575rem rgba(46, 38, 61, .18);
         border-top-right-radius: 1rem;
         border-bottom-right-radius: 1rem;
@@ -107,7 +113,6 @@
         right: 0;
         z-index: 999;
     }
-
 }
 
 @media (max-width: 850px) {

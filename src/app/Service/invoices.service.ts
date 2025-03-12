@@ -167,19 +167,22 @@ export class InvoicesService {
       const [startYear, startMonth, startDay] = startDate
         .split('-')
         .map(Number);
-
       const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+
+      const startTimestamp = Timestamp.fromDate(
+        new Date(startYear, startMonth - 1, startDay)
+      );
+
+      const endTimestamp = Timestamp.fromDate(
+        new Date(endYear, endMonth - 1, endDay)
+      );
 
       // Create a query to fetch invoices within the specified date range
       const invoicesQuery = query(
         this.invoicesCollection,
-        where('year', '>=', startYear),
-        where('year', '<=', endYear),
-        where('month', '>=', startMonth),
-        where('month', '<=', endMonth),
-        where('day', '>=', startDay),
-        where('day', '<=', endDay),
-        orderBy('invoiceNumber', 'desc')
+        where('timestamp', '>=', startTimestamp),
+        where('timestamp', '<=', endTimestamp),
+        orderBy('invoiceNumber', 'desc') // Sort by latest first
       );
 
       // Execute the query and get the documents
@@ -394,6 +397,7 @@ export class InvoicesService {
         subTotal: 0,
         taxTotal: 0,
         grandTotal: 0,
+        voidedAt: Timestamp.now(),
       });
 
       // Commit the batch

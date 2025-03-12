@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Renderer2 } from '@angular/core';
 import {
   RouterOutlet,
   Router,
@@ -28,7 +28,19 @@ export class DashboardPageComponent {
     this.isSidebarVisible = !this.isSidebarVisible;
   }
 
-  constructor(private router: Router, private globalService: GlobalService) {
+  constructor(
+    private router: Router,
+    private globalService: GlobalService,
+    private renderer: Renderer2
+  ) {
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+    this.setTheme(savedTheme);
+
+    this.logoPath =
+      savedTheme === 'dark-mode'
+        ? '../../../assets/aceClosetLogoFullLight.png'
+        : '../../../assets/aceClosetLogoFull.png';
+
     // Set greeting message based on time of day
     this.setGreetingMessage();
 
@@ -85,5 +97,27 @@ export class DashboardPageComponent {
           console.error('Logout Error:', error);
         },
       });
+  }
+
+  logoPath = '../../../assets/aceClosetLogoFull.png'; // Default image
+  toggleTheme(theme: string) {
+    // Remove any existing theme class
+    document.body.classList.remove('light-mode', 'dark-mode');
+
+    // Apply new theme
+    this.renderer.addClass(document.body, theme);
+
+    // Save the preference
+    localStorage.setItem('theme', theme);
+
+    // Update logo image dynamically
+    this.logoPath =
+      theme === 'dark-mode'
+        ? '../../../assets/aceClosetLogoFullLight.png'
+        : '../../../assets/aceClosetLogoFull.png';
+  }
+
+  setTheme(theme: string) {
+    document.body.classList.add(theme);
   }
 }

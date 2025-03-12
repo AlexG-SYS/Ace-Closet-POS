@@ -2,8 +2,11 @@
     font-size: 1.2rem !important;
 }
 
+.hoverColor {
+    color: var(--text-color);
+}
+
 .hoverColor:hover {
-    cursor: pointer;
     color: #497ffc;
 }
 
