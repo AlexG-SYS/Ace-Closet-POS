@@ -1,1 +1,430 @@
-<p>refunds works!</p>
+<div class="conatiner px-2">
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="text" class="form-control" id="searchRefund" placeholder="Search Refund"
+                                autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButtonRefund" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                        </form>
+
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row">
+                                <div class="col-auto px-2 d-none d-sm-block">
+                                    <select class="form-select" formControlName="year" (change)="filterStatus()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 d-none d-sm-block">
+                                    <select class="form-select" formControlName="month" (change)="filterStatus()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto p-0 pe-2">
+                                    <!-- Button to Open the New Refund Modal -->
+                                    <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                                        data-bs-target="#newRefundModal" (click)="processRefund()">
+                                        <i class="bi bi-plus-lg"></i>
+                                        <span class=" ps-1">New</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="row p-2 pb-0 d-block d-sm-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row ps-1 pb-0 pt-1">
+                                <div class="col-auto px-2 ">
+                                    <select class="form-select" formControlName="year" (change)="filterStatus()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 ">
+                                    <select class="form-select" formControlName="month" (change)="filterStatus()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+
+                            <!-- Invoice Num Column  -->
+                            <ng-container matColumnDef="invoiceNum">
+                                <mat-header-cell *matHeaderCellDef>Inv. Num.
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.invoiceNumber}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Customer Name Column  -->
+                            <ng-container matColumnDef="customerName">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Customer Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.customerName}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Amount Column  -->
+                            <ng-container matColumnDef="total">
+                                <mat-header-cell *matHeaderCellDef> Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.amount | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Payment Method Colum -->
+                            <ng-container matColumnDef="pymtMethod">
+                                <mat-header-cell *matHeaderCellDef> Pymt. Method
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.paymentMethod}}
+                                    @if(element.status){
+                                    <span class="text-danger ps-1 fw-medium">({{element.status}})</span>
+                                    }
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Date Column  -->
+                            <ng-container matColumnDef="date">
+                                <mat-header-cell *matHeaderCellDef> Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{convertDate(element.day, element.month ,element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Options Column -->
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                    <i class="bi bi-eye-fill hoverColor" (click)="refundInfoPopulate(element)"></i>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                        </table>
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row d-flex align-items-end">
+                        <div class="col p-0">
+                            <mat-paginator [pageSizeOptions]="[tableRow]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To Process Refund  -->
+<div class="modal fade" id="newRefundModal" data-bs-backdrop="static" tabindex="-1" #newRefundModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="clearRefundForm()"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Refund Payment</span>
+                    </div>
+                </div>
+                <form class="mx-4" [formGroup]="searchInvoiceForRefundInput">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Search Invoice #"
+                            aria-label="Search Invoice" aria-describedby="button-addon2"
+                            formControlName="invoiceNumber">
+                        <button class="btn btn-light border" type="button" id="button-addon2" (click)="findInvoice()"><i
+                                class="bi bi-search"></i></button>
+                    </div>
+                </form>
+                @if(refundData.invoiceNumber != null){
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                            <div>
+                                <p class="fs-6 fw-medium">Customer To:</p>
+                                <div class="ps-2">
+                                    <p class="mb-1">{{refundData.customer.name}}</p>
+                                    <p class="mb-1">{{refundData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{refundData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{refundData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{refundData.customer.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto col-lg-auto mx-auto mx-sm-0">
+                            <div class="row pb-2 align-items-center ">
+                                <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm ">
+                                        <span class="input-group-text refundNumWidth"># {{
+                                            refundData.invoiceNumber
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Date Issued:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">
+                                            {{ convertDate(refundData.day, refundData.month,
+                                            refundData.year) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Due Date:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">{{
+                                            formatDate(refundData.dueDate)
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row align-items-center">
+                                <div class="col text-lg-end fw-normal">Balance:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">${{refundData.invoiceBalance
+                                            |
+                                            number:'1.2-2' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                <hr class="my-4">
+                @if(refundData.invoiceBalance != 0){
+                <form [formGroup]="refundFormInputs">
+                    <div class="row m-3">
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" formControlName="date">
+                            </div>
+                        </div>
+                        <div class="col col-md-6 ">
+                            <div class="mb-3">
+
+                                <label for="amount" class="form-label">Amount</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="amount" formControlName="amount">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1">
+                                <label for="pymtMethod" class="form-label">Payment Method</label>
+                                <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
+                                    @for(account of bankAccounts; track account){
+                                    <option [value]="account.id">
+                                        {{ account.bankName
+                                        }}
+                                    </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                }
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="clearRefundForm()">Cancel</button>
+                        @if(isProcessing){
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span class="visually-hidden" role="status">Loading...</span>
+                        </button>
+                        }@else{
+                        <button class="btn btn-primary" (click)="refundSubmit()"
+                            [disabled]="refundFormInputs.invalid">Save</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To View Refund  -->
+<div class="modal fade" id="refundModalView" data-bs-backdrop="static" tabindex="-1" #refundModalView>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Refund Receipt @if(recRefundData.status){
+                            <span class="text-danger ps-1">({{recRefundData.status}})</span>
+                            }</span>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                            <div>
+                                <p class="fs-6 fw-medium">Customer:</p>
+                                <div>
+                                    @if(recRefundData.customer){
+                                    <p class="mb-1">{{recRefundData.customer.name}}</p>
+                                    <p class="mb-1">{{recRefundData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{recRefundData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{recRefundData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{recRefundData.customer.email}}</p>
+                                    } @else {
+                                    <p class="mb-1">{{recRefundData.name}}</p>
+                                    <p class="mb-1">{{recRefundData.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{recRefundData.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{recRefundData.phoneNumber}}</p>
+                                    <p class="mb-0">{{recRefundData.email}}</p>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto col-lg-auto mx-auto mx-sm-0">
+                            @if(recRefundData.customer){
+                            <div class="row pb-2 align-items-center ">
+                                <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm ">
+                                        <span class="input-group-text refundNumWidth"># {{
+                                            recRefundData.invoiceNumber
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-4 align-items-center">
+                                <div class="col text-lg-end fw-normal">Inv. Balance:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">${{recRefundData.invoiceBalance
+                                            |
+                                            number:'1.2-2' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Method</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">
+                                            {{ recRefundData.paymentMethod }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Amount</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">${{
+                                            recRefundData.amount|
+                                            number:'1.2-2'
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Date</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text refundNumWidth">
+                                            {{ convertDate(recRefundData.day, recRefundData.month,
+                                            recRefundData.year) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

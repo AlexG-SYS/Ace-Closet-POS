@@ -206,7 +206,9 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
         .then((userData) => {
           if (userData) {
             // Merge userData with payment data
+            userData.status = '';
             this.recPymtData = { ...userData, ...data };
+            console.log(this.recPymtData);
           } else {
             console.log(`User with ID ${data.userId} not found.`);
             this.recPymtData = { ...data };

@@ -30,20 +30,6 @@
     color: #ff0008 !important;
 }
 
-.clearBtn {
-    position: absolute;
-    top: 50%;
-    right: .8rem;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #676a71;
-}
-
-.hoverColor:hover {
-    cursor: pointer;
-    color: #497ffc;
-}
-
 .mat-mdc-table {
     height: 329px !important;
     overflow: auto;

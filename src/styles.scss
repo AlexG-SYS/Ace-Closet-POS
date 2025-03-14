@@ -41,6 +41,19 @@ body {
     border-radius: 1rem;
 }
 
+.clearBtn {
+    position: absolute;
+    top: 53%;
+    right: .8rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #676a71;
+}
+
+.hoverColor:hover {
+    color: var(--primary-color);
+}
+
 .btn {
     border-radius: .8rem;
 }

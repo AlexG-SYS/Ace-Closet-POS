@@ -41,6 +41,7 @@ export class HomeComponent implements OnInit {
   totalCost = 0;
   totalExpense = 0;
   lastMonthTotalSales = 0;
+  lastMonthTotalProfit = 0;
   today = new Date();
   currentYear = this.today.getFullYear();
   currentMonth = this.today.getMonth() + 1;
@@ -115,7 +116,12 @@ export class HomeComponent implements OnInit {
         report.year === this.currentYear &&
         report.month === this.currentMonth - 1
     );
-    if (lastMonthReport) this.lastMonthTotalSales = lastMonthReport.totalSales;
+    if (lastMonthReport) {
+      this.lastMonthTotalSales = lastMonthReport.totalSales;
+    }
+    if (lastMonthReport) {
+      this.lastMonthTotalProfit = lastMonthReport.totalProfit;
+    }
 
     const currentMonthReport = pastReports.find(
       (report) =>
@@ -242,5 +248,12 @@ export class HomeComponent implements OnInit {
         { name: 'Expense', data: expenseData },
       ];
     }
+  }
+
+  calculatePercent(total: number, lastMonth: number) {
+    if (lastMonth === 0) {
+      return total > 0 ? 100 : 0; // Avoid division by zero
+    }
+    return ((total - lastMonth) / lastMonth) * 100;
   }
 }

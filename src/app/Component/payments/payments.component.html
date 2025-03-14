@@ -120,7 +120,7 @@
                                 <mat-cell *matCellDef="let element">
                                     {{element.paymentMethod}}
                                     @if(element.status){
-                                    <span class="text-danger ps-1">({{element.status}})</span>
+                                    <span class="text-danger ps-1 fw-medium">({{element.status}})</span>
                                     }
                                 </mat-cell>
                             </ng-container>
@@ -196,7 +196,7 @@
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto col-lg  mb-4 mb-lg-0">
                             <div>
-                                <p class="fs-6 fw-medium">Invoice To:</p>
+                                <p class="fs-6 fw-medium">Customer:</p>
                                 <div class="ps-2">
                                     <p class="mb-1">{{recPymtInvoiceData.customer.name}}</p>
                                     <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.street}}</p>
@@ -335,7 +335,7 @@
                         <div class="col-auto col-lg  mb-4 mb-lg-0">
                             <div>
                                 <p class="fs-6 fw-medium">Customer:</p>
-                                <div class="ps-2">
+                                <div>
                                     @if(recPymtData.customer){
                                     <p class="mb-1">{{recPymtData.customer.name}}</p>
                                     <p class="mb-1">{{recPymtData.customer.shippingAddress?.street}}</p>
@@ -435,7 +435,7 @@
     </div>
 </div>
 
-<!-- Modal Confirm Void Invoice  -->
+<!-- Modal Confirm Void Payment  -->
 <div class="modal fade" id="voidIConfirmModal" data-bs-backdrop="static" tabindex="-1" #voidIConfirmModal>
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content">
