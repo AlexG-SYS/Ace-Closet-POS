@@ -296,6 +296,11 @@ export class ReportsComponent {
         this.filterFormInputs.value.endDate!
       )
       .then(async (expense) => {
+        expense.forEach((doc) => {
+          if (doc.status === 'Voided') {
+            doc.amount = 0;
+          }
+        });
         this.activeExpense = expense;
         this.calcualteExpenseTotals(expense);
         this.dataSourceExpense.data = this.activeExpense;
@@ -315,6 +320,12 @@ export class ReportsComponent {
         this.filterFormInputs.value.endDate!
       )
       .then(async (expense) => {
+        expense.forEach((doc) => {
+          if (doc.status === 'Voided') {
+            doc.amount = 0;
+          }
+        });
+
         this.activeExpense = expense;
         this.calcualteExpenseTotals(expense);
         this.dataSourceExpense.data = this.activeExpense;
@@ -387,6 +398,11 @@ export class ReportsComponent {
             this.filterFormInputs.value.endDate!
           )
           .then(async (expense) => {
+            expense.forEach((doc) => {
+              if (doc.status === 'Voided') {
+                doc.amount = 0;
+              }
+            });
             this.activeExpense = expense;
             this.dataSourceExpense.data = this.activeExpense;
             this.calcualteProfitTotals(expense, invoices);
@@ -421,6 +437,11 @@ export class ReportsComponent {
             this.filterFormInputs.value.endDate!
           )
           .then(async (expense) => {
+            expense.forEach((doc) => {
+              if (doc.status === 'Voided') {
+                doc.amount = 0;
+              }
+            });
             this.activeExpense = expense;
             this.dataSourceExpense.data = this.activeExpense;
             this.calcualteProfitTotals(expense, invoices);
