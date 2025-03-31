@@ -150,6 +150,12 @@ export class HomeComponent implements OnInit {
       ),
     ]);
 
+    expenses.forEach((doc) => {
+      if (doc.status === 'Voided') {
+        doc.amount = 0;
+      }
+    });
+
     this.totalSales = invoices.reduce(
       (sum, invoice) => sum + invoice.grandTotal,
       0
