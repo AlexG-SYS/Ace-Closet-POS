@@ -52,6 +52,12 @@
                 </a>
             </li>
             <li class="nav-item pb-1">
+                <a class="nav-link" routerLink="/dashboard/refunds" routerLinkActive="active" (click)="toggleSidebar()">
+                    <i class="bi bi-cart-x pe-2"></i>
+                    Refunds
+                </a>
+            </li>
+            <li class="nav-item pb-1">
                 <a class="nav-link" routerLink="/dashboard/bank" routerLinkActive="active" (click)="toggleSidebar()">
                     <i class="bi bi-bank pe-2"></i>
                     Bank Accounts
@@ -63,12 +69,7 @@
                     Reports
                 </a>
             </li>
-            <li class="nav-item pb-1">
-                <a class="nav-link" routerLink="/dashboard/refunds" routerLinkActive="active" (click)="toggleSidebar()">
-                    <i class="bi bi-cart-x pe-2"></i>
-                    Refunds
-                </a>
-            </li>
+
             <li class="nav-item pb-4">
                 <a class="nav-link" routerLink="/dashboard/settings" routerLinkActive="active"
                     (click)="toggleSidebar()">

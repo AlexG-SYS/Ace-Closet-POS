@@ -40,7 +40,7 @@
                                 <div class="col-auto p-0 pe-2">
                                     <!-- Button to Open the New Refund Modal -->
                                     <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
-                                        data-bs-target="#newRefundModal" (click)="processRefund()">
+                                        data-bs-target="#newRefundModal" (click)="newRefund()">
                                         <i class="bi bi-plus-lg"></i>
                                         <span class=" ps-1">New</span>
                                     </button>
@@ -157,7 +157,7 @@
                     }
                     <div class="row d-flex align-items-end">
                         <div class="col p-0">
-                            <mat-paginator [pageSizeOptions]="[tableRow]" hidePageSize class="p-0"></mat-paginator>
+                            <mat-paginator [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
                 </div>
                 <div class="row justify-content-between align-items-center pb-4">
                     <div class="col d-flex justify-content-center">
-                        <span class="fs-5 fw-medium">Refund Payment</span>
+                        <span class="fs-5 fw-medium">Return Items</span>
                     </div>
                 </div>
                 <form class="mx-4" [formGroup]="searchInvoiceForRefundInput">
@@ -196,7 +196,7 @@
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto col-lg  mb-4 mb-lg-0">
                             <div>
-                                <p class="fs-6 fw-medium">Customer To:</p>
+                                <p class="fs-6 fw-medium">Customer:</p>
                                 <div class="ps-2">
                                     <p class="mb-1">{{refundData.customer.name}}</p>
                                     <p class="mb-1">{{refundData.customer.shippingAddress?.street}}</p>
@@ -231,16 +231,7 @@
                                 </div>
                             </div>
 
-                            <div class="row pb-2 align-items-center">
-                                <div class="col text-lg-end fw-normal">Due Date:</div>
-                                <div class="col">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text refundNumWidth">{{
-                                            formatDate(refundData.dueDate)
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
+
 
                             <div class="row align-items-center">
                                 <div class="col text-lg-end fw-normal">Balance:</div>
@@ -257,7 +248,42 @@
                 </div>
                 }
                 <hr class="my-4">
-                @if(refundData.invoiceBalance != 0){
+
+                @if(refundData.products.length != 0){
+                <div class="container-fluid scrollable">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th class="fw-medium"></th>
+                                <th class="fw-medium">Item</th>
+                                <th class="fw-medium">Qty</th>
+                                <th class="fw-medium">Price</th>
+                                <th class="fw-medium">Discount</th>
+                                <th class="fw-medium">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for( items of refundData.products; track items.id){
+                            <tr>
+                                <td><input type="checkbox" (change)="selectedItems(items, $event)" /></td>
+                                <td>{{ items.description}} - {{items.size}}</td>
+                                <td>{{ items.quantity}}</td>
+                                <td>${{ items.price | number:'1.2-2' }}</td>
+                                <td>${{ (items.discount / 100) * items.price * items.quantity |
+                                    number:'1.2-2' }}</td>
+                                <td>${{ (items.quantity * items.price * (1 - (items.discount
+                                    || 0) / 100)) | number:'1.2-2' }}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="my-4">
+                }
+
+
+                @if(refundData.invoiceStatus == 'Paid' || refundData.invoiceStatus == 'Partial' ||
+                refundData.invoiceStatus == 'Past Due' ||refundData.invoiceStatus == 'Pending' ){
                 <form [formGroup]="refundFormInputs">
                     <div class="row m-3">
                         <div class="col-auto col-md-6">
@@ -272,23 +298,12 @@
                                 <label for="amount" class="form-label">Amount</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="amount" formControlName="amount">
+                                    <input type="number" class="form-control" id="amount" formControlName="amount"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="mb-1">
-                                <label for="pymtMethod" class="form-label">Payment Method</label>
-                                <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
-                                    @for(account of bankAccounts; track account){
-                                    <option [value]="account.id">
-                                        {{ account.bankName
-                                        }}
-                                    </option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
+
                     </div>
                 </form>
                 }
@@ -302,8 +317,8 @@
                             <span class="visually-hidden" role="status">Loading...</span>
                         </button>
                         }@else{
-                        <button class="btn btn-primary" (click)="refundSubmit()"
-                            [disabled]="refundFormInputs.invalid">Save</button>
+                        <!-- <button class="btn btn-primary" (click)="refundSubmit()"
+                            [disabled]="refundFormInputs.invalid">Save</button> -->
                         }
                     </div>
                 </div>
@@ -313,7 +328,7 @@
 </div>
 
 <!-- Modal To View Refund  -->
-<div class="modal fade" id="refundModalView" data-bs-backdrop="static" tabindex="-1" #refundModalView>
+<!-- <div class="modal fade" id="refundModalView" data-bs-backdrop="static" tabindex="-1" #refundModalView>
     <div class="modal-dialog  modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
@@ -427,4 +442,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->

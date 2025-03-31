@@ -18,6 +18,7 @@ import { PaymentsService } from '../../Service/payments.service';
 import { Payment } from '../../DataModels/paymentData.model';
 import { SnackbarService } from '../../Service/snackbar.service';
 import { Timestamp } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-customers',
@@ -97,6 +98,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     'total',
     'balance',
     'dueDate',
+    'options',
   ];
   dataSource = new MatTableDataSource(this.activeUsers);
   dataSourceInvoice = new MatTableDataSource(this.activeUsersInvoice);
@@ -132,7 +134,8 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     private invoiceService: InvoicesService,
     private paymentService: PaymentsService,
     private bankAccountsService: BankAccountsService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private router: Router
   ) {
     this.displaySmall = window.innerWidth < 768;
   }
@@ -361,6 +364,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
         }
       })
       .catch((error) => {
+        this.snackbarService.show('Error Loading Bank Info', 'error');
         console.error('Error fetching bank accounts:', error);
       });
   }
@@ -380,6 +384,7 @@ export class CustomersComponent implements AfterViewInit, OnInit {
       const partialPayment: Partial<Payment> = {
         userId: this.customerData.id || '',
         amount: Number(formData.amount),
+        balance: Number(formData.amount),
         customerName: this.customerData.name,
         day: day,
         month: month,
@@ -453,5 +458,13 @@ export class CustomersComponent implements AfterViewInit, OnInit {
     } else {
       return '';
     }
+  }
+
+  invoicePayment(invoiceData: Invoice) {
+    this.router.navigate(['dashboard/invoices', invoiceData.id, 'pay']); // Navigates to /invoice/:id/pay
+  }
+
+  invoiceView(invoiceData: Invoice) {
+    this.router.navigate(['dashboard/invoices', invoiceData.id, 'view']); // Navigates to /invoice/:id/view
   }
 }

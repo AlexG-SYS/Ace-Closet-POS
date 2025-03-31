@@ -307,4 +307,96 @@ export class PaymentsService {
       throw new Error('Failed to void the payment.');
     }
   }
+
+  async getPaymentsByUserId(userId: string): Promise<Payment[]> {
+    try {
+      const paymentsQuery = query(
+        this.paymentsCollection,
+        where('userId', '==', userId),
+        where('balance', '>', 0),
+        orderBy('createdAt', 'desc')
+      );
+
+      const querySnapshot = await getDocs(paymentsQuery);
+      const payments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Payment),
+      }));
+
+      return payments;
+    } catch (error) {
+      console.error(`Error retrieving payments for user ID ${userId}:`, error);
+      throw new Error('Failed to retrieve payments. Please try again later.');
+    }
+  }
+
+  async getPaymentsByInvoiceId(invoiceId: string): Promise<Payment[]> {
+    try {
+      const paymentsQuery = query(
+        this.paymentsCollection,
+        where('invoiceId', '==', invoiceId),
+        orderBy('createdAt', 'desc')
+      );
+
+      const querySnapshot = await getDocs(paymentsQuery);
+      const payments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Payment),
+      }));
+
+      return payments;
+    } catch (error) {
+      console.error(
+        `Error retrieving payments for Invoice ${invoiceId}:`,
+        error
+      );
+      throw new Error('Failed to retrieve payments. Please try again later.');
+    }
+  }
+
+  async applyCredit(paymentID: string, invoiceID: string) {
+    const batch = writeBatch(this.firestore);
+
+    const paymentRef = doc(this.firestore, 'payments', paymentID);
+    const invoiceRef = doc(this.firestore, 'invoices', invoiceID);
+
+    // Fetch payment details
+    const paymentSnap = await getDoc(paymentRef);
+    if (!paymentSnap.exists()) {
+      console.error('Payment not found');
+      return;
+    }
+    const paymentData = paymentSnap.data();
+    const paymentAmount = paymentData['balance'] || 0;
+
+    // Fetch invoice details
+    const invoiceSnap = await getDoc(invoiceRef);
+    if (!invoiceSnap.exists()) {
+      console.error('Invoice not found');
+      return;
+    }
+    const invoiceData = invoiceSnap.data();
+    const invoiceBalance = invoiceData['invoiceBalance'];
+    const invoiceNumber = invoiceData['invoiceNumber'];
+
+    // Update Payment: Save invoiceId & invoiceNumber
+    batch.update(paymentRef, {
+      invoiceId: invoiceID,
+      invoiceNumber: invoiceNumber,
+      balance: paymentData['amount'] - paymentAmount,
+      updatedAt: Timestamp.now(),
+    });
+
+    // Update Invoice: Deduct payment from invoice balance
+    const newInvoiceBalance = Math.max(0, invoiceBalance - paymentAmount);
+    batch.update(invoiceRef, {
+      invoiceBalance: newInvoiceBalance,
+      invoiceStatus: newInvoiceBalance === 0 ? 'Paid' : 'Partial',
+      updatedAt: Timestamp.now(),
+    });
+
+    // Commit all changes
+    await batch.commit();
+    console.log(`Applied $${paymentAmount} to invoice ${invoiceNumber}.`);
+  }
 }

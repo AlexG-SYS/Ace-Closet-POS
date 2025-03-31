@@ -694,6 +694,7 @@
 
                                 <!-- Invoice Details -->
                                 <div class="col-auto col-lg-auto">
+
                                     <div class="row pb-2 align-items-center ">
                                         <!-- Invoice ID -->
                                         <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
@@ -836,8 +837,17 @@
                                 <label for="salesperson" class="m-0 me-2 h6 text-center ">Sold By:
                                     <span class="fw-normal">{{printInvoiceData.salesRep}}</span></label>
                             </div>
-                            <label for="memo" class="m-0 me-2 mb-2 h6 text-center ">Note:
+                            <label for="memo" class="m-0 me-2 mb-2 h6  ">Note:
                                 <span class="fw-normal">{{printInvoiceData.memo}}</span></label>
+                            <br>
+                            <label for="memo" class="m-0 me-2 mb-2 h6  ">Status:
+                                <span [class.paid]="printInvoiceData.invoiceStatus == 'Paid'"
+                                    [class.pending]="printInvoiceData.invoiceStatus == 'Pending'"
+                                    [class.pastdue]="printInvoiceData.invoiceStatus == 'Past Due'"
+                                    [class.partial]="printInvoiceData.invoiceStatus == 'Partial'"
+                                    [class.voided]="printInvoiceData.invoiceStatus == 'Voided'"
+                                    class="badge rounded-pill text-capitalize mt-1">{{printInvoiceData.invoiceStatus}}</span></label>
+
                         </div>
                         <div class="col d-flex justify-content-end mt-2">
                             <div class="invoice-calculations ">
@@ -859,6 +869,7 @@
                                     <span class="mb-0 fs-5 fw-medium">${{printInvoiceData.grandTotal | number:'1.2-2'}}
                                     </span>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -1037,7 +1048,37 @@
                     </div>
                 </div>
                 <hr class="my-4">
+
                 @if(recPymtInvoiceData.invoiceBalance != 0){
+                @if(paymentsForUser.length != 0){
+                <div class="container-fluid">
+                    <p class="text-center fw-medium fs-5">Apply Credit</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="fw-medium">Pymt Method</th>
+                                <th class="fw-medium">Date</th>
+                                <th class="fw-medium">Amount</th>
+                                <th class="fw-medium">Balance</th>
+                                <th class="fw-medium"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for( payments of paymentsForUser; track payments.id){
+                            <tr>
+                                <td>{{ payments.paymentMethod }}</td>
+                                <td>{{convertDate(payments.day, payments.month, payments.year)}}</td>
+                                <td>${{ payments.amount.toFixed(2) }}</td>
+                                <td>${{ payments.balance.toFixed(2) }}</td>
+                                <td><i class="bi bi-cash-coin hoverColor mx-2" (click)="applyCredit(payments)"></i></td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="my-4">
+                }
+
                 <form [formGroup]="paymentFormInputs">
                     <div class="row m-3">
                         <div class="col-auto col-md-6">

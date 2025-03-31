@@ -59,6 +59,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
   lastYear = new Date().getFullYear() - 1;
   currentMonth = new Date().getMonth() + 1;
   tableSpinner = true;
+  bankAccounts: any[] = [];
   activePayment: Payment[] = [];
   displayedColumns: string[] = [
     'invoiceNum',
@@ -197,7 +198,8 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
           }
         })
         .catch((error) => {
-          console.error('Error loading payment info:', error);
+          this.snackbarService.show('Error Loading Invoice Info', 'error');
+          console.error('Error loading invoice info:', error);
         });
     } else {
       // If no invoice, fetch user info using UsersService
@@ -208,7 +210,6 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
             // Merge userData with payment data
             userData.status = '';
             this.recPymtData = { ...userData, ...data };
-            console.log(this.recPymtData);
           } else {
             console.log(`User with ID ${data.userId} not found.`);
             this.recPymtData = { ...data };
@@ -222,7 +223,8 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
           }
         })
         .catch((error) => {
-          console.error('Error fetching user info:', error);
+          this.snackbarService.show('Error Loading Customer Info', 'error');
+          console.error('Error Loading user info:', error);
         });
     }
   }
@@ -237,8 +239,6 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       return '';
     }
   }
-
-  bankAccounts: any[] = [];
 
   getBankAccountName(id: string): string {
     const account = this.bankAccounts.find((account) => account.id === id);
@@ -255,7 +255,8 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
         this.bankAccounts = accounts;
       })
       .catch((error) => {
-        console.error('Error fetching bank accounts:', error);
+        this.snackbarService.show('Error Loading Bank Info', 'error');
+        console.error('Error loading bank info:', error);
       });
   }
 
@@ -275,7 +276,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
       })
       .catch((error) => {
         console.error('Error finding invoice:', error);
-        this.snackbarService.show('Failed to Retrieve Invoice', 'error');
+        this.snackbarService.show('Error Finding Invoice Info', 'error');
       });
   }
 
@@ -292,6 +293,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
         invoiceId: this.recPymtInvoiceData.id || '',
         userId: this.recPymtInvoiceData.customer.id || '',
         amount: Number(formData.amount),
+        balance: 0,
         invoiceNumber: this.recPymtInvoiceData.invoiceNumber,
         customerName: this.recPymtInvoiceData.customer.name,
         day: day,

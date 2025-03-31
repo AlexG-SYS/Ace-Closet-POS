@@ -267,3 +267,9 @@ textarea[readonly] {
 .btn-close {
     filter: var(--icon-color);
 }
+
+th,
+td {
+    color: inherit !important;
+    background-color: inherit !important;
+}

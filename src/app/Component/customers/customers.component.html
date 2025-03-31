@@ -247,6 +247,15 @@
                             </mat-cell>
                         </ng-container>
 
+                        <!-- Options Column -->
+                        <ng-container matColumnDef="options">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                <i class="bi bi-cash-coin hoverColor mx-2" (click)="invoicePayment(element)"></i>
+                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="invoiceView(element)"></i>
+                            </mat-cell>
+                        </ng-container>
+
                         <mat-header-row *matHeaderRowDef="displayedColumnsInvoice"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: displayedColumnsInvoice;"></mat-row>
 
@@ -586,13 +595,13 @@
                 <hr class="my-4">
                 <form [formGroup]="paymentFormInputs">
                     <div class="row m-2">
-                        <div class="col-6 col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="mb-3">
                                 <label for="date" class="form-label">Date</label>
                                 <input type="date" class="form-control" id="date" formControlName="date">
                             </div>
                         </div>
-                        <div class="col-6 col-md-6 ">
+                        <div class="col-12 col-md-6 ">
                             <div class="mb-3">
 
                                 <label for="pymtAmount" class="form-label">Amount</label>

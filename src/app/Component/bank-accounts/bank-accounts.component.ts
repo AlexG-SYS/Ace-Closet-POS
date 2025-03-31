@@ -216,6 +216,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         this.activeBankAccount = accounts;
       })
       .catch((error) => {
+        this.snackbarService.show('Error Loading Bank Info', 'error');
         console.error('Error fetching bank accounts:', error);
       });
   }

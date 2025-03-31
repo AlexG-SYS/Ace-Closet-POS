@@ -404,6 +404,18 @@
                             </div>
 
                             <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Pymt. Balance</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text paymentNumWidth">${{
+                                            recPymtData.balance|
+                                            number:'1.2-2'
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
                                 <div class="col text-lg-end fw-normal">Pymt. Date</div>
                                 <div class="col">
                                     <div class="input-group input-group-sm">

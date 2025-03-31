@@ -50,6 +50,14 @@ export const routes: Routes = [
         path: 'invoices',
         title: 'Invoices | Ace Closet POS',
         component: InvoicesComponent,
+        children: [
+          // Child routes
+          {
+            path: ':id/:action',
+            title: 'Invoice | Ace Closet POS',
+            component: InvoicesComponent,
+          },
+        ],
       },
       {
         path: 'payments',

@@ -22,6 +22,7 @@ import { PaymentsService } from '../../Service/payments.service';
 import { BankAccountsService } from '../../Service/bank-accounts.service';
 import { SnackbarService } from '../../Service/snackbar.service';
 import { Timestamp } from '@angular/fire/firestore';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-invoices',
@@ -132,6 +133,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   tableSpinner = true;
   activeInvoice: Invoice[] = [];
   activeProduct: Product[] = [];
+  paymentsForUser: any[] = [];
   displayedColumns: string[] = [
     'invoiceStatus',
     'invoiceNum',
@@ -205,7 +207,8 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     private productService: ProductsService,
     private paymentService: PaymentsService,
     private snackbarService: SnackbarService,
-    private bankAccountsService: BankAccountsService
+    private bankAccountsService: BankAccountsService,
+    private route: ActivatedRoute
   ) {
     const savedTheme = localStorage.getItem('theme') || 'light-mode';
 
@@ -216,6 +219,8 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
+    this.processInvoiceViewPayRoute();
+
     this.dataSource.filterPredicate = (data: any, filter: string) => {
       const searchStr = filter.trim().toLowerCase();
       return JSON.stringify(data).toLowerCase().includes(searchStr);
@@ -733,6 +738,15 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   recPymtInvoiceData: Invoice = { customer: {} } as Invoice;
 
   receivePayment(invoiceData: Invoice) {
+    this.paymentService
+      .getPaymentsByUserId(invoiceData.customer.id!)
+      .then((payments) => {
+        this.paymentsForUser = payments;
+      })
+      .catch((error) => {
+        console.error('Error Retrieving User Payments', error);
+      });
+
     this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
     this.recPymtInvoiceData = invoiceData;
 
@@ -751,6 +765,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         }
       })
       .catch((error) => {
+        this.snackbarService.show('Error Loading Bank Info', 'error');
         console.error('Error fetching bank accounts:', error);
       });
   }
@@ -772,6 +787,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         invoiceId: this.recPymtInvoiceData.id || '',
         userId: this.recPymtInvoiceData.customer.id || '',
         amount: Number(formData.amount),
+        balance: 0,
         invoiceNumber: this.recPymtInvoiceData.invoiceNumber,
         customerName: this.recPymtInvoiceData.customer.name,
         day: day,
@@ -813,6 +829,54 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       })
       .catch(() => {
         this.snackbarService.show('Error Voiding Invoice', 'error');
+      });
+  }
+
+  processInvoiceViewPayRoute() {
+    this.route.firstChild?.params.subscribe((params) => {
+      if (params['action'] == 'pay') {
+        this.invoiceService
+          .getInvoiceById(params['id'])
+          .then((invoiceData) => {
+            this.receivePayment(invoiceData);
+          })
+          .catch((error) => {
+            this.snackbarService.show('Error Loading Invoice Data', 'error');
+            console.error('Error Loading Invoice Data', error);
+          });
+      } else if (params['action'] == 'view') {
+        this.invoiceService
+          .getInvoiceById(params['id'])
+          .then((invoiceData) => {
+            this.viewInvoice(invoiceData);
+          })
+          .catch((error) => {
+            this.snackbarService.show('Error Loading Invoice Data', 'error');
+            console.error('Error Loading Invoice Data', error);
+          });
+      }
+    });
+  }
+
+  applyCredit(payment: any) {
+    this.paymentService
+      .applyCredit(payment.id, this.recPymtInvoiceData.id)
+      .then(() => {
+        return Promise.all([
+          this.invoiceService.getInvoiceById(this.recPymtInvoiceData.id),
+          this.paymentService.getPaymentsByUserId(
+            this.recPymtInvoiceData.customer.id!
+          ),
+        ]);
+      })
+      .then(([invoiceData, payments]) => {
+        this.recPymtInvoiceData = invoiceData;
+        this.paymentsForUser = payments;
+        this.snackbarService.show('Credit Applied to Invoice', 'success');
+      })
+      .catch((error) => {
+        this.snackbarService.show('Error Applying Credit', 'error');
+        console.error('Error Applying Credit:', error);
       });
   }
 }
