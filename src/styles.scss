@@ -157,10 +157,17 @@ body {
     font-weight: 500;
 }
 
-.pastdue,
-.voided {
+.pastdue {
     color: #ff4c51;
     background-color: #ffe2e3;
+    font-size: smaller;
+    font-weight: 500;
+}
+
+.voided {
+    color: #ff4c51;
+    background-color: inherit;
+    border: 1px solid #fbc6c7;
     font-size: smaller;
     font-weight: 500;
 }

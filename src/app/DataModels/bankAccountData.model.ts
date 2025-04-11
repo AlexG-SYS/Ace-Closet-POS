@@ -5,6 +5,7 @@ export interface BankAccount {
   bankName: string;
   accountNumber: string;
   startingAmount: number;
+  type: string;
   balance: number;
   createdAt: Timestamp; // Timestamp of when the payment was created
   updatedAt: Timestamp; // Timestamp of the last payment update

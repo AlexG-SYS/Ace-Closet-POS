@@ -266,9 +266,10 @@
                             <h1 class="fw-medium">{{ modalData ? 'Edit Bank Account' : 'New Bank Account' }}</h1>
                         </div>
                     </div>
-                    <!-- Bank Account Name -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+                    <div class="row mx-2">
+
+                        <!-- Bank Account Name -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <input type="text" class="form-control" placeholder="Bank Name"
                                     formControlName="bankName" />
@@ -287,11 +288,9 @@
                                 }
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Bank Account Number -->
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
+                        <!-- Bank Account Number -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <input type="number" class="form-control" placeholder="Bank Account Number"
                                     formControlName="accountNumber" />
@@ -309,9 +308,14 @@
                         </div>
                     </div>
 
-                    <!-- Bank Starting Amount -->
-                    <div class="row mx-4">
-                        <div class="col d-flex justify-content-center mx-3">
+                    <div class="row">
+
+                    </div>
+
+                    <div class="row mx-2">
+
+                        <!-- Bank Starting Amount -->
+                        <div class="col-6">
                             <div class="mb-3">
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
@@ -325,6 +329,26 @@
                                     }
                                     @if(startingAmountControl?.errors?.['maxlength']){
                                     <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Bank Type -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <select class="form-select" id="bankType" formControlName="type">
+                                    <option value="">Select Type</option>
+                                    <option value="Bank">Bank</option>
+                                    <option value="eWallet">eWallet</option>
+                                    <option value="Card">Card</option>
+                                    <option value="Cash">Cash</option>
+                                </select>
+                                @if(typeControl?.invalid && typeControl?.touched){
+                                <div class="text-danger">
+                                    @if(typeControl?.errors?.['required']){
+                                    <small>Type is required.</small>
                                     }
                                 </div>
                                 }

@@ -45,6 +45,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
       Validators.maxLength(25),
     ]),
     startingAmount: new FormControl('', [Validators.required]),
+    type: new FormControl('', [Validators.required]),
   });
 
   filterFormInputs = new FormGroup({
@@ -139,6 +140,10 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
 
   get startingAmountControl() {
     return this.bankForm.get('startingAmount');
+  }
+
+  get typeControl() {
+    return this.bankForm.get('type');
   }
 
   bankSpinner = true;
@@ -251,6 +256,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
         accountNumber: formData.accountNumber!,
         startingAmount: Number(formData.startingAmount),
         balance: Number(formData.startingAmount),
+        type: formData.type!,
       };
 
       // Add Bank Account and handle success or error
