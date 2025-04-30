@@ -124,7 +124,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   });
 
   paymentFormInputs = new FormGroup({
-    amount: new FormControl('', [Validators.required, Validators.min(1)]),
+    amount: new FormControl('', [Validators.required, Validators.min(0.01)]),
     paymentMethod: new FormControl(''),
     bankAccountId: new FormControl('', [Validators.required]),
     date: new FormControl(this.formattedDate),
@@ -801,11 +801,17 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       this.paymentService
         .addPayment(partialPayment)
         .then(() => {
-          this.snackbarService.show('Payment Applied Successfully!', 'success');
+          return Promise.all([
+            this.invoiceService.getInvoiceById(this.recPymtInvoiceData.id),
+          ]);
+        })
+        .then(([invoiceData]) => {
+          this.recPymtInvoiceData = invoiceData;
           this.populateInvoiceTable(this.currentYear, this.currentMonth);
-          this.recPymtInvoiceData = { customer: {} } as Invoice;
           this.paymentFormInputs.reset();
+          this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
           this.isProcessing2 = false;
+          this.snackbarService.show('Payment Applied Successfully!', 'success');
         })
         .catch((error) => {
           this.snackbarService.show(error.message, 'error');
@@ -872,6 +878,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       .then(([invoiceData, payments]) => {
         this.recPymtInvoiceData = invoiceData;
         this.paymentsForUser = payments;
+        this.populateInvoiceTable(this.currentYear, this.currentMonth);
         this.snackbarService.show('Credit Applied to Invoice', 'success');
       })
       .catch((error) => {

@@ -45,7 +45,7 @@ export class PaymentsComponent implements AfterViewInit, OnInit {
   });
 
   paymentFormInputs = new FormGroup({
-    amount: new FormControl('', [Validators.required, Validators.min(1)]),
+    amount: new FormControl('', [Validators.required, Validators.min(0.01)]),
     paymentMethod: new FormControl(''),
     bankAccountId: new FormControl('', [Validators.required]),
     date: new FormControl(this.formattedDate),
