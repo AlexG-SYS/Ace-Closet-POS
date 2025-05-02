@@ -112,7 +112,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
   activeLoanTransactions: Transactions[] = [];
   dataSource = new MatTableDataSource(this.activeLoanTransactions);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('loanTransactionViewModal') loanTransactionViewModal: any;
+  @ViewChild('loanPaymentViewModal') loanPaymentViewModal: any;
   currentYear = new Date().getFullYear();
   lastYear = new Date().getFullYear() - 1;
   currentMonth = new Date().getMonth() + 1;
@@ -411,13 +411,37 @@ export class LoansComponent implements AfterViewInit, OnInit {
       this.loanForm.markAllAsTouched(); // Highlight invalid fields
     }
   }
-  //--------------------------------------------------------------
 
   filterLoanAcc() {
-    throw new Error('Method not implemented.');
+    const year = Number(this.filterFormInputs.value.year);
+    const month = Number(this.filterFormInputs.value.month);
+
+    this.tableSpinner = true;
+    this.transactionService
+      .getLoanTransactionYearMonth(year, month)
+      .then(async (transactions) => {
+        this.tableSpinner = false;
+        this.activeLoanTransactions = transactions;
+        this.dataSource.data = this.activeLoanTransactions;
+      })
+      .catch((error) => {
+        this.snackbarService.show(
+          `Retrieving Loan Transactions Failed`,
+          'error'
+        );
+        console.error('Error Retrieving Transactions:', error);
+      });
   }
 
-  viewTransaction(s: any) {
-    throw new Error('Method not implemented.');
+  showLoanTransactionData: any = {} as any;
+  viewTransaction(transactionData: Transactions) {
+    this.showLoanTransactionData = transactionData; // Assign data
+
+    if (this.loanPaymentViewModal) {
+      const loanPaymentViewModal = new bootstrap.Modal(
+        this.loanPaymentViewModal.nativeElement
+      );
+      loanPaymentViewModal.show();
+    }
   }
 }

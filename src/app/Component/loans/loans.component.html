@@ -12,7 +12,7 @@
     <div class="row">
         @if(!loanSpinner){
         @for(loanAcc of activeLoanAccount; track loanAcc.id){
-        <div class="col-sm-12 col-md mb-4">
+        <div class="col-6 col-md mb-4">
             <div class="card">
                 <div class="card-body pe-2">
                     <div class="d-flex justify-content-between p-1">
@@ -428,84 +428,75 @@
     </div>
 </div>
 
-<!-- Modal Confirm Void Transaction  -->
-<!-- <div class="modal fade" id="voidIConfirmModal" data-bs-backdrop="static" tabindex="-1" #voidIConfirmModal>
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+
+<!-- Modal For Loan Payment View-->
+<div class="modal fade" id="loanPaymentViewModal" data-bs-backdrop="static" tabindex="-1" #loanPaymentViewModal>
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col d-flex justify-content-end">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <form>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">{{showLoanTransactionData.type}}</h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <!-- Bank Name -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Bank Name" autocomplete="off"
+                                    [value]="showLoanTransactionData.bankName" readonly>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="number" class="form-control bg-body-secondary" placeholder="Account Number"
+                                    [value]="showLoanTransactionData.accountNumber" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Date"
+                                    [value]="convertDate(showLoanTransactionData.day, showLoanTransactionData.month ,showLoanTransactionData.year)"
+                                    readonly />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Amount"
+                                    [value]="showLoanTransactionData.amount | number:'1.2-2'" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary" placeholder="Description"
+                                    [value]="showLoanTransactionData.description" readonly />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                                aria-label="Close">Close</button>
+                        </div>
                     </div>
                 </div>
-                <div class="row justify-content-between align-items-center pb-4">
-                    <div class="col d-flex justify-content-center">
-                        <span class="fs-5 fw-medium text-center lh-base">Are you Sure? <br>Voiding
-                            {{showTransactionData.type}}
-                            for {{showTransactionData.loanName}} of
-                            ${{showTransactionData.amount | number:'1.2-2'}}</span>
-                    </div>
-                </div>
-                <div class="row justify-content-between align-items-center pb-4">
-                    <div class="col d-flex justify-content-center">
-                        <i class="bi bi-exclamation-triangle fs-1 text-danger"></i>
-                    </div>
-                </div>
-                <div class="row py-2">
-                    <div class="col d-flex justify-content-center">
-                        <button type="button" class="btn btn-light " data-bs-dismiss="modal"
-                            aria-label="Close">Close</button>
-                        @if(showTransactionData.amount != 0){
-                        <button type="button" class="btn btn-danger mx-2" data-bs-target="#voidTransactionModal"
-                            data-bs-toggle="modal" (click)="voidTransaction()"><i
-                                class="bi bi-exclamation-triangle me-1"></i>Void</button>
-                        }
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-</div> -->
-
-<!-- Modal Void Transaction  -->
-<!-- <div class="modal fade" id="voidTransactionModal" data-bs-backdrop="static" tabindex="-1" #voidTransactionModal>
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col d-flex justify-content-end">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                </div>
-                <div class="row justify-content-between align-items-center pb-4">
-                    <div class="col d-flex justify-content-center text-center">
-                        @if(isProcessing2){
-                        <span class="fs-5 fw-medium lh-base">Voiding
-                            {{showTransactionData.type}}
-                            for {{showTransactionData.loanName}} of
-                            ${{showTransactionData.amount | number:'1.2-2'}}</span>
-                        }
-                        @else {
-                        <span class="fs-5 fw-medium lh-base">Voided
-                            {{showTransactionData.type}}
-                            for {{showTransactionData.loanName}} of
-                            ${{showTransactionData.amount | number:'1.2-2'}}</span>
-                        }
-                    </div>
-                </div>
-                <div class="row justify-content-between align-items-center pb-4">
-                    <div class="col d-flex justify-content-center">
-                        @if(isProcessing2){
-                        <span class="spinner-border spinner-border-lg" aria-hidden="true"></span>
-                        <span class="visually-hidden" role="status">Loading...</span>
-                        }
-                        @else {
-                        <i class="bi bi-check2-square fs-1 text-success"></i>
-                        }
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div> -->
+</div>
