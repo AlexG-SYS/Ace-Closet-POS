@@ -1,0 +1,44 @@
+.mat-mdc-table {
+    height: 439px !important;
+    overflow: auto;
+}
+
+.scrollable {
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: #a3a3a3 #f1f1f1;
+}
+
+
+.fs-5 {
+    font-size: 1.2rem !important;
+}
+
+.color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid #d2d2d2;
+}
+
+.colWidthLg {
+    flex: 4;
+}
+
+.colWidthXLg {
+    flex: 5;
+}
+
+.colWidthMd {
+    flex: 2;
+}
+
+@media (max-width: 767.98px) {
+
+    .fs-5 {
+        font-size: 1.1rem !important;
+    }
+}

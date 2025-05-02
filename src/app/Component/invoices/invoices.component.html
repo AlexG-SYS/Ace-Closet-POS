@@ -161,7 +161,7 @@
                     </div>
 
                     @if(!tableSpinner){
-                    <div class="scrollable">
+                    <div class="scrollable table-responsive">
                         @if(!displaySmall){
                         <!-- Table Section -->
                         <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
@@ -250,71 +250,76 @@
                         }
                         @else{
                         <!-- Table Section -->
-                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+                        <div class="table-responsive">
+                            <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
 
-                            <!-- Invoice Status Column -->
-                            <ng-container matColumnDef="invoiceStatus">
-                                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-                                <mat-cell *matCellDef="let element">
-                                    <span [class.paid]="element.invoiceStatus == 'Paid'"
-                                        [class.pending]="element.invoiceStatus == 'Pending'"
-                                        [class.pastdue]="element.invoiceStatus == 'Past Due'"
-                                        [class.partial]="element.invoiceStatus == 'Partial'"
-                                        class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
-                                </mat-cell>
-                            </ng-container>
+                                <!-- Invoice Status Column -->
+                                <ng-container matColumnDef="invoiceStatus">
+                                    <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                                    <mat-cell *matCellDef="let element">
+                                        <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                            [class.pending]="element.invoiceStatus == 'Pending'"
+                                            [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                            [class.partial]="element.invoiceStatus == 'Partial'"
+                                            class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
+                                    </mat-cell>
+                                </ng-container>
 
-                            <!-- Invoice Num Column  -->
-                            <ng-container matColumnDef="invoiceNum">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">#
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    {{element.invoiceNumber}}
-                                </mat-cell>
-                            </ng-container>
+                                <!-- Invoice Num Column  -->
+                                <ng-container matColumnDef="invoiceNum">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">#
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        {{element.invoiceNumber}}
+                                    </mat-cell>
+                                </ng-container>
 
-                            <!-- Customer Name Column  -->
-                            <ng-container matColumnDef="customerName">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-start colWidthSMMD">
-                                    Name
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-start colWidthSMMD">
-                                    {{element.customer.name}}
-                                </mat-cell>
-                            </ng-container>
+                                <!-- Customer Name Column  -->
+                                <ng-container matColumnDef="customerName">
+                                    <mat-header-cell *matHeaderCellDef
+                                        class="d-flex justify-content-start colWidthSMMD">
+                                        Name
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element"
+                                        class="d-flex justify-content-start colWidthSMMD">
+                                        {{element.customer.name}}
+                                    </mat-cell>
+                                </ng-container>
 
-                            <!-- Total Column  -->
-                            <ng-container matColumnDef="total">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Total
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    ${{element.grandTotal | number:'1.2-2' }}
-                                </mat-cell>
-                            </ng-container>
+                                <!-- Total Column  -->
+                                <ng-container matColumnDef="total">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Total
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{element.grandTotal | number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
 
-                            <!-- Balance Column  -->
-                            <ng-container matColumnDef="balance">
-                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
-                                </mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    ${{element.invoiceBalance | number:'1.2-2' }}
-                                </mat-cell>
-                            </ng-container>
+                                <!-- Balance Column  -->
+                                <ng-container matColumnDef="balance">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{element.invoiceBalance | number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
 
 
-                            <!-- Options Column -->
-                            <ng-container matColumnDef="options">
-                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
-                                    <i class="bi bi-cash-coin hoverColor mx-2" (click)="receivePayment(element)"></i>
-                                    <i class="bi bi-eye-fill hoverColor mx-2" (click)="viewInvoice(element)"></i>
-                                </mat-cell>
-                            </ng-container>
+                                <!-- Options Column -->
+                                <ng-container matColumnDef="options">
+                                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        <i class="bi bi-cash-coin hoverColor mx-2"
+                                            (click)="receivePayment(element)"></i>
+                                        <i class="bi bi-eye-fill hoverColor mx-2" (click)="viewInvoice(element)"></i>
+                                    </mat-cell>
+                                </ng-container>
 
-                            <mat-header-row *matHeaderRowDef="displayedColumnsSmall"></mat-header-row>
-                            <mat-row *matRowDef="let row; columns: displayedColumnsSmall;"></mat-row>
+                                <mat-header-row *matHeaderRowDef="displayedColumnsSmall"></mat-header-row>
+                                <mat-row *matRowDef="let row; columns: displayedColumnsSmall;"></mat-row>
 
-                        </table>
+                            </table>
+                        </div>
                         }
                     </div>
                     }
@@ -457,7 +462,7 @@
                             <form class="source-item">
                                 <div class="p-2">
                                     <div class="row">
-                                        <div class="col m-1 mb-2 scrollable">
+                                        <div class="col m-1 mb-2 scrollable table-responsive">
                                             @if(dataSourceProduct.data.length != 0){
                                             <!-- Table Section -->
                                             <table mat-table [dataSource]="dataSourceProduct" class="my-2 productTable">
@@ -761,7 +766,7 @@
                     </div>
                     <hr class="mt-4 mb-0">
                     <div class="row">
-                        <div class="col scrollable p-0 m-1 mx-2">
+                        <div class="col scrollable p-0 m-1 mx-2 table-responsive">
                             <!-- Table Section -->
                             <table mat-table [dataSource]="dataSourcePrintInvoiceProduct" class=" printTable">
 

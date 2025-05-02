@@ -21,46 +21,48 @@
 
                     </div>
                     @if(!tableSpinner){
-                    <!-- Table Section -->
-                    <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+                    <div class="table-responsive">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
 
-                        <!-- Name Column -->
-                        <ng-container matColumnDef="name">
-                            <mat-header-cell *matHeaderCellDef class="colWidth"> Name </mat-header-cell>
-                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"
-                                [class.text-danger]="element.status == 'inactive'" class="colWidth"> {{element.name}}
-                            </mat-cell>
-                        </ng-container>
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell *matHeaderCellDef class="colWidth"> Name </mat-header-cell>
+                                <mat-cell *matCellDef="let element" (click)="showUserData(element)"
+                                    [class.text-danger]="element.status == 'inactive'" class="colWidth">
+                                    {{element.name}}
+                                </mat-cell>
+                            </ng-container>
 
-                        <!-- Account Balance Column -->
-                        <ng-container matColumnDef="accountBalance">
-                            <mat-header-cell *matHeaderCellDef> Balance
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"
-                                [class.text-danger]="element.status == 'inactive'">
-                                ${{element.accountBalance | number:'1.2-2' }}
-                            </mat-cell>
-                        </ng-container>
+                            <!-- Account Balance Column -->
+                            <ng-container matColumnDef="accountBalance">
+                                <mat-header-cell *matHeaderCellDef> Balance
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" (click)="showUserData(element)"
+                                    [class.text-danger]="element.status == 'inactive'">
+                                    ${{element.accountBalance | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
 
-                        <!-- Options Column -->
-                        <ng-container matColumnDef="options">
-                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
-                                @if(displaySmall){
-                                <i class="bi bi-eye-fill hoverColor pe-2" (click)="showUserData(element)"
-                                    data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
-                                }
+                            <!-- Options Column -->
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                    @if(displaySmall){
+                                    <i class="bi bi-eye-fill hoverColor pe-2" (click)="showUserData(element)"
+                                        data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
+                                    }
 
-                                <i class="bi bi-cash-coin hoverColor pe-2" (click)="receivePayment(element)"></i>
-                                <i class="bi bi-pencil-square hoverColor " (click)="modalUserData(element)"></i>
-                            </mat-cell>
-                        </ng-container>
+                                    <i class="bi bi-cash-coin hoverColor pe-2" (click)="receivePayment(element)"></i>
+                                    <i class="bi bi-pencil-square hoverColor " (click)="modalUserData(element)"></i>
+                                </mat-cell>
+                            </ng-container>
 
-                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 
-                    </table>
-
+                        </table>
+                    </div>
                     }@else {
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border m-5" role="status">

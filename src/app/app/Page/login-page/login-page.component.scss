@@ -1,0 +1,18 @@
+.backgroundColor {
+    background-color: var(--secondary-color);
+}
+
+.input-group-text {
+    background-color: none;
+}
+
+.forgotPwdLink {
+    text-decoration: none;
+    color: rgb(107, 107, 107);
+}
+
+.forgotPwdLink:hover {
+    color: #497ffc;
+    text-decoration: underline;
+
+}

@@ -1,0 +1,151 @@
+.avatar {
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: 1rem;
+}
+
+.avatar-initial {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background-color: #f0eff0;
+    font-size: .9375rem;
+}
+
+
+.bg-paid {
+    background-color: #e4f7d6 !important;
+    color: #56ca00 !important;
+}
+
+.bg-unpaid {
+    background-color: #ffe2e3 !important;
+    color: #ff0008 !important;
+}
+
+.mat-mdc-table {
+    height: 329px !important;
+    overflow: auto;
+}
+
+.productTable {
+    height: auto !important;
+    width: 100%;
+    overflow: auto !important;
+}
+
+.scrollable {
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: #a3a3a3 #f1f1f1;
+}
+
+.invoice-preview-header {
+    background-color: var(--bg-color);
+    border-radius: 1rem;
+}
+
+.fs-5 {
+    font-size: 1.2rem !important;
+}
+
+.btn-outline-secondary {
+    border-color: #dee2e6;
+}
+
+.itemCard {
+    border: solid 1px #dee2e6;
+    border-radius: 1rem;
+}
+
+.autocomplete {
+    position: relative;
+}
+
+.dropdown-menu {
+    height: auto !important;
+    width: 100%;
+    overflow: auto !important;
+    max-height: 250px;
+    scrollbar-width: thin;
+    scrollbar-color: #a3a3a3 #f1f1f1;
+    z-index: 1000 !important;
+}
+
+.dropdown-item {
+    cursor: pointer;
+    padding: 8px 12px;
+}
+
+.colWidth {
+    flex: 4;
+}
+
+.colWidthMD {
+    flex: 1.5;
+}
+
+.colWidthSMMD {
+    flex: 2;
+}
+
+.colWidthSm {
+    flex: 0;
+}
+
+.invoiceNumWidth {
+    width: 6.5rem;
+}
+
+
+
+.printTable {
+    height: auto !important;
+
+    .mat-mdc-row:hover .mat-mdc-cell {
+        cursor: auto;
+        background-color: inherit;
+        font-weight: normal;
+    }
+}
+
+
+
+@media (max-width: 767.98px) {
+
+    .fs-5 {
+        font-size: 1.1rem !important;
+    }
+
+}
+
+@media (max-width: 992px) {
+
+    .border-end {
+        border-right: none !important;
+    }
+
+    .avatar {
+        margin-right: 0 !important;
+    }
+
+}
+
+@media print {
+    .invoice-preview-header {
+        background-color: #f4f5fa !important;
+        /* Ensure background color persists when printing */
+        -webkit-print-color-adjust: exact;
+        /* Ensures colors are printed correctly */
+    }
+}

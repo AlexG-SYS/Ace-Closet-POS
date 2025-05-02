@@ -1,0 +1,772 @@
+<div class="conatiner px-2">
+    <div class="row gy-6">
+        <div class="col-xl-3 col-md-6 col-sm-6 pb-4">
+            <div class="card reportOption" (click)="showSalesReport()">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-1">
+                        <div class="me-4">
+                            <h2 class="mb-0 fw-medium fs-5">Sales Report</h2>
+                        </div>
+                        <div class="my-auto">
+                            <i class="bi bi-graph-up-arrow pe-2 fs-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-sm-6 pb-4">
+            <div class="card">
+                <div class="card-body reportOption" (click)=" showExpenseReport()">
+                    <div class="d-flex justify-content-between p-1">
+                        <div class="me-4">
+                            <h2 class="mb-0 fw-medium fs-5">Expense Report</h2>
+                        </div>
+                        <div class="my-auto">
+                            <i class="bi bi-graph-down-arrow pe-2 fs-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-sm-6 pb-4">
+            <div class="card">
+                <div class="card-body reportOption" (click)="showProfitReport()">
+                    <div class="d-flex justify-content-between p-1">
+                        <div class="me-4">
+                            <h2 class="mb-0 fw-medium fs-5">Profit Report</h2>
+                        </div>
+                        <div class="my-auto">
+                            <i class="bi bi-cash-coin pe-2 fs-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-sm-6 pb-4">
+            <div class="card">
+                <div class="card-body reportOption" (click)="showAssetReport()">
+                    <div class="d-flex justify-content-between p-1">
+                        <div class="me-4">
+                            <h2 class="mb-0 fw-medium fs-5">Asset Report</h2>
+                        </div>
+                        <div class="my-auto">
+                            <i class="bi bi-box-seam pe-2 fs-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if(showSalesReportBool){
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2" id="print-invoice-section">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <div class="ps-2">
+                            <h2 class="fs-5 fw-medium">Sales Report - {{reportDateRange}}</h2>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <form [formGroup]="filterFormInputs">
+                                <div class="row hide">
+                                    <div class="col-auto p-0 px-2">
+                                        <label for="startDate">Start Date</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" formControlName="startDate"
+                                                placeholder="MM/DD/YYYY" id="startDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-auto p-0 px-2">
+                                        <label for="endDate">End Date</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" formControlName="endDate"
+                                                placeholder="MM/DD/YYYY" id="endDate">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-auto p-0 pt-auto mt-auto">
+                                        <!-- Button to Open the New Invoice Modal -->
+                                        <button class="btn btn-primary mx-2" (click)="searchInvoiceDateRange()"><i
+                                                class="bi bi-search me-1"></i>Search</button>
+                                    </div>
+
+                                    <div class="col-auto p-0 pe-2 pt-auto mt-auto">
+                                        <!-- Button to Open the New Invoice Modal -->
+                                        <button class="btn btn-outline-secondary mx-2" ngxPrint
+                                            printSectionId="print-invoice-section" printTitle="Invoice"
+                                            [useExistingCss]="true"><i class="bi bi-printer me-1"></i>Print</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row p-2 pb-0 d-block d-md-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row hide">
+                                <div class="col-6 p-0 px-1">
+                                    <label for="startDate">Start Date</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" formControlName="startDate"
+                                            placeholder="MM/DD/YYYY" id="startDate">
+                                    </div>
+                                </div>
+                                <div class="col-6 p-0 px-1">
+                                    <label for="endDate">End Date</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" formControlName="endDate"
+                                            placeholder="MM/DD/YYYY" id="endDate">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 p-0 pt-auto mt-auto pt-2 d-flex justify-content-center">
+                                    <!-- Button to Open the New Invoice Modal -->
+                                    <button class="btn btn-primary mx-2" (click)="searchInvoiceDateRange()"><i
+                                            class="bi bi-search me-1"></i>Search</button>
+                                    <!-- Button to Open the New Invoice Modal -->
+                                    <button class="btn btn-outline-secondary mx-2" ngxPrint
+                                        printSectionId="print-invoice-section" printTitle="Invoice"
+                                        [useExistingCss]="true"><i class="bi bi-printer me-1"></i>Print</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                            <!-- Invoice Num Column  -->
+                            <ng-container matColumnDef="invoiceNum">
+                                <mat-header-cell *matHeaderCellDef>#
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.invoiceNumber}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Date Invoiced Colum -->
+                            <ng-container matColumnDef="dateInvoiced">
+                                <mat-header-cell *matHeaderCellDef> Date Inv.
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{convertDate(element.day, element.month, element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Customer Name Column  -->
+                            <ng-container matColumnDef="customerName">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-start colWidthMD"> Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-start colWidthMD">
+                                    {{element.customer.name}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- SubTotal Column  -->
+                            <ng-container matColumnDef="subTotal">
+                                <mat-header-cell *matHeaderCellDef> Sub-Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.subTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Discount Column  -->
+                            <ng-container matColumnDef="discount">
+                                <mat-header-cell *matHeaderCellDef> Discount
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.discount | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Total Column  -->
+                            <ng-container matColumnDef="total">
+                                <mat-header-cell *matHeaderCellDef> Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.grandTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- GST Column  -->
+                            <ng-container matColumnDef="gst">
+                                <mat-header-cell *matHeaderCellDef> GST
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.taxTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Invoice Status Column  -->
+                            <ng-container matColumnDef="invoiceStatus">
+                                <mat-header-cell *matHeaderCellDef> Status
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.invoiceStatus}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsInv"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsInv;"></mat-row>
+
+                        </table>
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="col d-flex justify-content-end m-3">
+                        <div class="invoice-calculations ">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Subtotal:</span>
+                                <span class="mb-0 fw-normal">${{subTotal | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Discount:</span>
+                                <span class="mb-0 fw-normal">${{discount | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">GST:</span>
+                                <span class="mb-0 fw-normal">${{gst | number:'1.2-2'}}</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="fs-5 fw-medium me-3">Total:</span>
+                                <span class="mb-0 fs-5 fw-medium">${{grandTotal | number:'1.2-2'}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @if(showExpenseReportBool){
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2" id="print-expense-section">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <div class="ps-2">
+                            <h2 class="fs-5 fw-medium">Expense Report - {{reportDateRange}}</h2>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <form [formGroup]="filterFormInputs">
+                                <div class="row hide">
+                                    <div class="col-auto p-0 px-2">
+                                        <label for="startDate">Start Date</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" formControlName="startDate"
+                                                placeholder="MM/DD/YYYY" id="startDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-auto p-0 px-2">
+                                        <label for="endDate">End Date</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" formControlName="endDate"
+                                                placeholder="MM/DD/YYYY" id="endDate">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-auto p-0 pt-auto mt-auto">
+                                        <button class="btn btn-primary mx-2" (click)="searchExpenseDateRange()"><i
+                                                class="bi bi-search me-1"></i>Search</button>
+                                    </div>
+
+                                    <div class="col-auto p-0 pe-2 pt-auto mt-auto">
+                                        <button class="btn btn-outline-secondary mx-2" ngxPrint
+                                            printSectionId="print-expense-section" printTitle="Expense"
+                                            [useExistingCss]="true"><i class="bi bi-printer me-1"></i>Print</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row p-2 pb-0 d-block d-md-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row hide">
+                                <div class="col-6 p-0 px-1">
+                                    <label for="startDate">Start Date</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" formControlName="startDate"
+                                            placeholder="MM/DD/YYYY" id="startDate">
+                                    </div>
+                                </div>
+                                <div class="col-6 p-0 px-1">
+                                    <label for="endDate">End Date</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" formControlName="endDate"
+                                            placeholder="MM/DD/YYYY" id="endDate">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 p-0 pt-auto mt-auto pt-2 d-flex justify-content-center">
+                                    <button class="btn btn-primary mx-2" (click)="searchExpenseDateRange()"><i
+                                            class="bi bi-search me-1"></i>Search</button>
+                                    <button class="btn btn-outline-secondary mx-2" ngxPrint
+                                        printSectionId="print-expense-section" printTitle="Expense"
+                                        [useExistingCss]="true"><i class="bi bi-printer me-1"></i>Print</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSourceExpense" class="mt-3 scrollable">
+
+                            <!-- Bank Name Column  -->
+                            <ng-container matColumnDef="bankName">
+                                <mat-header-cell *matHeaderCellDef class="colWidthSm">Bank Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthSm">
+                                    {{element.bankName}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Type Column  -->
+                            <ng-container matColumnDef="type">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Type
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.type}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Amount Column  -->
+                            <ng-container matColumnDef="amount">
+                                <mat-header-cell *matHeaderCellDef> Amount
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.amount | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Description Colum -->
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell *matHeaderCellDef class="colWidth"> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidth">
+                                    {{element.description}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Date Column  -->
+                            <ng-container matColumnDef="date">
+                                <mat-header-cell *matHeaderCellDef class="colWidthSm"> Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthSm">
+                                    {{convertDate(element.day, element.month ,element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsExp"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsExp;"></mat-row>
+
+                        </table>
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="col d-flex justify-content-end m-3">
+                        <div class="expense-calculations ">
+                            <div class="d-flex justify-content-between">
+                                <span class="fs-5 fw-medium me-3">Total:</span>
+                                <span class="mb-0 fs-5 fw-medium">${{grandTotal | number:'1.2-2'}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @if(showProfitReportBool){
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2" id="print-profit-section">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <div class="ps-2">
+                            <h2 class="fs-5 fw-medium">Profit Report - {{reportDateRange}}</h2>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <form [formGroup]="filterFormInputs">
+                                <div class="row hide">
+                                    <div class="col-auto p-0 px-2">
+                                        <label for="startDate">Start Date</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" formControlName="startDate"
+                                                placeholder="MM/DD/YYYY" id="startDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-auto p-0 px-2">
+                                        <label for="endDate">End Date</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" formControlName="endDate"
+                                                placeholder="MM/DD/YYYY" id="endDate">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-auto p-0 pt-auto mt-auto">
+                                        <button class="btn btn-primary mx-2" (click)="searchProfitDateRange()"><i
+                                                class="bi bi-search me-1"></i>Search</button>
+                                    </div>
+
+                                    <div class="col-auto p-0 pe-2 pt-auto mt-auto">
+                                        <button class="btn btn-outline-secondary mx-2" ngxPrint
+                                            printSectionId="print-profit-section" printTitle="Profit"
+                                            [useExistingCss]="true"><i class="bi bi-printer me-1"></i>Print</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row p-2 pb-0 d-block d-md-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row hide">
+                                <div class="col-6 p-0 px-1">
+                                    <label for="startDate">Start Date</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" formControlName="startDate"
+                                            placeholder="MM/DD/YYYY" id="startDate">
+                                    </div>
+                                </div>
+                                <div class="col-6 p-0 px-1">
+                                    <label for="endDate">End Date</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" formControlName="endDate"
+                                            placeholder="MM/DD/YYYY" id="endDate">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 p-0 pt-auto mt-auto pt-2 d-flex justify-content-center">
+                                    <button class="btn btn-primary mx-2" (click)="searchProfitDateRange()"><i
+                                            class="bi bi-search me-1"></i>Search</button>
+                                    <button class="btn btn-outline-secondary mx-2" ngxPrint
+                                        printSectionId="print-profit-section" printTitle="Profit"
+                                        [useExistingCss]="true"><i class="bi bi-printer me-1"></i>Print</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                            <!-- Invoice Num Column  -->
+                            <ng-container matColumnDef="invoiceNum">
+                                <mat-header-cell *matHeaderCellDef>#
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.invoiceNumber}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Date Invoiced Colum -->
+                            <ng-container matColumnDef="dateInvoiced">
+                                <mat-header-cell *matHeaderCellDef> Date Inv.
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{convertDate(element.day, element.month, element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Customer Name Column  -->
+                            <ng-container matColumnDef="customerName">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-start colWidthMD"> Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-start colWidthMD">
+                                    {{element.customer.name}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- SubTotal Column  -->
+                            <ng-container matColumnDef="subTotal">
+                                <mat-header-cell *matHeaderCellDef> Sub-Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.subTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Discount Column  -->
+                            <ng-container matColumnDef="discount">
+                                <mat-header-cell *matHeaderCellDef> Discount
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.discount | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+
+                            <!-- Total Column  -->
+                            <ng-container matColumnDef="total">
+                                <mat-header-cell *matHeaderCellDef> Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.grandTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsInvProfit"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsInvProfit;"></mat-row>
+
+                        </table>
+                    </div>
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSourceExpense" class="mt-3 scrollable">
+
+                            <!-- Bank Name Column  -->
+                            <ng-container matColumnDef="bankName">
+                                <mat-header-cell *matHeaderCellDef class="colWidthSm">Bank Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthSm">
+                                    {{element.bankName}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Date Column  -->
+                            <ng-container matColumnDef="date">
+                                <mat-header-cell *matHeaderCellDef class="colWidthSm"> Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthSm">
+                                    {{convertDate(element.day, element.month ,element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Type Column  -->
+                            <ng-container matColumnDef="type">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Type
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.type}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Amount Column  -->
+                            <ng-container matColumnDef="amount">
+                                <mat-header-cell *matHeaderCellDef> Amount
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.amount | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Description Colum -->
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell *matHeaderCellDef class="colWidth"> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidth">
+                                    {{element.description}}
+                                </mat-cell>
+                            </ng-container>
+
+
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsExpProfit"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsExpProfit;"></mat-row>
+
+                        </table>
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="col d-flex justify-content-end m-3">
+                        <div class="profit-calculations ">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Total Sales:</span>
+                                <span class="mb-0 fw-normal">${{totalSales | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Total Cost of Items:</span>
+                                <span class="mb-0 fw-normal">${{totalCost | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Gross Profit:</span>
+                                <span class="mb-0 fw-normal">${{grossProfit | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Expense:</span>
+                                <span class="mb-0 fw-normal">${{totalExpense | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Net Percentage:</span>
+                                <span class="mb-0 fw-normal">{{netProfitPercentage | number:'1.2-2'}}%</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="fs-5 fw-medium me-3">Net Profit:</span>
+                                <span class="mb-0 fs-5 fw-medium">${{netProfit | number:'1.2-2'}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @if(showAssetReportBool){
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2" id="print-asset-section">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <div class="ps-2">
+                            <h2 class="fs-5 fw-medium">Asset Report - {{reportDateRange}}</h2>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <div class="row hide">
+                                <div class="col-auto p-0 pe-2 pt-auto mt-auto">
+                                    <button class="btn btn-primary mx-2" ngxPrint printSectionId="print-asset-section"
+                                        printTitle="Assets" [useExistingCss]="true"><i
+                                            class="bi bi-printer me-1"></i>Print</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row  d-block d-md-none ">
+                        <div class="row hide d-flex justify-content-end">
+                            <div class="col-auto ">
+                                <button class="btn btn-primary " ngxPrint printSectionId="print-asset-section"
+                                    printTitle="Assets" [useExistingCss]="true"><i
+                                        class="bi bi-printer me-1"></i>Print</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSourceProduct" class="mt-3 scrollable">
+
+                            <!-- UPC Column -->
+                            <ng-container matColumnDef="upc">
+                                <mat-header-cell *matHeaderCellDef class="colWidthMd"> UPC </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthMd">
+                                    {{element.upc}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Description Column  -->
+                            <ng-container matColumnDef="productName">
+                                <mat-header-cell *matHeaderCellDef class="colWidthLg"> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthLg">
+                                    {{element.description}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Category Column  -->
+                            <ng-container matColumnDef="category">
+                                <mat-header-cell *matHeaderCellDef class=""> Category
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="r">
+                                    {{element.category}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Price Column  -->
+                            <ng-container matColumnDef="price">
+                                <mat-header-cell *matHeaderCellDef class=""> Price
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    ${{element.price | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Qty Column  -->
+                            <ng-container matColumnDef="qty">
+                                <mat-header-cell *matHeaderCellDef class=""> Qty
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    {{element.quantity}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Size Column  -->
+                            <ng-container matColumnDef="size">
+                                <mat-header-cell *matHeaderCellDef class=""> Size
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    {{element.size}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Cost Column  -->
+                            <ng-container matColumnDef="cost">
+                                <mat-header-cell *matHeaderCellDef class=""> Cost
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="">
+                                    ${{element.cost | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsProduct"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsProduct;"></mat-row>
+
+                        </table>
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="col d-flex justify-content-end m-3">
+                        <div class="assets-calculations ">
+
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Grand Total Value:</span>
+                                <span class="mb-0 fw-normal">${{grandTotal | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class=" me-3 fw-normal">Total Cost of Items:</span>
+                                <span class="mb-0 fw-normal">${{totalCost | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Gross Profit:</span>
+                                <span class="mb-0 fw-normal">${{grossProfit | number:'1.2-2'}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-normal me-3">Gross Percentage:</span>
+                                <span class="mb-0 fw-normal">{{netProfitPercentage | number:'1.2-2'}}%</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between">
+                                <span class="fs-5 fw-medium me-3">Grand Total:</span>
+                                <span class="mb-0 fs-5 fw-medium">${{grandTotal | number:'1.2-2'}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

@@ -1,0 +1,134 @@
+.sidebar {
+    background-color: inherit;
+    position: sticky;
+    top: 0;
+    z-index: 800;
+}
+
+.topNav {
+    position: sticky;
+    top: 0;
+    z-index: 800;
+    background-color: inherit;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.topNav.scrolled {
+    box-shadow: 0 4px 6px var(--hover-color);
+}
+
+.nav-link {
+    cursor: pointer;
+    color: var(--text-color);
+    border-radius: 0 50rem 50rem 0;
+    padding: .6rem 1.45rem;
+    font-size: 1.1rem;
+    letter-spacing: .25px;
+    font-weight: 500;
+    margin-inline-end: 1.125rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link:hover {
+    background: var(--hover-color);
+}
+
+.nav-link.active {
+    color: var(--bg-color);
+    box-shadow: 0 .1875rem .375rem rgba(184, 184, 186, 0.5);
+    background: linear-gradient(270deg, var(--primary-color) 0%, #66bfff 100%);
+}
+
+
+
+.scrollable {
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-color) var(--bg-color);
+}
+
+.dashTopIcon {
+    text-decoration: none;
+    color: inherit;
+}
+
+.dashTopIcon:hover {
+    color: var(--primary-color);
+}
+
+.logout {
+    border-radius: 1rem;
+    margin: 8px 16px;
+    background-color: var(--snackbar-error);
+    border-color: var(--snackbar-error);
+
+    .dropdown-item {
+        color: #fff;
+        background-color: inherit;
+        border-radius: 1rem;
+    }
+
+    .dropdown-item:hover {
+        background-color: var(--snackbar-error);
+    }
+}
+
+.topNav {
+    position: sticky;
+    top: 0;
+    z-index: 800;
+    background-color: var(--bg-color);
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+@media (max-width: 992px) {
+    .vh-100 {
+        position: absolute;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+    }
+
+    .nav-link {
+        font-size: .95rem;
+    }
+
+    .sidebar {
+        background-color: var(--bg-color);
+        box-shadow: 0 .3875rem .575rem rgba(46, 38, 61, .18);
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        position: fixed;
+        width: 30%;
+    }
+
+    .closeNav {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 999;
+    }
+}
+
+@media (max-width: 850px) {
+    .sidebar {
+        width: 40% !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        width: 55% !important;
+    }
+}
+
+@media (max-width: 450px) {
+    .sidebar {
+        width: 70% !important;
+    }
+}

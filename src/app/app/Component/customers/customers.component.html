@@ -1,0 +1,647 @@
+<div class="conatiner px-2">
+    <div class="row">
+        <div class="col-xxl-4 col-xl-4 col-md-5 pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="text" class="form-control" id="searchCustomer" placeholder="Search Customer"
+                                autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButton" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                        </form>
+                        <div class="col-auto p-0">
+                            <!-- Button to Open the Modal -->
+                            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                                data-bs-target="#newCustomer" (click)="modalData = false">
+                                <i class="bi bi-plus-lg"></i>
+                                <span class=" ps-1">New</span>
+                            </button>
+                        </div>
+
+                    </div>
+                    @if(!tableSpinner){
+                    <!-- Table Section -->
+                    <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef class="colWidth"> Name </mat-header-cell>
+                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"
+                                [class.text-danger]="element.status == 'inactive'" class="colWidth"> {{element.name}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Account Balance Column -->
+                        <ng-container matColumnDef="accountBalance">
+                            <mat-header-cell *matHeaderCellDef> Balance
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element" (click)="showUserData(element)"
+                                [class.text-danger]="element.status == 'inactive'">
+                                ${{element.accountBalance | number:'1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Options Column -->
+                        <ng-container matColumnDef="options">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                @if(displaySmall){
+                                <i class="bi bi-eye-fill hoverColor pe-2" (click)="showUserData(element)"
+                                    data-bs-toggle="modal" data-bs-target="#customerInfo"></i>
+                                }
+
+                                <i class="bi bi-cash-coin hoverColor pe-2" (click)="receivePayment(element)"></i>
+                                <i class="bi bi-pencil-square hoverColor " (click)="modalUserData(element)"></i>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    </table>
+
+                    }@else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row">
+                        <div class="col d-flex align-items-center pe-0">
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-capitalize"
+                                (click)="populateUsersTable(userTableStatus)">Show {{userTableStatus}}</button>
+                        </div>
+                        <div class="col-auto p-0">
+                            <mat-paginator #paginator1 [pageSizeOptions]="[8]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        @if(customerDataLoaded){
+        <div class="col-xxl-8 col-xl-8 col-md-7 d-none d-md-inline pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="d-flex align-items-center flex-column pb-4">
+                                <div class="p-2">
+                                    <div class="avatar"><span
+                                            class="avatar-initial rounded-circle bgColor">{{getInitials()}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around flex-wrap pb-2 row px-4">
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bgColor">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 class="mb-0 fs-5">{{customerData.cart || 0}}</h2>
+                                        <span class="smallText">Cart Items</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bgColor">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 class="mb-0 fs-5">${{customerData.cart || 0}}</h2>
+                                        <span class="smallText">Cart Value</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bgColor">
+                                            <i class="bi bi-heart"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 class="mb-0 fs-5">{{customerData.wishlist || 0}}</h2>
+                                        <span class="smallText">Wishlist Items</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-4 p-2 pb-3 col col-xl-6 col-xxl-3">
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bgColor">
+                                            <i class="bi bi-coin"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 class="mb-0 fs-5">${{customerData.wishlist || 0}}</h2>
+                                        <span class="smallText">Wishlist Value</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around row px-4">
+                                <div class="col col-xl-12 col-xxl-4">
+                                    <ul class="list-unstyled mb-1">
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Name:</span>
+                                            <span>{{customerData.name}}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Email:</span>
+                                            <span>{{customerData.email}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col col-xl-6 col-xxl-4">
+                                    <ul class="list-unstyled mb-1">
+                                        <li class="mb-1">
+                                            <span class="h6 me-1">Status:</span>
+                                            <span [class.inactive]="customerData.status == 'inactive'"
+                                                [class.active]="customerData.status == 'active'"
+                                                class="badge rounded-pill text-capitalize">{{customerData.status}}</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Contact:</span>
+                                            <span>{{customerData.phoneNumber}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col col-xl-6 col-xxl-4">
+                                    <ul class="list-unstyled mb-1">
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">Street:</span>
+                                            <span
+                                                class="text-capitalize">{{customerData.shippingAddress?.street}}</span>
+                                        </li>
+
+                                        <li class="mb-2">
+                                            <span class="h6 me-1">City / Town:</span>
+                                            <span>{{customerData.shippingAddress?.cityTown}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if(!tableSpinnerInv){
+                    <!-- Table Section -->
+                    <table mat-table [dataSource]="dataSourceInvoice" class="scrollable invoice">
+
+                        <!-- Status Column -->
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                    [class.pending]="element.invoiceStatus == 'Pending'"
+                                    [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                    [class.partial]="element.invoiceStatus == 'Partial'"
+                                    [class.voided]="element.invoiceStatus == 'Voided'"
+                                    class="badge rounded-pill text-capitalize ">{{element.invoiceStatus}}</span>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Invoice Number Column -->
+                        <ng-container matColumnDef="invNumber">
+                            <mat-header-cell *matHeaderCellDef> Inv. Number
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.invoiceNumber}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef> Name
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.customer.name}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Total Column -->
+                        <ng-container matColumnDef="total">
+                            <mat-header-cell *matHeaderCellDef> Total
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                ${{element.grandTotal | number:'1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Balance Column -->
+                        <ng-container matColumnDef="balance">
+                            <mat-header-cell *matHeaderCellDef> Balance
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                ${{element.invoiceBalance | number:'1.2-2' }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Due Date Column -->
+                        <ng-container matColumnDef="dueDate">
+                            <mat-header-cell *matHeaderCellDef> Due Date
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{formatDate(element.dueDate)}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Options Column -->
+                        <ng-container matColumnDef="options">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                <i class="bi bi-cash-coin hoverColor mx-2" (click)="invoicePayment(element)"></i>
+                                <i class="bi bi-eye-fill hoverColor mx-2" (click)="invoiceView(element)"></i>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumnsInvoice"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsInvoice;"></mat-row>
+
+                    </table>
+                    }@else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row px-4">
+                        <div class="col ">
+                        </div>
+                        <div class="col-auto p-0">
+                            <mat-paginator #paginator2 [pageSizeOptions]="[5]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+    </div>
+</div>
+
+
+<!-- Modal For New Customer -->
+<div class="modal fade" id="newCustomer" data-bs-backdrop="static" tabindex="-1" #newCustomerModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="customerForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewCustomerForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">{{ modalData ? 'Edit Customer' : 'New Customer' }}</h1>
+                        </div>
+                    </div>
+                    <!-- Customer Name -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="First Name"
+                                    formControlName="customerFirstName" />
+                                @if(firstNameControl?.invalid && firstNameControl?.touched){
+                                <div class="text-danger">
+                                    @if(firstNameControl?.errors?.['required']){
+                                    <small>First Name is required.</small>
+                                    }
+                                    @if(firstNameControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                    @if(firstNameControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Last Name"
+                                    formControlName="customerLastName" />
+                                @if(lastNameControl?.invalid && lastNameControl?.touched){
+                                <div class="text-danger">
+                                    @if(lastNameControl?.errors?.['required']){
+                                    <small>Last Name is required.</small>
+                                    }
+                                    @if(lastNameControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                    @if(lastNameControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Email & Phone # -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Email"
+                                    formControlName="customerEmail" />
+                                @if(emailControl?.invalid && emailControl?.touched){
+                                <div class="text-danger">
+                                    @if(emailControl?.errors?.['required']){
+                                    <small>Email is required.</small>
+                                    }
+                                    @if(emailControl?.errors?.['email']){
+                                    <small>Invalid email format.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Phone #"
+                                    formControlName="customerPhoneNum" />
+                                @if(phoneControl?.invalid && phoneControl?.touched){
+                                <div class="text-danger">
+                                    @if(phoneControl?.errors?.['required']){
+                                    <small>Phone number is required.</small>
+                                    }
+                                    @if(phoneControl?.errors?.['pattern']){
+                                    <small>Invalid format. Use xxx-xxxx.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Address -->
+                    <div class="row">
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Street"
+                                    formControlName="customerStreet" />
+                                @if(streetControl?.invalid && streetControl?.touched){
+                                <div class="text-danger">
+                                    @if(streetControl?.errors?.['required']){
+                                    <small>Street is required.</small>
+                                    }
+                                    @if(streetControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="City/Town/Village"
+                                    formControlName="customerCityTown" />
+                                @if(cityControl?.invalid && cityControl?.touched){
+                                <div class="text-danger">
+                                    @if(cityControl?.errors?.['required']){
+                                    <small>City/Town/Village is required.</small>
+                                    }
+                                    @if(cityControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                    @if(cityControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if(modalData){
+                    <div class="row">
+                        <div class="col d-flex justify-content-start">
+                            <div class="mx-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault" formControlName="customerStatus">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Status</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewCustomerForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
+                            <button class="btn btn-primary" (click)="modalData ? updateCustomer() : newCustomerForm()"
+                                [disabled]="customerForm.invalid">{{ modalData ? 'Update' : 'Save' }}</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="customerInfo" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex align-items-center flex-column pb-4 mb-4">
+                            <div class="avatar"><span
+                                    class="avatar-initial rounded-circle bgColor">{{getInitials()}}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-around flex-wrap row px-3 pb-3">
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">185</h2>
+                                    <span class="smallText">Cart Items</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-currency-dollar"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">$378.00</h2>
+                                    <span class="smallText">Cart Value</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-heart"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">184</h2>
+                                    <span class="smallText">Wishlist Items</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 pb-3 px-1 col-6">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bgColor">
+                                        <i class="bi bi-coin"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0 fs-5">$178.00</h2>
+                                    <span class="smallText">Wishlist Value</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-around row px-4">
+                            <div class="col-12">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Name:</span>
+                                        <span>{{customerData.name}}</span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Email:</span>
+                                        <span>{{customerData.email}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Status:</span>
+                                        <span
+                                            class="badge active rounded-pill text-capitalize">{{customerData.status}}</span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Contact:</span>
+                                        <span class="text-capitalize">{{customerData.phoneNumber}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <ul class="list-unstyled ">
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">Street:</span>
+                                        <span class="text-capitalize">{{customerData.shippingAddress?.street}}</span>
+                                    </li>
+
+                                    <li class="mb-2">
+                                        <span class="h6 me-1">City / Town:</span>
+                                        <span>{{customerData.shippingAddress?.cityTown}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To Receive Payment  -->
+<div class="modal fade" id="paymentModal" data-bs-backdrop="static" tabindex="-1" #paymentModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="clearPaymentForm()"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Receive Payment For</span>
+                    </div>
+                </div>
+
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg  mb-4 mb-lg-0">
+                            <div>
+                                <div class="ps-2">
+                                    <p class="mb-1 fw-medium">{{customerData.name}}</p>
+                                    <p class="mb-1 fw-medium">{{customerData.phoneNumber}}</p>
+                                    <p class="mb-1 fw-medium">{{customerData.shippingAddress?.street}},
+                                        {{customerData.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0 fw-medium">{{customerData.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <form [formGroup]="paymentFormInputs">
+                    <div class="row m-2">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" formControlName="date">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 ">
+                            <div class="mb-3">
+
+                                <label for="pymtAmount" class="form-label">Amount</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="pymtAmount" formControlName="amount">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1">
+                                <label for="pymtMethod" class="form-label">Payment Method</label>
+                                <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
+                                    @for(account of bankAccounts; track account){
+                                    <option [value]="account.id">
+                                        {{ account.bankName
+                                        }}
+                                    </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="clearPaymentForm()">Cancel</button>
+                        @if(isProcessing){
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span class="visually-hidden" role="status">Loading...</span>
+                        </button>
+                        }@else{
+                        <button class="btn btn-primary" (click)="paymentSubmit()"
+                            [disabled]="paymentFormInputs.invalid">Save</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

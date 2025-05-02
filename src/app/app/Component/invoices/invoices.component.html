@@ -1,0 +1,1133 @@
+<div class="conatiner px-2">
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 col-lg-3">
+                            <div class="d-flex justify-content-between border-end p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">{{paidQty}}</h2>
+                                    <p class="mb-0">Paid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-paid">
+                                        <i class="bi bi-receipt-cutoff fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="d-flex justify-content-between border-end p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">{{unpaidQty}}</h2>
+                                    <p class="mb-0">Unpaid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-unpaid">
+                                        <i class="bi bi-receipt fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3 d-none d-md-block">
+                            <div class="d-flex justify-content-between border-end p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">${{paidTotal | number:'1.2-2'}}</h2>
+                                    <p class="mb-0">Paid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-paid">
+                                        <i class="bi bi-bank fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3 d-none d-md-block">
+                            <div class="d-flex justify-content-between p-2">
+                                <div>
+                                    <h2 class="mb-0 fw-medium fs-4">${{unpaidTotal | number:'1.2-2'}}</h2>
+                                    <p class="mb-0">Unpaid</p>
+                                </div>
+                                <div class="avatar p-2">
+                                    <span class="avatar-initial rounded bg-unpaid">
+                                        <i class="bi bi-currency-dollar fs-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-center justify-content-between pt-2">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="text" class="form-control" id="searchInvoice" placeholder="Search Invoice"
+                                autocomplete="off" matInput (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButtonInvoice" class="clearBtn hoverColor"><i class="bi bi-x-lg"></i></span>
+                        </form>
+
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row">
+                                <div class="col px-2 d-none d-md-block">
+                                    <select class="form-select" formControlName="status" (change)="filterStatus()">
+                                        <option value="-1" selected>Status All</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Partial">Partial</option>
+                                        <option value="Past Due">Past Due</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 d-none d-md-block">
+                                    <select class="form-select" formControlName="year" (change)="filterStatus()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 d-none d-md-block">
+                                    <select class="form-select" formControlName="month" (change)="filterStatus()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto p-0 pe-2">
+                                    <!-- Button to Open the New Invoice Modal -->
+                                    <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                                        data-bs-target="#newInvoice" (click)="modalData = false"
+                                        (click)="getCustomersAndItems()">
+                                        <i class="bi bi-plus-lg"></i>
+                                        <span class=" ps-1">New</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row p-2 pb-0 d-block d-md-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row ps-1 pb-0 pt-1">
+                                <div class="col px-2 ">
+                                    <select class="form-select" formControlName="status" (change)="filterStatus()">
+                                        <option value="-1" selected>Status All</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Partial">Partial</option>
+                                        <option value="Past Due">Past Due</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2">
+                                    <select class="form-select" formControlName="year" (change)="filterStatus()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 ">
+                                    <select class="form-select" formControlName="month" (change)="filterStatus()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        @if(!displaySmall){
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                            <!-- Invoice Status Column -->
+                            <ng-container matColumnDef="invoiceStatus">
+                                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                        [class.pending]="element.invoiceStatus == 'Pending'"
+                                        [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                        [class.partial]="element.invoiceStatus == 'Partial'"
+                                        [class.voided]="element.invoiceStatus == 'Voided'"
+                                        class="badge rounded-pill text-capitalize ">{{element.invoiceStatus}}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Invoice Num Column  -->
+                            <ng-container matColumnDef="invoiceNum">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">#
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    {{element.invoiceNumber}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Customer Name Column  -->
+                            <ng-container matColumnDef="customerName">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-start colWidthMD"> Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-start colWidthMD">
+                                    {{element.customer.name}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Total Column  -->
+                            <ng-container matColumnDef="total">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    ${{element.grandTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Date Invoiced Colum -->
+                            <ng-container matColumnDef="dateInvoiced">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Date Inv.
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center text-center">
+                                    {{convertDate(element.day, element.month ,element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Balance Column  -->
+                            <ng-container matColumnDef="balance">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    ${{element.invoiceBalance | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+
+                            <!-- Due Date Column  -->
+                            <ng-container matColumnDef="dueDate">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Due Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    {{formatDate(element.dueDate) }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Options Column -->
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                    <i class="bi bi-cash-coin hoverColor mx-2" (click)="receivePayment(element)"></i>
+                                    <i class="bi bi-eye-fill hoverColor mx-2" (click)="viewInvoice(element)"></i>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                        </table>
+                        }
+                        @else{
+                        <!-- Table Section -->
+                        <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                            <!-- Invoice Status Column -->
+                            <ng-container matColumnDef="invoiceStatus">
+                                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    <span [class.paid]="element.invoiceStatus == 'Paid'"
+                                        [class.pending]="element.invoiceStatus == 'Pending'"
+                                        [class.pastdue]="element.invoiceStatus == 'Past Due'"
+                                        [class.partial]="element.invoiceStatus == 'Partial'"
+                                        class="badge rounded-pill text-capitalize active">{{element.invoiceStatus}}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Invoice Num Column  -->
+                            <ng-container matColumnDef="invoiceNum">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">#
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    {{element.invoiceNumber}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Customer Name Column  -->
+                            <ng-container matColumnDef="customerName">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-start colWidthSMMD">
+                                    Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-start colWidthSMMD">
+                                    {{element.customer.name}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Total Column  -->
+                            <ng-container matColumnDef="total">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Total
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    ${{element.grandTotal | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Balance Column  -->
+                            <ng-container matColumnDef="balance">
+                                <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Balance
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    ${{element.invoiceBalance | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+
+                            <!-- Options Column -->
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                    <i class="bi bi-cash-coin hoverColor mx-2" (click)="receivePayment(element)"></i>
+                                    <i class="bi bi-eye-fill hoverColor mx-2" (click)="viewInvoice(element)"></i>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumnsSmall"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumnsSmall;"></mat-row>
+
+                        </table>
+                        }
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row d-flex align-items-end">
+                        <div class="col p-0">
+                            <mat-paginator [pageSizeOptions]="[tableRow]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For New Invoice  -->
+<div class="modal fade" id="newInvoice" data-bs-backdrop="static" tabindex="-1" #newInvoiceModal>
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="invoiceForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewInvoiceForm()"></button>
+                        </div>
+                    </div>
+
+                    <div class="p-sm-12 p-4">
+                        <div class="invoice-preview-header  p-4">
+                            <div class="d-flex flex-wrap  flex-row justify-content-between ">
+                                <!-- Logo and Address -->
+                                <div class="col d-flex align-items-center gap-3 ">
+                                    <img [src]="logoPath" alt="Logo" class="img-fluid" style="max-width: 100px;">
+                                    <div>
+                                        <p class="mb-1">#7 Panama Extension</p>
+                                        <p class="mb-1">Belmopan City,</p>
+                                        <p class="mb-1">Cayo, Belize</p>
+                                        <p class="mb-0">+501 628-9704</p>
+                                    </div>
+                                </div>
+                                <!-- Invoice Details -->
+                                <div class="col col-md-12 col-lg-6 mt-4 mt-lg-0">
+                                    <dl class="row mb-0 gx-4">
+                                        <!-- Invoice ID -->
+                                        <dt class="col-sm-5 mb-2 d-flex align-items-center">
+                                            <span class="text-capitalize text-nowrap fs-5 fw-medium">Invoice</span>
+                                        </dt>
+                                        <dd class="col-sm-7">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text">#</span>
+                                                <input type="number" class="form-control" readonly
+                                                    formControlName="invoiceNumber" id="invoiceId">
+                                            </div>
+                                        </dd>
+                                        <!-- Date Issued -->
+                                        <dt class="col-sm-5 mb-2 d-flex align-items-center">
+                                            <span class="fw-normal text-nowrap">Date Issued:</span>
+                                        </dt>
+                                        <dd class="col-sm-7">
+                                            <div class="input-group input-group-sm">
+                                                <input type="date" class="form-control" formControlName="dateIssued"
+                                                    placeholder="MM/DD/YYYY" id="dateIssued">
+                                            </div>
+                                        </dd>
+                                        <!-- Due Date -->
+                                        <dt class="col-sm-5 d-flex align-items-center">
+                                            <span class="fw-normal">Due Date:</span>
+                                        </dt>
+                                        <dd class="col-sm-7 mb-0">
+                                            <div class="input-group input-group-sm">
+                                                <input type="date" class="form-control" formControlName="dueDate"
+                                                    placeholder="MM/DD/YYYY" id="dueDate">
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body pt-4">
+                            <div class="row my-1">
+                                <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-4">
+                                    <p class="fs-6 fw-medium">Invoice To:</p>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-8 col-12">
+                                            <div class="autocomplete">
+                                                <input type="text" class="form-control w-100"
+                                                    placeholder="Select Customer" id="searchCustomer2"
+                                                    autocomplete="off" (keyup)="filterCustomers($event)" />
+                                                <span id="clearButtonCustomer2" class="clearBtn hoverColor"><i
+                                                        class="bi bi-x-lg"></i></span>
+                                                @if(searchTerm.length > 0){
+                                                <ul class="dropdown-menu show">
+                                                    @for(customer of filteredCustomers; track customer.id){
+                                                    <li class="dropdown-item" (click)="populateCustInv(customer)">
+                                                        {{ customer.name }}
+                                                    </li>
+                                                    }
+                                                </ul>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 pb-0">
+                                        @if(selectedInvoiceCustomer){
+                                        <p class="mb-0">{{selectedInvoiceCustomer.name}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.street}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.cityTown}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.phoneNumber}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.email}}</p>
+                                        }@else {
+                                        <p class="mb-0"></p>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-7">
+                                    <p class="fs-6 fw-medium">Bill To:</p>
+                                    <div class="px-2">
+                                        @if(selectedInvoiceCustomer){
+                                        <p class="mb-0">{{selectedInvoiceCustomer.name}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.street}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.shippingAddress?.cityTown}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.phoneNumber}}</p>
+                                        <p class="mb-0">{{selectedInvoiceCustomer.email}}</p>
+                                        }@else {
+                                        <p class="mb-0"></p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mt-3 mb-4">
+                        <div class="itemCard pt-0 px-0">
+                            <form class="source-item">
+                                <div class="p-2">
+                                    <div class="row">
+                                        <div class="col m-1 mb-2 scrollable">
+                                            @if(dataSourceProduct.data.length != 0){
+                                            <!-- Table Section -->
+                                            <table mat-table [dataSource]="dataSourceProduct" class="my-2 productTable">
+
+                                                <!-- Item Column -->
+                                                <ng-container matColumnDef="item">
+                                                    <mat-header-cell *matHeaderCellDef class="colWidth"> Item
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element" class="colWidth">
+                                                        {{element.description}} - {{element.size}}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Qty Column  -->
+                                                <ng-container matColumnDef="qty">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center">Qty
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        {{element.quantity}}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Price Column  -->
+                                                <ng-container matColumnDef="price">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center"> Price
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{element.price | number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Discount Column  -->
+                                                <ng-container matColumnDef="discount">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center"> Discount
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{ (element.discount / 100) * element.price * element.quantity
+                                                        | number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- Total Column -->
+                                                <ng-container matColumnDef="total">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center">
+                                                        Total
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                                        || 0) / 100)) | number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <!-- TAX Column -->
+                                                <ng-container matColumnDef="tax">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="d-flex justify-content-center">
+                                                        GST
+                                                    </mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-center">
+                                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                                        || 0) / 100) * (element.gst / 100)) |
+                                                        number:'1.2-2' }}
+                                                    </mat-cell>
+                                                </ng-container>
+
+
+                                                <!-- Option Column -->
+                                                <ng-container matColumnDef="option">
+                                                    <mat-header-cell *matHeaderCellDef
+                                                        class="colWidthSm"></mat-header-cell>
+                                                    <mat-cell *matCellDef="let element"
+                                                        class="d-flex justify-content-end colWidthSm">
+                                                        <i class="bi bi-x-lg hoverColor"
+                                                            (click)="removeProductFromInvoice(element)"></i>
+                                                    </mat-cell>
+                                                </ng-container>
+
+                                                <mat-header-row
+                                                    *matHeaderRowDef="displayedColumnsProduct"></mat-header-row>
+                                                <mat-row
+                                                    *matRowDef="let row; columns: displayedColumnsProduct;"></mat-row>
+
+                                            </table>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-lg-5 col-12 pb-3">
+                                            <p class="fw-medium ps-1">New Item</p>
+                                            <div class="autocomplete">
+                                                <input type="text" class="form-control invoice-product-name w-100"
+                                                    placeholder="Select Product" id="searchProduct" autocomplete="off"
+                                                    (keyup)="filterProduct($event)" />
+                                                @if(searchTermProduct.length > 0){
+                                                <ul class="dropdown-menu show">
+                                                    @for(Product of filteredProduct; track Product.id){
+                                                    <li class="dropdown-item" (click)="populateProductInv(Product)">
+                                                        {{ Product.description }} - {{ Product.size }}
+                                                    </li>
+                                                    }
+                                                </ul>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-6 pb-3">
+                                            <p class="fw-medium ps-1">Qty</p>
+                                            <input type="number" class="form-control" id="invoice-product-qty" min="1"
+                                                value="1" (keyup)="calculateSelectedTotal()"
+                                                (change)="calculateSelectedTotal()">
+                                        </div>
+
+                                        <div class="col-lg-1 col-4 pb-3 text-center">
+                                            <p class="fw-medium ps-1">Price</p>
+                                            <p class="py-2 my-2 text-heading">${{selectedProductPrice |
+                                                number:'1.2-2'}}</p>
+                                        </div>
+                                        <div class="col-lg-2 col-6 pb-3">
+                                            <p class="fw-medium ps-1">Discount (%)</p>
+                                            <input type="number" class="form-control" id="invoice-discount" min="0"
+                                                max="100" value="0" (keyup)="calculateSelectedTotal()"
+                                                (change)="calculateSelectedTotal()">
+                                        </div>
+                                        <div class="col-lg-1 col-4 pb-3 text-center">
+                                            <p class="fw-medium ps-1">Total</p>
+                                            <p class="py-2 my-2 text-heading">${{(selectedProductTotal) |
+                                                number:'1.2-2'}}</p>
+                                        </div>
+                                        @if(selectedInvoiceProduct){
+                                        <div class="col-lg-1 col-2 pb-3 d-flex align-items-center justify-content-end">
+                                            <p class="py-3 my-3 mt-4 text-heading">
+                                                <i class="bi bi-check2 fs-5 hoverColor"
+                                                    (click)="addProductToInvoice(selectedInvoiceProduct)"></i>
+                                            </p>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <hr class="my-1 my-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-md-0 mb-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <label for="salesperson" class="m-0 me-2 h6 text-center ">Salesperson:</label>
+                                    <input type="text" class="form-control" id="salesperson" formControlName="salesRep"
+                                        placeholder="User Goes Here">
+                                </div>
+                                <label for="memo" class="m-0 me-2 mb-2 h6 text-center ">Note:</label>
+                                <textarea class="form-control" formControlName="memo" rows="2"
+                                    id="memo">{{memoControl?.value}}</textarea>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end mt-2">
+                                <div class="invoice-calculations ">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class=" me-3 fw-normal">Subtotal:</span>
+                                        <span class="mb-0 fw-normal">${{subTotalControl?.value | number:'1.2-2'}}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-normal me-3">Discount:</span>
+                                        <span class="mb-0 fw-normal">${{discountControl?.value | number:'1.2-2'}}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-normal me-3">GST:</span>
+                                        <span class="mb-0 fw-normal">${{gstControl?.value | number:'1.2-2'}}</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fs-5 fw-medium me-3">Total:</span>
+                                        <h6 class="mb-0 fs-5 fw-medium">${{grandTotalControl?.value | number:'1.2-2'}}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewInvoiceForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
+                            <button class="btn btn-primary" [disabled]="invoiceForm.invalid"
+                                (click)="modalData ? updateInvoice() : newInvoiceForm()">{{
+                                modalData ? 'Update' : 'Save' }}</button>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal To View & Invoice  -->
+<div class="modal fade" id="printInvoice" data-bs-backdrop="static" tabindex="-1" #printInvoiceModal>
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="p-sm-12 p-4" id="print-invoice-section">
+                    <div class="invoice-preview-header  p-2 py-4">
+                        <div class="container-fluid">
+                            <div class="row justify-content-between align-items-center">
+                                <!-- Logo and Address -->
+                                <div class="col-auto col-lg d-flex align-items-center gap-3 mb-3 mb-lg-0">
+                                    <img [src]="logoPath" alt="Logo" class="img-fluid" style="max-width: 100px;">
+                                    <div>
+                                        <p class="mb-1">#7 Panama Extension</p>
+                                        <p class="mb-1">Belmopan City,</p>
+                                        <p class="mb-1">Cayo, Belize</p>
+                                        <p class="mb-0">+501 628-9704</p>
+                                    </div>
+                                </div>
+
+                                <!-- Invoice Details -->
+                                <div class="col-auto col-lg-auto">
+
+                                    <div class="row pb-2 align-items-center ">
+                                        <!-- Invoice ID -->
+                                        <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                        <div class="col">
+                                            <div class="input-group input-group-sm ">
+                                                <span class="input-group-text invoiceNumWidth"># {{
+                                                    printInvoiceData.invoiceNumber
+                                                    }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Issued -->
+                                    <div class="row pb-2 align-items-center">
+                                        <div class="col text-lg-end fw-normal">Date Issued:</div>
+                                        <div class="col">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text invoiceNumWidth">
+                                                    {{ convertDate(printInvoiceData.day, printInvoiceData.month,
+                                                    printInvoiceData.year) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Due Date -->
+                                    <div class="row align-items-center">
+                                        <div class="col text-lg-end fw-normal">Due Date:</div>
+                                        <div class="col">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text invoiceNumWidth">{{
+                                                    formatDate(printInvoiceData.dueDate)
+                                                    }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-4">
+                        <div class="row my-1 ">
+                            <div class="col ">
+                                <div class="px-2">
+                                    <p class="fs-6 fw-medium">Invoice To:</p>
+                                    <p class="mb-0">{{printInvoiceData.customer!.name}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.email}}</p>
+                                </div>
+                            </div>
+                            <div class="col ">
+                                <div class="px-2">
+                                    <p class="fs-6 fw-medium">Bill To:</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.name}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{printInvoiceData.customer.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="mt-4 mb-0">
+                    <div class="row">
+                        <div class="col scrollable p-0 m-1 mx-2">
+                            <!-- Table Section -->
+                            <table mat-table [dataSource]="dataSourcePrintInvoiceProduct" class=" printTable">
+
+                                <!-- Item Column -->
+                                <ng-container matColumnDef="item">
+                                    <mat-header-cell *matHeaderCellDef class="colWidth noHover"> Item
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="colWidth noHover">
+                                        {{element.description}} - {{element.size}}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Qty Column  -->
+                                <ng-container matColumnDef="qty">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center noHover">Qty
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center noHover">
+                                        {{element.quantity}}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Price Column  -->
+                                <ng-container matColumnDef="price">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"> Price
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{element.price | number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Discount Column  -->
+                                <ng-container matColumnDef="discount">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">
+                                        Discount
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{ (element.discount / 100) * element.price * element.quantity |
+                                        number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- Total Column -->
+                                <ng-container matColumnDef="total">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">
+                                        Total
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                        || 0) / 100)) | number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <!-- TAX Column -->
+                                <ng-container matColumnDef="tax">
+                                    <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center">
+                                        GST
+                                    </mat-header-cell>
+                                    <mat-cell *matCellDef="let element" class="d-flex justify-content-center">
+                                        ${{ (element.quantity * element.price * (1 - (element.discount
+                                        || 0) / 100) * (element.gst / 100)) |
+                                        number:'1.2-2' }}
+                                    </mat-cell>
+                                </ng-container>
+
+                                <mat-header-row *matHeaderRowDef="displayedColumnsPrintProduct"></mat-header-row>
+                                <mat-row *matRowDef="let row; columns: displayedColumnsPrintProduct;"></mat-row>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col mb-3">
+                            <div class="d-flex align-items-center mb-3">
+                                <label for="salesperson" class="m-0 me-2 h6 text-center ">Sold By:
+                                    <span class="fw-normal">{{printInvoiceData.salesRep}}</span></label>
+                            </div>
+                            <label for="memo" class="m-0 me-2 mb-2 h6  ">Note:
+                                <span class="fw-normal">{{printInvoiceData.memo}}</span></label>
+                            <br>
+                            <label for="memo" class="m-0 me-2 mb-2 h6  ">Status:
+                                <span [class.paid]="printInvoiceData.invoiceStatus == 'Paid'"
+                                    [class.pending]="printInvoiceData.invoiceStatus == 'Pending'"
+                                    [class.pastdue]="printInvoiceData.invoiceStatus == 'Past Due'"
+                                    [class.partial]="printInvoiceData.invoiceStatus == 'Partial'"
+                                    [class.voided]="printInvoiceData.invoiceStatus == 'Voided'"
+                                    class="badge rounded-pill text-capitalize mt-1">{{printInvoiceData.invoiceStatus}}</span></label>
+
+                        </div>
+                        <div class="col d-flex justify-content-end mt-2">
+                            <div class="invoice-calculations ">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class=" me-3 fw-normal">Subtotal:</span>
+                                    <span class="mb-0 fw-normal">${{printInvoiceData.subTotal | number:'1.2-2'}}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-normal me-3">Discount:</span>
+                                    <span class="mb-0 fw-normal">${{printInvoiceData.discount | number:'1.2-2'}}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-normal me-3">GST:</span>
+                                    <span class="mb-0 fw-normal">${{printInvoiceData.taxTotal | number:'1.2-2'}}</span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fs-5 fw-medium me-3">Total:</span>
+                                    <span class="mb-0 fs-5 fw-medium">${{printInvoiceData.grandTotal | number:'1.2-2'}}
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        @if(printInvoiceData.subTotal != 0){
+                        <button type="button" class="btn btn-danger mx-2" data-bs-target="#voidIConfirmModal"
+                            data-bs-toggle="modal"><i class="bi bi-exclamation-triangle me-1"></i>Void</button>
+                        }
+
+                        <button class="btn btn-primary mx-2" ngxPrint printSectionId="print-invoice-section"
+                            printTitle="Invoice" [useExistingCss]="true"><i
+                                class="bi bi-printer me-1"></i>Print</button>
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirm Void Invoice  -->
+<div class="modal fade" id="voidIConfirmModal" data-bs-backdrop="static" tabindex="-1" #voidIConfirmModal>
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium text-center lh-base">Are you Sure? <br>Voiding Invoice
+                            #{{printInvoiceData.invoiceNumber}}</span>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <i class="bi bi-exclamation-triangle fs-1 text-danger"></i>
+                    </div>
+                </div>
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light " data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
+                        @if(printInvoiceData.subTotal != 0){
+                        <button type="button" class="btn btn-danger mx-2" data-bs-target="#voidInvoiceModal"
+                            data-bs-toggle="modal" (click)="voidInvoice(printInvoiceData)"><i
+                                class="bi bi-exclamation-triangle me-1"></i>Void</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Void Invoice  -->
+<div class="modal fade" id="voidInvoiceModal" data-bs-backdrop="static" tabindex="-1" #voidInvoiceModal>
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        @if(isProcessing3){
+                        <span class="fs-5 fw-medium">Voiding Invoice #{{printInvoiceData.invoiceNumber}}</span>
+                        }
+                        @else {
+                        <span class="fs-5 fw-medium">Voided Invoice #{{printInvoiceData.invoiceNumber}}</span>
+                        }
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        @if(isProcessing3){
+                        <span class="spinner-border spinner-border-lg" aria-hidden="true"></span>
+                        <span class="visually-hidden" role="status">Loading...</span>
+                        }
+                        @else {
+                        <i class="bi bi-check2-square fs-1 text-success"></i>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal To Receive Payment  -->
+<div class="modal fade" id="paymentModal" data-bs-backdrop="static" tabindex="-1" #paymentModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium">Receive Payment</span>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto col-lg mb-4">
+                            <div>
+                                <p class="fs-6 fw-medium">Customer:</p>
+                                <div class="ps-2">
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.name}}</p>
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.street}}</p>
+                                    <p class="mb-1">{{recPymtInvoiceData.customer.shippingAddress?.cityTown}}</p>
+                                    <p class="mb-0">{{recPymtInvoiceData.customer.phoneNumber}}</p>
+                                    <p class="mb-0">{{recPymtInvoiceData.customer.email}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto col-lg-auto mx-auto mx-sm-0">
+                            <div class="row pb-2 d-flex align-items-center">
+                                <div class="col text-lg-end fw-medium text-capitalize">Invoice:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm ">
+                                        <span class="input-group-text invoiceNumWidth"># {{
+                                            recPymtInvoiceData.invoiceNumber
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Date Issued:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text invoiceNumWidth">
+                                            {{ convertDate(recPymtInvoiceData.day, recPymtInvoiceData.month,
+                                            recPymtInvoiceData.year) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-2 align-items-center">
+                                <div class="col text-lg-end fw-normal">Due Date:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text invoiceNumWidth">{{
+                                            formatDate(recPymtInvoiceData.dueDate)
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row align-items-center">
+                                <div class="col text-lg-end fw-normal">Balance:</div>
+                                <div class="col">
+                                    <div class="input-group input-group-sm">
+                                        <span
+                                            class="input-group-text invoiceNumWidth">${{recPymtInvoiceData.invoiceBalance
+                                            |
+                                            number:'1.2-2' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+
+                @if(recPymtInvoiceData.invoiceBalance != 0){
+                @if(paymentsForUser.length != 0){
+                <div class="container-fluid">
+                    <p class="text-center fw-medium fs-5">Apply Credit</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="fw-medium">Pymt Method</th>
+                                <th class="fw-medium">Date</th>
+                                <th class="fw-medium">Amount</th>
+                                <th class="fw-medium">Balance</th>
+                                <th class="fw-medium"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for( payments of paymentsForUser; track payments.id){
+                            <tr>
+                                <td>{{ payments.paymentMethod }}</td>
+                                <td>{{convertDate(payments.day, payments.month, payments.year)}}</td>
+                                <td>${{ payments.amount.toFixed(2) }}</td>
+                                <td>${{ payments.balance.toFixed(2) }}</td>
+                                <td><i class="bi bi-cash-coin hoverColor mx-2" (click)="applyCredit(payments)"></i></td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="my-4">
+                }
+
+                <form [formGroup]="paymentFormInputs">
+                    <div class="row m-3">
+                        <div class="col-auto col-md-6">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" formControlName="date">
+                            </div>
+                        </div>
+                        <div class="col col-md-6 ">
+                            <label for="pymtAmount" class="form-label">Amount</label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="pymtAmount" formControlName="amount">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-1">
+                                <label for="pymtMethod" class="form-label">Payment Method</label>
+                                <select id="pymtMethod" class="form-select" formControlName="bankAccountId">
+                                    @for(account of bankAccounts; track account.id){
+                                    <option [value]="account.id">
+                                        {{ account.bankName
+                                        }}
+                                    </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                }
+
+
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                            aria-label="Close">Cancel</button>
+                        @if(isProcessing2){
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span class="visually-hidden" role="status">Loading...</span>
+                        </button>
+                        }@else{
+                        <button class="btn btn-primary" (click)="paymentSubmit()"
+                            [disabled]="paymentFormInputs.invalid">Save</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -361,4 +361,35 @@ export class TransactionsService {
       throw new Error(error.message);
     }
   }
+
+  async getLoanTransactionYearMonth(
+    year: number,
+    month: number
+  ): Promise<any[]> {
+    try {
+      const transactionsQuery = query(
+        this.transactionsCollection,
+        where('year', '==', year),
+        where('month', '==', month),
+        where('type', 'in', ['Loan Payment', 'Loan Disbursement']),
+        orderBy('createdAt', 'desc')
+      );
+
+      // Await the Firestore operation to get the documents
+      const querySnapshot = await getDocs(transactionsQuery);
+
+      // Map the query snapshot to an array of transaction objects
+      const transactions = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as any), // Spread the transaction data
+      }));
+
+      return transactions; // Return the list of transactions if successful
+    } catch (error) {
+      console.error('Error Retrieving Transactions: ', error);
+      throw new Error(
+        'Failed to Retrieve Transactions. Please try Again Later.'
+      );
+    }
+  }
 }

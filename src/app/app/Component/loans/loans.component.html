@@ -1,0 +1,585 @@
+<div class="conatiner px-2">
+    <div class="row">
+        <div class="col d-flex justify-content-end mb-2 d-block d-md-none">
+            <!-- Button to Open the New Loan Modal -->
+            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                data-bs-target="#newLoanAccountModal" (click)="modalData = false">
+                <i class="bi bi-plus-lg"></i>
+                <span class="ps-1">New</span>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        @if(!loanSpinner){
+        @for(loanAcc of activeLoanAccount; track loanAcc.id){
+        <div class="col-sm-12 col-md mb-4">
+            <div class="card">
+                <div class="card-body pe-2">
+                    <div class="d-flex justify-content-between p-1">
+                        <div class="me-4">
+                            <h2 class="mb-0 fw-medium fs-4">${{loanAcc.balance | number:'1.2-2'}}</h2>
+                            <div class="row">
+                                <div class="col-auto d-flex align-items-center ms-1">
+                                    <i class="bi bi-loan fs-4"></i>
+                                </div>
+                                <div class="col p-0">
+                                    <span class="fw-medium">{{loanAcc.loanName}}</span>
+                                    <p class="mb-0">Balance</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown my-auto ps-1">
+                            <i type="button" class="bi bi-three-dots-vertical fs-5 hoverColor" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"></i>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="revenueID">
+                                <a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#loanPaymentModal"
+                                    (click)="setloanInfo('Payment', loanAcc)">Payment</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+        }@else {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border m-5" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        }
+        <div class="col-auto d-flex align-items-center mb-4 d-none d-md-flex">
+            <!-- Button to Open the New Loan Modal -->
+            <button type="button" class="btn btn-primary mx-2" data-bs-toggle="modal"
+                data-bs-target="#newLoanAccountModal" (click)="modalData = false">
+                <i class="bi bi-plus-lg"></i>
+                <span class="ps-1">New</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col pb-4">
+            <div class="card">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-center justify-content-between pt-2 me-2">
+                        <form class="mx-2" style="position: relative;">
+                            <input type="text" class="form-control" id="searchLoanTransaction"
+                                placeholder="Search Transaction" autocomplete="off" matInput
+                                (keyup)="applyFilter($event)" #input>
+
+                            <span id="clearButtonTransaction" class="clearBtn hoverColor"><i
+                                    class="bi bi-x-lg"></i></span>
+                        </form>
+
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row ps-1 pb-0 pt-1">
+
+                                <div class="col-auto px-2 px-2 d-none d-md-block">
+                                    <select class="form-select" formControlName="year" (change)="filterLoanAcc()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 px-2 d-none d-md-block">
+                                    <select class="form-select" formControlName="month" (change)="filterLoanAcc()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="row p-2 pb-0 d-block d-md-none">
+                        <form [formGroup]="filterFormInputs">
+                            <div class="row ps-1 pb-0 pt-1">
+
+                                <div class="col-auto px-2 px-2 ">
+                                    <select class="form-select" formControlName="year" (change)="filterLoanAcc()">
+                                        <option value="{{currentYear}}">{{currentYear}}</option>
+                                        <option value="{{lastYear}}">{{lastYear}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-auto px-2 px-2 ">
+                                    <select class="form-select" formControlName="month" (change)="filterLoanAcc()">
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    @if(!tableSpinner){
+                    <div class="scrollable">
+                        <!-- Table Section -->
+                        <!-- <table mat-table [dataSource]="dataSource" class="mt-3 scrollable">
+
+                            <ng-container matColumnDef="loanName">
+                                <mat-header-cell *matHeaderCellDef class="colWidthSm">Loan Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthSm">
+                                    {{element.loanName}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="type">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Type
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.type}}
+                                    @if(element.status){
+                                    <span class="text-danger ps-1">({{element.status}})</span>
+                                    }
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="amount">
+                                <mat-header-cell *matHeaderCellDef> Amount
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    ${{element.amount | number:'1.2-2' }}
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell *matHeaderCellDef class="colWidth"> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidth">
+                                    {{element.description}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="date">
+                                <mat-header-cell *matHeaderCellDef class="colWidthSm"> Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="colWidthSm">
+                                    {{convertDate(element.day, element.month ,element.year)}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="options">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let element" class="d-flex justify-content-end">
+                                    <i class="bi bi-eye-fill hoverColor" (click)="viewTransaction(element)"></i>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                        </table> -->
+                    </div>
+                    }
+                    @else {
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border m-5" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row d-flex align-items-end">
+                        <div class="col p-0">
+                            <mat-paginator [pageSizeOptions]="[6]" hidePageSize class="p-0"></mat-paginator>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For New Loan Account -->
+<div class="modal fade" id="newLoanAccountModal" data-bs-backdrop="static" tabindex="-1" #newLoanAccountModal>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="loanForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewLoanForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">{{ modalData ? 'Edit Loan' : 'New Loan' }}</h1>
+                        </div>
+                    </div>
+                    <div class="row mx-2">
+
+                        <!-- loan Account Name -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Loan Name"
+                                    formControlName="loanName" />
+                                @if(loanNameControl?.invalid && loanNameControl?.touched){
+                                <div class="text-danger">
+                                    @if(loanNameControl?.errors?.['required']){
+                                    <small>loan Name is required.</small>
+                                    }
+                                    @if(loanNameControl?.errors?.['pattern']){
+                                    <small>Only letters and spaces are allowed.</small>
+                                    }
+                                    @if(loanNameControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- loan Account Number -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="number" class="form-control" placeholder="loan Account Number"
+                                    formControlName="accountNumber" />
+                                @if(accountNumberControl?.invalid && accountNumberControl?.touched){
+                                <div class="text-danger">
+                                    @if(accountNumberControl?.errors?.['required']){
+                                    <small>loan Account Number is required.</small>
+                                    }
+                                    @if(accountNumberControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                    </div>
+
+                    <div class="row mx-2">
+
+                        <!-- loan Starting Amount -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" placeholder="Starting Amount"
+                                        formControlName="startingAmount" />
+                                </div>
+                                @if(startingAmountControl?.invalid && startingAmountControl?.touched){
+                                <div class="text-danger">
+                                    @if(startingAmountControl?.errors?.['required']){
+                                    <small>Starting Amount is required.</small>
+                                    }
+                                    @if(startingAmountControl?.errors?.['maxlength']){
+                                    <small>Maximum length is 25 characters.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- loan Type -->
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <select class="form-select" id="loanType" formControlName="type">
+                                    <option value="">Select Type</option>
+                                    <option value="loan">loan</option>
+                                    <option value="eWallet">eWallet</option>
+                                    <option value="Card">Card</option>
+                                    <option value="Cash">Cash</option>
+                                </select>
+                                @if(typeControl?.invalid && typeControl?.touched){
+                                <div class="text-danger">
+                                    @if(typeControl?.errors?.['required']){
+                                    <small>Type is required.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearNewloanForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
+                            <button class="btn btn-primary" (click)="modalData ? updateloanAccount() : newloanAccount()"
+                                [disabled]="loanForm.invalid">{{ modalData ? 'Update' : 'Save'
+                                }}</button>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For loan Account Deposit -->
+<!-- <div class="modal fade" id="loanDepositModal" data-bs-backdrop="static" tabindex="-1" #loanDepositModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form [formGroup]="loanDepositForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearloanDepositForm()"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">New Deposit</h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary" placeholder="loan Name"
+                                    formControlName="loanName" readonly />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="number" class="form-control bg-body-secondary"
+                                    placeholder="loan Account Number" formControlName="accountNumber" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input type="date" class="form-control" formControlName="date" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" placeholder="Amount"
+                                    formControlName="amount" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <textarea class="form-control" placeholder="Description"
+                                    formControlName="description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal" aria-label="Close"
+                                (click)="clearloanDepositForm()">Cancel</button>
+                            @if(isProcessing){
+                            <button class="btn btn-primary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">Loading...</span>
+                            </button>
+                            }@else{
+                            <button class="btn btn-primary" (click)="saveloanDeposit()"
+                                [disabled]="loanDepositForm.invalid">Save</button>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+<!-- Modal For View Transaction -->
+<!-- <div class="modal fade" id="loanTransactionViewModal" data-bs-backdrop="static" tabindex="-1" #loanTransactionViewModal>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col d-flex justify-content-center">
+                            <h1 class="fw-medium">{{showTransactionData.type}}@if(showTransactionData.status){
+                                <span class="text-danger ps-1">({{showTransactionData.status}})</span>
+                                }
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary" placeholder="loan Name"
+                                    [value]="showTransactionData.loanName" readonly />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="number" class="form-control bg-body-secondary"
+                                    placeholder="loan Account Number" [value]="showTransactionData.accountNumber"
+                                    readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-body-secondary"
+                                    [value]="convertDate(showTransactionData.day, showTransactionData.month ,showTransactionData.year)"
+                                    readonly />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control bg-body-secondary" placeholder="Expense Amount"
+                                    [value]="showTransactionData.amount | number:'1.2-2'" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div class="mb-3">
+                                <textarea class="form-control bg-body-secondary" placeholder="Description"
+                                    [value]="showTransactionData.description" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col d-flex justify-content-center">
+                            @if(showTransactionData.amount != 0){
+                            <button type="button" class="btn btn-danger mx-2" data-bs-target="#voidIConfirmModal"
+                                data-bs-toggle="modal"><i class="bi bi-exclamation-triangle me-1"></i>Void</button>
+                            }
+                            <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal"
+                                aria-label="Close">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- Modal Confirm Void Transaction  -->
+<!-- <div class="modal fade" id="voidIConfirmModal" data-bs-backdrop="static" tabindex="-1" #voidIConfirmModal>
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <span class="fs-5 fw-medium text-center lh-base">Are you Sure? <br>Voiding
+                            {{showTransactionData.type}}
+                            for {{showTransactionData.loanName}} of
+                            ${{showTransactionData.amount | number:'1.2-2'}}</span>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        <i class="bi bi-exclamation-triangle fs-1 text-danger"></i>
+                    </div>
+                </div>
+                <div class="row py-2">
+                    <div class="col d-flex justify-content-center">
+                        <button type="button" class="btn btn-light " data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
+                        @if(showTransactionData.amount != 0){
+                        <button type="button" class="btn btn-danger mx-2" data-bs-target="#voidTransactionModal"
+                            data-bs-toggle="modal" (click)="voidTransaction()"><i
+                                class="bi bi-exclamation-triangle me-1"></i>Void</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- Modal Void Transaction  -->
+<!-- <div class="modal fade" id="voidTransactionModal" data-bs-backdrop="static" tabindex="-1" #voidTransactionModal>
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center text-center">
+                        @if(isProcessing2){
+                        <span class="fs-5 fw-medium lh-base">Voiding
+                            {{showTransactionData.type}}
+                            for {{showTransactionData.loanName}} of
+                            ${{showTransactionData.amount | number:'1.2-2'}}</span>
+                        }
+                        @else {
+                        <span class="fs-5 fw-medium lh-base">Voided
+                            {{showTransactionData.type}}
+                            for {{showTransactionData.loanName}} of
+                            ${{showTransactionData.amount | number:'1.2-2'}}</span>
+                        }
+                    </div>
+                </div>
+                <div class="row justify-content-between align-items-center pb-4">
+                    <div class="col d-flex justify-content-center">
+                        @if(isProcessing2){
+                        <span class="spinner-border spinner-border-lg" aria-hidden="true"></span>
+                        <span class="visually-hidden" role="status">Loading...</span>
+                        }
+                        @else {
+                        <i class="bi bi-check2-square fs-1 text-success"></i>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div> -->
