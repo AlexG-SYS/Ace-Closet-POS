@@ -45,6 +45,7 @@ export class HomeComponent implements OnInit {
   today = new Date();
   currentYear = this.today.getFullYear();
   currentMonth = this.today.getMonth() + 1;
+  isProcessing = false;
 
   constructor(
     private invoiceService: InvoicesService,
@@ -94,6 +95,8 @@ export class HomeComponent implements OnInit {
   }
 
   private async getData() {
+    this.isProcessing = true;
+
     try {
       if (this.today.getDate() === 1) await this.generateLastMonthReport();
 
@@ -253,6 +256,7 @@ export class HomeComponent implements OnInit {
         { name: 'Net Profit', data: profitData },
         { name: 'Expense', data: expenseData },
       ];
+      this.isProcessing = false;
     }
   }
 

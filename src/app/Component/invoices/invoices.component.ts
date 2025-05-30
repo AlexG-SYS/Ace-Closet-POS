@@ -182,6 +182,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
   invoiceDataLoaded = false;
   invoiceData: Partial<Invoice> = {};
   currentYear = new Date().getFullYear();
+  nextYear = new Date().getFullYear() + 1;
   lastYear = new Date().getFullYear() - 1;
   currentMonth = new Date().getMonth() + 1;
   paidQty = 0;
@@ -372,6 +373,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
     const year = Number(this.filterFormInputs.value.year);
     const month = Number(this.filterFormInputs.value.month);
     const status = this.filterFormInputs.value.status!.toString();
+    console.log('payment received reload table');
 
     if (this.filterFormInputs.value.status == '-1') {
       this.populateInvoiceTable(year, month);
@@ -704,13 +706,14 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         .then(() => {
           this.modalData = false;
           this.snackbarService.show('Invoice Added Successfully!', 'success');
-          this.populateInvoiceTable(this.currentYear, this.currentMonth);
+          this.filterStatus();
           this.clearNewInvoiceForm();
           this.isProcessing = false;
         })
         .catch((error) => {
           this.snackbarService.show(error.message, 'error');
           console.log(error.message);
+          this.isProcessing = false;
         });
     } else {
       this.snackbarService.show('Invalid Action', 'error');
@@ -807,7 +810,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
         })
         .then(([invoiceData]) => {
           this.recPymtInvoiceData = invoiceData;
-          this.populateInvoiceTable(this.currentYear, this.currentMonth);
+          this.filterStatus();
           this.paymentFormInputs.reset();
           this.paymentFormInputs.get('date')?.setValue(this.formattedDate);
           this.isProcessing2 = false;
@@ -831,7 +834,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       .then(() => {
         this.isProcessing3 = false;
         this.snackbarService.show('Invoice Voided Successfully', 'success');
-        this.populateInvoiceTable(this.currentYear, this.currentMonth);
+        this.filterStatus();
       })
       .catch(() => {
         this.snackbarService.show('Error Voiding Invoice', 'error');
@@ -878,7 +881,7 @@ export class InvoicesComponent implements AfterViewInit, OnInit {
       .then(([invoiceData, payments]) => {
         this.recPymtInvoiceData = invoiceData;
         this.paymentsForUser = payments;
-        this.populateInvoiceTable(this.currentYear, this.currentMonth);
+        this.filterStatus();
         this.snackbarService.show('Credit Applied to Invoice', 'success');
       })
       .catch((error) => {

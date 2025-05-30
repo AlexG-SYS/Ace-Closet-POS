@@ -36,7 +36,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     id: new FormControl('', []),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$]+$/),
       Validators.maxLength(25),
     ]),
     accountNumber: new FormControl('', [
@@ -59,7 +59,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     bankAccountId: new FormControl(''),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     amount: new FormControl('', [Validators.required]),
@@ -73,7 +73,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     bankAccountId: new FormControl(''),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     amount: new FormControl('', [Validators.required]),
@@ -87,7 +87,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     bankAccountId: new FormControl(''),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     amount: new FormControl('', [Validators.required]),
@@ -101,7 +101,7 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     bankAccountId: new FormControl(''),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     amount: new FormControl('', [Validators.required]),
@@ -116,11 +116,11 @@ export class BankAccountsComponent implements AfterViewInit, OnInit {
     newBankAccountId: new FormControl(''),
     oldBankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     newBankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     oldAccountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     newAccountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),

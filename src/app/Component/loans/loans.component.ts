@@ -399,6 +399,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
             'success'
           );
           this.populateLoanAccount();
+          this.populateTransactionTable(this.currentYear, this.currentMonth);
           this.isProcessing = false;
         })
         .catch((error) => {

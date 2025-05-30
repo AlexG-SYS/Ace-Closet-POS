@@ -54,8 +54,10 @@ export class LoginPageComponent {
   }
 
   loginError: string | null = null;
+  isProcessing = false;
 
   onLoginClicked() {
+    this.isProcessing = true;
     this.loginError = null;
     if (this.loginForm.valid) {
       const formData = this.loginForm.value;
@@ -67,12 +69,14 @@ export class LoginPageComponent {
             this.globalService.username = formData.email!;
             this.router.navigateByUrl('/dashboard/home');
             console.log(this.globalService.username, ' Logged In*');
+            this.isProcessing = false;
           } else {
             // User is null (login failed)
             console.log('Login failed: Invalid credentials');
             this.loginForm.reset(); // Or display an error message
             // Optionally set an error message to display in the UI
             this.loginError = 'Invalid email or password'; // Example error message
+            this.isProcessing = false;
           }
         },
         error: (err) => {

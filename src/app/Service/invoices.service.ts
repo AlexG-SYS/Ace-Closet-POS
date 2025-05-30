@@ -56,9 +56,7 @@ export class InvoicesService {
         const currentStock = productData?.['quantity'] || 0;
 
         if (currentStock < item.quantity) {
-          throw new Error(
-            `Insufficient stock for product: ${item?.['productName']}`
-          );
+          throw new Error(`Insufficient stock for: ${item?.['productName']}`);
         }
 
         // Deduct the purchased quantity

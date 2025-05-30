@@ -87,6 +87,7 @@
 
                                 <div class="col-auto px-2 d-none d-md-block">
                                     <select class="form-select" formControlName="year" (change)="filterStatus()">
+                                        <option value="{{nextYear}}">{{nextYear}}</option>
                                         <option value="{{currentYear}}">{{currentYear}}</option>
                                         <option value="{{lastYear}}">{{lastYear}}</option>
                                     </select>
