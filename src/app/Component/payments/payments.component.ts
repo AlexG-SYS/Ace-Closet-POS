@@ -21,18 +21,17 @@ import { SnackbarService } from '../../Service/snackbar.service';
 import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
-  selector: 'app-payments',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    DecimalPipe,
-    FormsModule,
-    NgxPrintModule,
-  ],
-  templateUrl: './payments.component.html',
-  styleUrl: './payments.component.scss',
+    selector: 'app-payments',
+    imports: [
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        DecimalPipe,
+        FormsModule,
+        NgxPrintModule,
+    ],
+    templateUrl: './payments.component.html',
+    styleUrl: './payments.component.scss'
 })
 export class PaymentsComponent implements AfterViewInit, OnInit {
   today = new Date();

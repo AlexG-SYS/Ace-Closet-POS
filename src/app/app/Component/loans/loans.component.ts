@@ -11,16 +11,15 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'app-loans',
-  standalone: true,
-  imports: [
-    DecimalPipe,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-  ],
-  templateUrl: './loans.component.html',
-  styleUrl: './loans.component.scss',
+    selector: 'app-loans',
+    imports: [
+        DecimalPipe,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+    ],
+    templateUrl: './loans.component.html',
+    styleUrl: './loans.component.scss'
 })
 export class LoansComponent {
   modalData: any;

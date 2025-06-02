@@ -21,16 +21,15 @@ import { Timestamp } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-customers',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule,
-    DecimalPipe,
-    MatPaginatorModule,
-  ],
-  templateUrl: './customers.component.html',
-  styleUrls: ['./customers.component.scss'], // Corrected property
+    selector: 'app-customers',
+    imports: [
+        ReactiveFormsModule,
+        MatTableModule,
+        DecimalPipe,
+        MatPaginatorModule,
+    ],
+    templateUrl: './customers.component.html',
+    styleUrls: ['./customers.component.scss']
 })
 export class CustomersComponent implements AfterViewInit, OnInit {
   customerForm = new FormGroup({

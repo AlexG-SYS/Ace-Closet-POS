@@ -17,16 +17,15 @@ import { SnackbarService } from '../../Service/snackbar.service';
 import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
-  selector: 'app-bank-accounts',
-  standalone: true,
-  imports: [
-    DecimalPipe,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-  ],
-  templateUrl: './bank-accounts.component.html',
-  styleUrl: './bank-accounts.component.scss',
+    selector: 'app-bank-accounts',
+    imports: [
+        DecimalPipe,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+    ],
+    templateUrl: './bank-accounts.component.html',
+    styleUrl: './bank-accounts.component.scss'
 })
 export class BankAccountsComponent implements AfterViewInit, OnInit {
   today = new Date();

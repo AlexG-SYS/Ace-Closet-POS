@@ -25,18 +25,17 @@ import { Timestamp } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-invoices',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    DecimalPipe,
-    FormsModule,
-    NgxPrintModule,
-  ],
-  templateUrl: './invoices.component.html',
-  styleUrl: './invoices.component.scss',
+    selector: 'app-invoices',
+    imports: [
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        DecimalPipe,
+        FormsModule,
+        NgxPrintModule,
+    ],
+    templateUrl: './invoices.component.html',
+    styleUrl: './invoices.component.scss'
 })
 export class InvoicesComponent implements AfterViewInit, OnInit {
   logoPath = '../../../assets/aceClosetLogoFull.png'; // Default image

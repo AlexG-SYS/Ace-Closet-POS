@@ -24,18 +24,17 @@ import { TransactionsService } from '../../Service/transactions.service';
 import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
-  selector: 'app-reports',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule,
-    MatSnackBarModule,
-    DecimalPipe,
-    FormsModule,
-    NgxPrintModule,
-  ],
-  templateUrl: './reports.component.html',
-  styleUrl: './reports.component.scss',
+    selector: 'app-reports',
+    imports: [
+        ReactiveFormsModule,
+        MatTableModule,
+        MatSnackBarModule,
+        DecimalPipe,
+        FormsModule,
+        NgxPrintModule,
+    ],
+    templateUrl: './reports.component.html',
+    styleUrl: './reports.component.scss'
 })
 export class ReportsComponent {
   today = new Date();

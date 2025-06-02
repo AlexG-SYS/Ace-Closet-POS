@@ -14,16 +14,15 @@ import * as bootstrap from 'bootstrap';
 import { SnackbarService } from '../../Service/snackbar.service';
 
 @Component({
-  selector: 'app-products',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule,
-    DecimalPipe,
-    MatPaginatorModule,
-  ],
-  templateUrl: './products.component.html',
-  styleUrl: './products.component.scss',
+    selector: 'app-products',
+    imports: [
+        ReactiveFormsModule,
+        MatTableModule,
+        DecimalPipe,
+        MatPaginatorModule,
+    ],
+    templateUrl: './products.component.html',
+    styleUrl: './products.component.scss'
 })
 export class ProductsComponent implements AfterViewInit, OnInit {
   productForm = new FormGroup({

@@ -12,11 +12,10 @@ import {
 import { tap } from 'rxjs';
 
 @Component({
-  selector: 'app-login-page',
-  standalone: true,
-  imports: [ReactiveFormsModule, FormsModule],
-  templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.scss',
+    selector: 'app-login-page',
+    imports: [ReactiveFormsModule, FormsModule],
+    templateUrl: './login-page.component.html',
+    styleUrl: './login-page.component.scss'
 })
 export class LoginPageComponent {
   logoPath = '../../../assets/aceClosetLogoFull.png'; // Default image

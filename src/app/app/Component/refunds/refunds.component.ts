@@ -24,18 +24,17 @@ import { Refund } from '../../DataModels/refundData.model';
 import { Product } from '../../DataModels/productData.model';
 
 @Component({
-  selector: 'app-refunds',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    DecimalPipe,
-    FormsModule,
-    NgxPrintModule,
-  ],
-  templateUrl: './refunds.component.html',
-  styleUrl: './refunds.component.scss',
+    selector: 'app-refunds',
+    imports: [
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        DecimalPipe,
+        FormsModule,
+        NgxPrintModule,
+    ],
+    templateUrl: './refunds.component.html',
+    styleUrl: './refunds.component.scss'
 })
 export class RefundsComponent implements AfterViewInit, OnInit {
   today = new Date();

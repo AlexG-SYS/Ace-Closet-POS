@@ -28,11 +28,10 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [NgApexchartsModule, DecimalPipe, RouterLink],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+    selector: 'app-home',
+    imports: [NgApexchartsModule, DecimalPipe, RouterLink],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
   public chartOptions!: ChartOptions;

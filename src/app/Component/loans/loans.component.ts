@@ -21,16 +21,15 @@ import { LoanAccount } from '../../DataModels/loanAccountData.model';
 import { LoanService } from '../../Service/loan.service';
 
 @Component({
-  selector: 'app-loans',
-  standalone: true,
-  imports: [
-    DecimalPipe,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-  ],
-  templateUrl: './loans.component.html',
-  styleUrl: './loans.component.scss',
+    selector: 'app-loans',
+    imports: [
+        DecimalPipe,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+    ],
+    templateUrl: './loans.component.html',
+    styleUrl: './loans.component.scss'
 })
 export class LoansComponent implements AfterViewInit, OnInit {
   today = new Date();

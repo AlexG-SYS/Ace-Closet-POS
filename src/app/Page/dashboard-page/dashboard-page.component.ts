@@ -10,11 +10,10 @@ import { AuthenticateService } from '../../Service/authenticate.service';
 import { GlobalService } from '../../Service/global.service';
 
 @Component({
-  selector: 'app-dashboard-page',
-  standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './dashboard-page.component.html',
-  styleUrl: './dashboard-page.component.scss',
+    selector: 'app-dashboard-page',
+    imports: [RouterOutlet, RouterLink, RouterLinkActive],
+    templateUrl: './dashboard-page.component.html',
+    styleUrl: './dashboard-page.component.scss'
 })
 export class DashboardPageComponent {
   isSidebarVisible: boolean = false;
