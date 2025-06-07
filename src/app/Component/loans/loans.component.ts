@@ -21,15 +21,15 @@ import { LoanAccount } from '../../DataModels/loanAccountData.model';
 import { LoanService } from '../../Service/loan.service';
 
 @Component({
-    selector: 'app-loans',
-    imports: [
-        DecimalPipe,
-        ReactiveFormsModule,
-        MatTableModule,
-        MatPaginatorModule,
-    ],
-    templateUrl: './loans.component.html',
-    styleUrl: './loans.component.scss'
+  selector: 'app-loans',
+  imports: [
+    DecimalPipe,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+  ],
+  templateUrl: './loans.component.html',
+  styleUrl: './loans.component.scss',
 })
 export class LoansComponent implements AfterViewInit, OnInit {
   today = new Date();
@@ -50,6 +50,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
     ]),
     bankAccountNumber: new FormControl('', []),
     loanAmount: new FormControl('', [Validators.required]),
+    description: new FormControl('', [Validators.required]),
   });
 
   filterFormInputs = new FormGroup({
@@ -87,6 +88,10 @@ export class LoansComponent implements AfterViewInit, OnInit {
 
   get loanAmountControl() {
     return this.loanForm.get('loanAmount');
+  }
+
+  get loanDescriptionControl() {
+    return this.loanForm.get('description');
   }
 
   displayedColumns: string[] = [
@@ -281,6 +286,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
         bankID: formData.bankID!,
         loanAmount: Number(formData.loanAmount),
         balance: Number(formData.loanAmount),
+        description: formData.description!,
       };
 
       // Add Bank Account and handle success or error

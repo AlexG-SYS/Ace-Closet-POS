@@ -99,7 +99,7 @@ export class LoanService {
         day,
         month,
         year,
-        description: `Loan issued to ${customerData['name'] || 'customer'}`,
+        description: `Loan Issued to ${customerData['name'] || 'customer'}`,
       });
 
       // Step 5: Commit batch

@@ -9,6 +9,7 @@ export interface LoanAccount {
   customerName: string;
   loanAmount: number;
   balance: number;
+  description: string;
   createdAt: Timestamp; // Timestamp of when the payment was created
   updatedAt: Timestamp; // Timestamp of the last payment update
 }
