@@ -99,7 +99,11 @@ export class LoanService {
         day,
         month,
         year,
-        description: `Loan Issued to ${customerData['name'] || 'customer'}`,
+        description:
+          `Loan Issued to ${customerData['name'] || 'customer'}` +
+          ' (' +
+          data.description +
+          ') ',
       });
 
       // Step 5: Commit batch
@@ -114,7 +118,11 @@ export class LoanService {
 
   // Retrieve all loan accounts
   async getLoanAccounts(): Promise<any[]> {
-    const q = query(this.loanCollection, orderBy('createdAt', 'asc'));
+    const q = query(
+      this.loanCollection,
+      where('status', '==', 'Active'),
+      orderBy('createdAt', 'asc')
+    );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }

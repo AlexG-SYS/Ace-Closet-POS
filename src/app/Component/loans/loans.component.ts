@@ -45,7 +45,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
     bankID: new FormControl('', []),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
       Validators.maxLength(25),
     ]),
     bankAccountNumber: new FormControl('', []),
@@ -69,7 +69,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
     bankAccountId: new FormControl(''),
     bankName: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-Z\s]+$/),
+      Validators.pattern(/^[a-zA-Z\s$()]+$/),
     ]),
     accountNumber: new FormControl('', [Validators.pattern('^[0-9]+$')]),
     loanBalance: new FormControl(),
@@ -303,6 +303,7 @@ export class LoansComponent implements AfterViewInit, OnInit {
             'success'
           );
           this.populateLoanAccount();
+          this.populateTransactionTable(this.currentYear, this.currentMonth);
           this.isProcessing = false;
         })
         .catch((error) => {
@@ -378,6 +379,10 @@ export class LoansComponent implements AfterViewInit, OnInit {
 
       const [year, month, day] = formData.date!.split('-').map(Number);
 
+      const matchingLoan = this.activeLoanAccount.find(
+        (loan) => loan.id === formData.id
+      );
+
       // Convert form data to a partial transaction data model
       const partialLoanPayment: Partial<any> = {
         id: formData.id,
@@ -388,7 +393,12 @@ export class LoansComponent implements AfterViewInit, OnInit {
         bankID: formData.bankAccountId!,
         amount: Number(formData.amount),
         type: formData.type,
-        description: 'Loan Payment for ' + formData.customerName,
+        description:
+          'Loan Payment for ' +
+          formData.customerName +
+          ' (' +
+          matchingLoan?.description +
+          ') ',
         day,
         month,
         year,
